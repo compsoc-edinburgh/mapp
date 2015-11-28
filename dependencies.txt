@@ -1,1 +1,3 @@
 paramiko
+pycrypto>=2.1
+ecdsa>=0.9
