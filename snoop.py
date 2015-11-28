@@ -5,38 +5,15 @@ import getpass
 import sys
 import time
 import re
-
+import json
+import urllib2
 from multiprocessing import Process, Lock, Pool
-
-class Collector:
-    def __init__(self, username, password, servers):
-        self.username = str(username)
-        self.password = str(password)
-        self.servers  = list(servers)
-        self.pool = Pool(len(servers))
-        self.out = []
-
-    def run(self):
-        for server in self.servers:
-            print "trying " + server
-            self.pool.apply_async(self.mapfun, args=(server, ), callback=self.callback)
-        self.pool.close()
-        self.pool.join()
-        print self.out
-
-    def callback(self, result):
-        print result
-        self.out.append(result)
-
-    @staticmethod
-    def mapfun(un, pw, hn):
-        s = Snoop(username=un, password=pw, hostname=hn)
-        return s.usercheck()
         
 
 class Snoop:
     # Init method, creates SSH connection to remote host
-    def __init__(self, username, password, hostname):
+    def __init__(self, username, password, hostname, lock=None):
+        self.lock = lock
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(username=username,
@@ -61,6 +38,11 @@ class Snoop:
                 ret.append(user)
             except AttributeError, IndexError:
                 pass
+        if self.lock is not None:
+            self.lock.acquire()
+        sys.stderr.write("INFO: %s\n" % str(ret))
+        if self.lock is not None:
+            self.lock.release()
         return ret
             
             
@@ -68,14 +50,21 @@ class Snoop:
     # $wall the remote host with message:str
     def wall(self,message):
         stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
-        sys.stderr.write("ERROR on REMOTE: %s" % stderr.read())
+        if self.lock is not None:
+            self.lock.acquire()
+        sys.stderr.write("ERROR on REMOTE: %s\n" % stderr.read())
+        if self.lock is not None:
+            self.lock.release()
 
 
         
         
 if __name__ == "__main__":
+    
     servers = ["fez.tardis.ed.ac.uk",
                "torchwood.tardis.ed.ac.uk"]
+
+    lock = Lock()
     
     try:
         username = str(sys.argv[1])
@@ -84,24 +73,9 @@ if __name__ == "__main__":
 
     password = getpass.getpass("Remote Password for %s on all machines:" % username)
     
-    srv_cons = dict()
-
+    def mapf(serv):
+        s = Snoop(username, password, serv, lock)
+        userl = s.usercheck()
     
-
-    #coll = Collector(username, password, servers)
-
-    #coll.run()
-
-    # threads = []
-    # for server in servers:
-    #    thread = Process( target=f, args=(username, password, server, ))
-    #    thread.start()
-    #    threads.append(p)
-       
-        
-
-    for server in servers:
-        srv_cons[server] = Snoop(username, password, server)
-        print "------------"
-        print server
-        print srv_cons[server].usercheck()
+    p = Pool(len(servers))
+    p.map(mapf,servers)
