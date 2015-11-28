@@ -88,11 +88,14 @@ if __name__ == "__main__":
     password = getpass.getpass("Remote Password for %s on all machines:" % username)
     
     def mapf(serv):
-        s = Snoop(username, password, serv, lock)
-        userl = s.usercheck()
+        try:
+            s = Snoop(username, password, serv, lock)
+            userl = s.usercheck()
+        except:
+            pass
     
-    #p = Pool(max(len(servers),1))
-    #p.map(mapf,servers)
+    p = Pool(max(len(servers),20))
+    p.map(mapf,servers)
 
-    for server in servers:
-        mapf(server)
+    #for server in servers:
+    #    mapf(server)
