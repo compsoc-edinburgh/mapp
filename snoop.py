@@ -7,12 +7,13 @@ import time
 import re
 import json
 import urllib2
+import datetime
 from multiprocessing import Process, Lock, Pool
         
 
 class Snoop:
     # Init method, creates SSH connection to remote host
-    def __init__(self, username, password, hostname, lock=None):
+    def __init__(self, username, password, hostname, lock):
         self.lock = lock
         self.hostname = hostname
         self.client = paramiko.SSHClient()
@@ -36,26 +37,34 @@ class Snoop:
                 usr_i, usr_o, usr_e = self.client.exec_command("finger %s" % user[0])
                 out = re.search("Name: (.*)", usr_o.readline())
                 user = (out.group(1), user[4])
-                ret.append(user)
+                if user[2] == ":0":
+                    ret.append(user)
             except AttributeError, IndexError:
                 pass
-        if self.lock is not None:
-            self.lock.acquire()
+        
+        self.lock.acquire()
         sys.stderr.write("USERS @ %s: %s\n" % (self.hostname, str(ret)))
-        if self.lock is not None:
-            self.lock.release()
+        self.lock.release()
+
+        data_dict = dict()
+        data_dict['hostname']  = self.hostname
+        data_dict['user']      = str(ret[0])
+        data_dict['active']    = str(ret[1])
+        data_dict['timestamp'] = datetime.utcnow().isoformat()
+        json_data = json.dumps(data_dict)
+        
+        req = urllib2.Request(
+            os.environ.get("SNOOP_URL","http://localhost"),
+            json_data,
+            {'Content-Type': 'application/json'})
+        
+        f = urllib2.urlopen(req)
+        f.close()
         return ret
             
-            
-        
     # $wall the remote host with message:str
     def wall(self,message):
         stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
-        if self.lock is not None:
-            self.lock.acquire()
-        sys.stderr.write("ERROR on REMOTE: %s\n" % stderr.read())
-        if self.lock is not None:
-            self.lock.release()
 
 
         
@@ -94,7 +103,7 @@ if __name__ == "__main__":
         except:
             pass
     
-    p = Pool(max(len(servers),20))
+    p = Pool(max(len(servers),30))
     p.map(mapf,servers)
 
     #for server in servers:
