@@ -41,7 +41,7 @@ class Snoop:
                 pass
         if self.lock is not None:
             self.lock.acquire()
-        sys.stderr.write("USERS @ {}: {}\n".format(self.hostname, str(ret)))
+        sys.stderr.write("USERS @ %s: %s\n" % (self.hostname, str(ret)))
         if self.lock is not None:
             self.lock.release()
         return ret
@@ -91,5 +91,5 @@ if __name__ == "__main__":
         s = Snoop(username, password, serv, lock)
         userl = s.usercheck()
     
-    p = Pool(max(len(servers),15))
+    p = Pool(max(len(servers),1))
     p.map(mapf,servers)
