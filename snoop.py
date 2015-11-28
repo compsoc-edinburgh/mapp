@@ -4,6 +4,7 @@ import os
 import getpass
 import sys
 import time
+import re
 
 from multiprocessing import Process, Lock, Pool
 
@@ -47,45 +48,34 @@ class Snoop:
 
     # Runs a user check on the remote host
     def usercheck(self):
-        stdin, stdout, stderr = self.client.exec_command("who")
+        stdin, stdout, stderr = self.client.exec_command("w -h")
         users = stdout.readlines()
-
-        refined = []
+        
+        ret = []
         for user in users:
-            user = user.split(' ')[0]
-            usr_i, user, usr_e = self.client.exec_command("finger %s" % user)
-            out = user.readlines()
-
-            
-            refined.append(out)
-
-        return refined
+            try:
+                user = re.split("\s+", user.encode("ascii"))
+                usr_i, usr_o, usr_e = self.client.exec_command("finger %s" % user[0])
+                out = re.search("Name: (.*)", usr_o.readline().encode("ascii"))
+                user = (out.group(1), user[4])
+                ret.append(user)
+            except AttributeError, IndexError:
+                pass
+        return ret
             
             
         
-    # Walls the remote host with message:str
+    # $wall the remote host with message:str
     def wall(self,message):
-        stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % message)
-        sys.stderr.write(stderr.read())
+        stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
+        sys.stderr.write("ERROR on REMOTE: %s" % stderr.read())
 
-
-
-
-def f(username, password, server):
-    try:
-        s = Snoop(username, password, server)
-        return s.usercheck()
-    except paramiko.AuthenticationException:
-        return []
 
         
         
 if __name__ == "__main__":
     servers = ["fez.tardis.ed.ac.uk",
-               "torchwood.tardis.ed.ac.uk",
-               "fez.tardis.ed.ac.uk",
-               "torchwood.tardis.ed.ac.uk",
-               "fez.tardis.ed.ac.uk"]
+               "torchwood.tardis.ed.ac.uk"]
     
     try:
         username = str(sys.argv[1])
