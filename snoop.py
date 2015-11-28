@@ -50,16 +50,20 @@ class Snoop:
         data_dict['hostname']  = self.hostname
         data_dict['user']      = str(ret[0])
         data_dict['active']    = str(ret[1])
-        data_dict['timestamp'] = datetime.utcnow().isoformat()
-        json_data = json.dumps(data_dict)
+        data_dict['timestamp'] = str(datetime.utcnow().isoformat())
         
         req = urllib2.Request(
-            os.environ.get("SNOOP_URL","http://localhost"),
-            json_data,
+            os.environ.get("SNOOP_URL"),
+            json.dumps(data_dict),
             {'Content-Type': 'application/json'})
-        
-        f = urllib2.urlopen(req)
-        f.close()
+
+        try:
+            f = urllib2.urlopen(req)
+            f.close()
+        except as e:
+            self.lock.acquire()
+            sys.stderr.write("ERR for %s : %s\n" % (self.hostname, str(e)))
+            self.lock.release()
         return ret
             
     # $wall the remote host with message:str
@@ -100,8 +104,10 @@ if __name__ == "__main__":
         try:
             s = Snoop(username, password, serv, lock)
             userl = s.usercheck()
-        except:
-            pass
+        except as e:
+            lock.acquire()
+            sys.stderr.write("ERR for %s : %s\n" % (self.hostname))
+            lock.release()
     
     p = Pool(max(len(servers),30))
     p.map(mapf,servers)
