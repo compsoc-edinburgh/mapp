@@ -6,18 +6,11 @@ import sys
 
 class Snoop:
     # Init method, creates SSH connection to remote host
-    def __init__(self):
+    def __init__(self, username, password, hostname):
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            username = str(sys.argv[1])
-            hostname = str(sys.argv[2])
-        except IndexError:
-            raise Exception("Expect command line arguments <username> <host>")
-
-        self.pswd = getpass.getpass('Remote Password:')
         self.client.connect(username=username,
-                            password=str(self.pswd),
+                            password=password,
                             hostname=hostname,
                             port=22)
         
@@ -31,6 +24,11 @@ class Snoop:
         
         for user in users:
             print user
+
+        s = self.client.get_transport().open_session()
+        paramiko.agent.AgentRequestHandler(s)
+        s.get_pty()
+        s.invoke_shell()
             
             
         
@@ -39,6 +37,29 @@ class Snoop:
         stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % message)
         sys.stderr.write(stderr.read())
 
+
+        
 if __name__ == "__main__":
-    this = Snoop()
-    this.usercheck()
+    servers = ["fez.tardis.ed.ac.uk",
+               "torchwood.tardis.ed.ac.uk",
+               "torchwood.tardis.ed.ac.uk",
+               "torchwood.tardis.ed.ac.uk",
+               "torchwood.tardis.ed.ac.uk"]
+    
+    try:
+        username = str(sys.argv[1])
+    except IndexError:
+        raise Exception("Expect command line arguments <username>")
+
+    password = getpass.getpass("Remote Password for %s on all machines:" % username)
+
+    srv_cons = dict()
+
+    for server in servers:
+        try:
+            srv_cons[server] = Snoop(username, password, server)
+            print "------------"
+            print server
+            srv_cons[server].usercheck()
+        except AuthenticationException:
+            sys.stderr.write("ERROR: Couldn't connect to %s \n" % server)
