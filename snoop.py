@@ -14,6 +14,7 @@ class Snoop:
     # Init method, creates SSH connection to remote host
     def __init__(self, username, password, hostname, lock=None):
         self.lock = lock
+        self.hostname = hostname
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(username=username,
@@ -40,7 +41,7 @@ class Snoop:
                 pass
         if self.lock is not None:
             self.lock.acquire()
-        sys.stderr.write("INFO: %s\n" % str(ret))
+        sys.stderr.write("USERS @ {}: {}\n".format(self.hostname, str(ret)))
         if self.lock is not None:
             self.lock.release()
         return ret
@@ -61,8 +62,21 @@ class Snoop:
         
 if __name__ == "__main__":
     
-    servers = ["fez.tardis.ed.ac.uk",
-               "torchwood.tardis.ed.ac.uk"]
+    servers = ['rosalinde', 'montparnasse', 'dancaire', 'lillas', 'vervcelli', 'zuniga',
+               'rieti', 'venosa','trento', 'pavia', 'orlofsky', 'mereb', 'radames', 'ascoli',
+               'tivoli', 'wideopen', 'twite', 'swanland', 'enna', 'gosforth', 'albenga',
+               'hart', 'stork', 'brujon', 'pharoah', 'combeferre', 'remendado', 'escamillo',
+               'micaela', 'lavello', 'marsala', 'mantua', 'spoleto', 'falconara', 'amelia',
+               'parrot', 'wigton', 'falcon', 'raven', 'ciociosan', 'roxanne', 'yakuside',
+               'lesgles', 'goro', 'daae', 'owl', 'owl', 'penguin', 'lodi', 'luni', 'palermo',
+               'falke', 'scarpia', 'cavaradossi', 'amneris', 'babet', 'amanasro', 'ceilingcat',
+               'lowick', 'seascale', 'ostiglia', 'allonby', 'yvan', 'claquesous', 'tosca',
+               'spoletta', 'enjolras', 'nehebka', 'parma', 'carmen', 'messina', 'gabriel',
+               'aida', 'frosch', 'thenardier', 'zoser', 'pollenzo', 'palestrina', 'ravenna',
+               'bechstein', 'mocha', 'bluthner', 'dove', 'scarecrow', 'giry', 'savona',
+               'vicenza', 'velma', 'avellino', 'morales', 'pontremoli', 'velletri',
+               'angelotti', 'joly', 'courfeyrac', 'crow', 'giudicelli', 'pipit']
+
 
     lock = Lock()
     
@@ -77,5 +91,5 @@ if __name__ == "__main__":
         s = Snoop(username, password, serv, lock)
         userl = s.usercheck()
     
-    p = Pool(len(servers))
+    p = Pool(max(len(servers),15))
     p.map(mapf,servers)
