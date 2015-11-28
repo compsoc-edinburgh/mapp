@@ -3,6 +3,35 @@ import paramiko
 import os
 import getpass
 import sys
+import time
+
+from multiprocessing import Process, Lock, Pool
+
+class Collector:
+    def __init__(self, username, password, servers):
+        self.username = str(username)
+        self.password = str(password)
+        self.servers  = list(servers)
+        self.pool = Pool(len(servers))
+        self.out = []
+
+    def run(self):
+        for server in self.servers:
+            print "trying " + server
+            self.pool.apply_async(self.mapfun, args=(server, ), callback=self.callback)
+        self.pool.close()
+        self.pool.join()
+        print self.out
+
+    def callback(self, result):
+        print result
+        self.out.append(result)
+
+    @staticmethod
+    def mapfun(un, pw, hn):
+        s = Snoop(username=un, password=pw, hostname=hn)
+        return s.usercheck()
+        
 
 class Snoop:
     # Init method, creates SSH connection to remote host
@@ -20,15 +49,17 @@ class Snoop:
     def usercheck(self):
         stdin, stdout, stderr = self.client.exec_command("who")
         users = stdout.readlines()
-        sys.stderr.write(stderr.read())
-        
-        for user in users:
-            print user
 
-        s = self.client.get_transport().open_session()
-        paramiko.agent.AgentRequestHandler(s)
-        s.get_pty()
-        s.invoke_shell()
+        refined = []
+        for user in users:
+            user = user.split(' ')[0]
+            usr_i, user, usr_e = self.client.exec_command("finger %s" % user)
+            out = user.readlines()
+
+            
+            refined.append(out)
+
+        return refined
             
             
         
@@ -38,13 +69,23 @@ class Snoop:
         sys.stderr.write(stderr.read())
 
 
+
+
+def f(username, password, server):
+    try:
+        s = Snoop(username, password, server)
+        return s.usercheck()
+    except paramiko.AuthenticationException:
+        return []
+
+        
         
 if __name__ == "__main__":
     servers = ["fez.tardis.ed.ac.uk",
                "torchwood.tardis.ed.ac.uk",
+               "fez.tardis.ed.ac.uk",
                "torchwood.tardis.ed.ac.uk",
-               "torchwood.tardis.ed.ac.uk",
-               "torchwood.tardis.ed.ac.uk"]
+               "fez.tardis.ed.ac.uk"]
     
     try:
         username = str(sys.argv[1])
@@ -52,14 +93,25 @@ if __name__ == "__main__":
         raise Exception("Expect command line arguments <username>")
 
     password = getpass.getpass("Remote Password for %s on all machines:" % username)
-
+    
     srv_cons = dict()
 
+    
+
+    #coll = Collector(username, password, servers)
+
+    #coll.run()
+
+    # threads = []
+    # for server in servers:
+    #    thread = Process( target=f, args=(username, password, server, ))
+    #    thread.start()
+    #    threads.append(p)
+       
+        
+
     for server in servers:
-        try:
-            srv_cons[server] = Snoop(username, password, server)
-            print "------------"
-            print server
-            srv_cons[server].usercheck()
-        except AuthenticationException:
-            sys.stderr.write("ERROR: Couldn't connect to %s \n" % server)
+        srv_cons[server] = Snoop(username, password, server)
+        print "------------"
+        print server
+        print srv_cons[server].usercheck()
