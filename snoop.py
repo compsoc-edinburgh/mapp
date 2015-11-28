@@ -32,9 +32,9 @@ class Snoop:
         ret = []
         for user in users:
             try:
-                user = re.split("\s+", user.encode("ascii"))
+                user = re.split("\s+", user)
                 usr_i, usr_o, usr_e = self.client.exec_command("finger %s" % user[0])
-                out = re.search("Name: (.*)", usr_o.readline().encode("ascii"))
+                out = re.search("Name: (.*)", usr_o.readline())
                 user = (out.group(1), user[4])
                 ret.append(user)
             except AttributeError, IndexError:
@@ -91,5 +91,8 @@ if __name__ == "__main__":
         s = Snoop(username, password, serv, lock)
         userl = s.usercheck()
     
-    p = Pool(max(len(servers),1))
-    p.map(mapf,servers)
+    #p = Pool(max(len(servers),1))
+    #p.map(mapf,servers)
+
+    for server in servers:
+        mapf(server)
