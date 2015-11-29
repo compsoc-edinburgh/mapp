@@ -107,5 +107,22 @@ def hello_monkey():
 
         return str(resp)
 
+
+#Here be Braintree Dragons
+
+@app.route("/client_token", methods=["GET"])
+def client_token():
+  return braintree.ClientToken.generate()
+
+@app.route("/checkout", methods=["POST"])
+def create_purchase():
+  nonce = request.form["payment_method_nonce"]
+  # Use payment method nonce here...
+  result = braintree.Transaction.sale({
+    "amount": "10.00",
+    "payment_method_nonce": nonce_from_the_client
+})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
