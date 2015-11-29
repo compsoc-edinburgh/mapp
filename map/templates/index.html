@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{ room.name }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                {% for row in rows %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>
+                                {% if cell.hostname %}
+                                    <p>{{ cell.hostname }}</p>
+                                    {% if "user" in cell %}
+                                        <p class="text-{% if cell.user == "Cameron Gray" %}info{% else %}danger{% endif %}">{% if cell.user != "Cameron Gray" %}Unavailable{% else %}{{ cell.user }}{% endif %}</p>
+                                    {% else %}
+                                        <p class="text-success">Available</p>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
