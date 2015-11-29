@@ -5,52 +5,53 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h2>
-              <span id="maintitle">{{ room.name }}</span>
-              <span class="pull-right">
-                <a class="btn btn-primary btn-sm" id="reservemachine">Leave Me Alone</a>
-              </span>
-            </h2>
+            <h2>{{ room.name }}</h2>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-bordered">
-                {% for row in rows %}
-                    <tr>
-                        {% for cell in row %}
-                            <td>
-                                {% if cell.hostname %}
-                                    <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
-                                    {% if cell.user %}
-                                        <p id="status-{{ cell.hostname }}" class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
-                                    {% else %}
-                                        <p id="status-{{ cell.hostname }}" class="text-success">Available</p>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <br>
+    <div class="tabwrap">
+      <table class="table">
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>
+            {% if cell.hostname %}
+            {% if cell.user %}
+            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="Unavailable">
+              {% if current_user.has_friend(cell.user) %}
+              <i class="fa fa-star-o"></i>
+              {% else %}
+              <i class="fa fa-circle-thin"></i>
+              {% endif %}
+            </p>
+            {% else %}
+            <p class="text-success"  data-state="Unavailable"><i class="fa fa-circle-thin"></i></p>
+            {% endif %}
+            <p>{{ cell.hostname }}</p>
+            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ cell.user }}</small></p>{% endif %}
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
     </div>
 {% endblock %}
+<form id="checkout" method="post" action="/checkout">
+  <div id="payment-form"></div>
+  <input type="submit" value="Pay $10">
+</form>
 
-{% block scripts %}
-  <script>
-    $(document).ready(function () {
-      $('#reservemachine').click(function () {
-        $('.hostname').each(function () {
-          $('#maintitle').text("Select a machine for us to consider 'Unavailable'");
-          var hostname = $(this).html();
-          var status = $('#status-' + hostname).text();
+<script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+<script>
+// We generated a client token for you so you can test out this code
+// immediately. In a production-ready integration, you will need to
+// generate a client token on your server (see section below).
+var clientToken = "***REMOVED***=";
 
-          if (status == "Available") {
-            $('#host-' + hostname).html("<a href='/reserve/" + hostname + "'>" + hostname +  "</a>");
-          }
-        });
-      });
-    });
-  </script>
-{% endblock %}
+braintree.setup(clientToken, "dropin", {
+  container: "payment-form"
+});
+</script>
+
+
