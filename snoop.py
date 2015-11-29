@@ -8,7 +8,7 @@ import re
 import json
 import urllib2
 from datetime import datetime
-from multiprocessing import Process, Lock, Pool
+from multiprocessing import Process, Pool
         
 
 class Snoop:
@@ -73,26 +73,17 @@ class Snoop:
         
 if __name__ == "__main__":
 
-    servers = ['ssh.tardis.ed.ac.uk','ssh1.tardis.ed.ac.uk']
-    
-    # servers = ['rosalinde', 'montparnasse', 'dancaire', 'lillas', 'vervcelli', 'zuniga',
-    #            'rieti', 'venosa','trento', 'pavia', 'orlofsky', 'mereb', 'radames', 'ascoli',
-    #            'tivoli', 'wideopen', 'twite', 'swanland', 'enna', 'gosforth', 'albenga',
-    #            'hart', 'stork', 'brujon', 'pharoah', 'combeferre', 'remendado', 'escamillo',
-    #            'micaela', 'lavello', 'marsala', 'mantua', 'spoleto', 'falconara', 'amelia',
-    #            'parrot', 'wigton', 'falcon', 'raven', 'ciociosan', 'roxanne', 'yakuside',
-    #            'lesgles', 'goro', 'daae', 'owl', 'owl', 'penguin', 'lodi', 'luni', 'palermo',
-    #            'falke', 'scarpia', 'cavaradossi', 'amneris', 'babet', 'amanasro', 'ceilingcat',
-    #            'lowick', 'seascale', 'ostiglia', 'allonby', 'yvan', 'claquesous', 'tosca',
-    #            'spoletta', 'enjolras', 'nehebka', 'parma', 'carmen', 'messina', 'gabriel',
-    #            'aida', 'frosch', 'thenardier', 'zoser', 'pollenzo', 'palestrina', 'ravenna',
-    #            'bechstein', 'mocha', 'bluthner', 'dove', 'scarecrow', 'giry', 'savona',
-    #            'vicenza', 'velma', 'avellino', 'morales', 'pontremoli', 'velletri',
-    #            'angelotti', 'joly', 'courfeyrac', 'crow', 'giudicelli', 'pipit']
-
-
-    lock = Lock()
-    
+    try:
+        server_file = open(sys.argv[2])
+        servers = json.loads(server_file.read())
+    except IOError:
+        print("Input server list '"+sys.argv[1]+"' not found.")
+    except IndexError:
+        print("No input file")
+    except ValueError:
+        print("Malformed JSON input list")
+    finally:
+        servers = ['ssh.tardis.ed.ac.uk','ssh1.tardis.ed.ac.uk']    
     try:
         username = str(sys.argv[1])
     except IndexError:
@@ -109,7 +100,3 @@ if __name__ == "__main__":
     
     p = Pool(20)
     p.map(mapf,servers)
-
-    # Single threaded version:
-    #for server in servers:
-    #    mapf(server)
