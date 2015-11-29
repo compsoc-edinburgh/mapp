@@ -18,7 +18,7 @@
                                 {% if cell.hostname %}
                                     <p>{{ cell.hostname }}</p>
                                     {% if cell.user %}
-                                        <p class="text-{% if cell.user == "Cameron Gray" %}info{% else %}danger{% endif %}">{% if cell.user != "Cameron Gray" %}Unavailable{% else %}{{ cell.user }}{% endif %}</p>
+                                        <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
                                     {% else %}
                                         <p class="text-success">Available</p>
                                     {% endif %}
