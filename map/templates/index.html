@@ -5,7 +5,12 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h2>{{ room.name }}</h2>
+            <h2>
+              <span id="maintitle">{{ room.name }}</span>
+              <span class="pull-right">
+                <a class="btn btn-primary btn-sm" id="reservemachine">Leave Me Alone</a>
+              </span>
+            </h2>
         </div>
     </div>
     <div class="row">
@@ -16,11 +21,11 @@
                         {% for cell in row %}
                             <td>
                                 {% if cell.hostname %}
-                                    <p>{{ cell.hostname }}</p>
+                                    <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
                                     {% if cell.user %}
-                                        <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
+                                        <p id="status-{{ cell.hostname }}" class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
                                     {% else %}
-                                        <p class="text-success">Available</p>
+                                        <p id="status-{{ cell.hostname }}" class="text-success">Available</p>
                                     {% endif %}
                                 {% endif %}
                             </td>
@@ -31,21 +36,21 @@
         </div>
     </div>
 {% endblock %}
-<form id="checkout" method="post" action="/checkout">
-  <div id="payment-form"></div>
-  <input type="submit" value="Pay $10">
-</form>
 
-<script src="https://js.braintreegateway.com/v2/braintree.js"></script>
-<script>
-// We generated a client token for you so you can test out this code
-// immediately. In a production-ready integration, you will need to
-// generate a client token on your server (see section below).
-var clientToken = "***REMOVED***=";
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#reservemachine').click(function () {
+        $('.hostname').each(function () {
+          $('#maintitle').text("Select a machine for us to consider 'Unavailable'");
+          var hostname = $(this).html();
+          var status = $('#status-' + hostname).text();
 
-braintree.setup(clientToken, "dropin", {
-  container: "payment-form"
-});
-</script>
-
-
+          if (status == "Available") {
+            $('#host-' + hostname).html("<a href='/reserve/" + hostname + "'>" + hostname +  "</a>");
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}
