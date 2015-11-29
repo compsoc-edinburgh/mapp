@@ -27,7 +27,11 @@
                   {% if current_user.is_anonymous %}
                     <li><a href="/login">Log In</a></li>
                   {% else %}
-                    <li><a href="/friends">Manage Friends</a></li>
+                    {% if request.path == "/friends" %}
+                      <li><a href="/">Back to The Marauder's App</a></li>
+                    {% else %}
+                      <li><a href="/friends">Manage Friends</a></li>
+                    {% endif %}
                     <li><a href="/logout">Log Out ({{ current_user.get_id() }})</a></li>
                   {% endif %}
                 </ul>
