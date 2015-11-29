@@ -57,3 +57,7 @@ class User(UserMixin):
 
     def get_email(self):
         return self.mail[0]
+
+    def has_friend(self, friend_name):
+        from map import flask_redis
+        return flask_redis.sismember(self.get_id() + "-friends", friend_name)

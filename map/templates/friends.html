@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Friends{% endblock %}
+
+{% block content %}
+  <h3>Friends</h3>
+  <div class="row">
+    <div class="col-md-12">
+      <form method="POST" class="form-horizontal">
+        <input type="hidden" name="type" value="del">
+        <div class="form-group">
+          <select multiple class="form-control" name="delfriends">
+            {% for friend in friends %}
+              <option>{{ friend }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-block btn-primary">Remove Friend(s)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <form method="POST" class="form-horizontal">
+        <input type="hidden" name="type" value="add">
+        <div class="form-group">
+          <input type="text" name="newfriend" class="form-control" placeholder="New Friend">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary btn-block">Add Friend</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
