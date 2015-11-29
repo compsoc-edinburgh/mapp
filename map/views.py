@@ -1,7 +1,7 @@
 from map import app, flask_redis, ldap
 
 from flask import render_template, request, jsonify, redirect
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required, current_user
 
 
 @app.route('/')
@@ -71,3 +71,19 @@ def update():
     pipe.execute()
 
     return jsonify(status="ok")
+
+
+@app.route("/friends", methods=['GET', 'POST'])
+@login_required
+def friends():
+    if request.method == "POST":
+        formtype = request.form.get('type')
+        if formtype == "del":
+            remove_friends = request.form.getlist('delfriends')
+            flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
+        elif formtype == "add":
+            add_friend = request.form.get('newfriend')
+            flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
+
+    friends = flask_redis.smembers(current_user.get_id() + "-friends")
+    return render_template("friends.html", friends=friends)
