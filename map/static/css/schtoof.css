@@ -1,0 +1,39 @@
+table.table {
+    table-layout: fixed;
+    text-align: center;
+    border-top: 1px solid #cbd7e2;
+}
+
+table.table tr {
+    border-bottom: 1px solid #ebf0f4;
+}
+
+table.table>tbody>tr>td {
+    /*width: 10rem;
+    height: 5rem;*/
+    padding: 1.8rem 1.2rem;
+}
+
+@media(max-width: 720px){
+    .container {
+        width: 90%; 
+    }
+}
+
+.container {
+    overflow: hidden;
+}
+
+.col-md-12 {
+    overflow-x: auto;
+}
+
+.table p {
+    display: block;
+    margin: 0;
+}
+
+.table p i.fa {
+    font-size: 120%;
+    margin-bottom: -10px;
+}
