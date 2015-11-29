@@ -28,7 +28,9 @@ def index():
         cells = unsorted_cells
         rows.append(cells)
 
-    return render_template('index.html', room=room, rows=rows)
+    reserved = flask_redis.smembers('reserved-machines')
+
+    return render_template('index.html', room=room, rows=rows, reserved=reserved)
 
 
 @app.route("/login", methods=['GET', 'POST'])
