@@ -71,7 +71,7 @@ class Snoop:
             json.dumps(data_dict),
             {'Content-Type': 'application/json'})
         try:
-            f = urllib2.urlopen(req)
+            f = urllib2.urlopen(req, timeout=5)
             print json.loads(f.read())['status']
             f.close()
         except Exception as e:
@@ -107,6 +107,10 @@ if __name__ == "__main__":
         except Exception as e:
             Snoop.checkin(serv)
             sys.stderr.write("DEBUG no-go for host %s : %s\n" % (serv, str(e)))
-    
+
     p = Pool(20)
-    p.map(mapf,servers)
+
+    while True:
+        p.map(mapf,servers)
+        sys.stderr.write("INFO sleeping\n")
+        time.sleep(300)
