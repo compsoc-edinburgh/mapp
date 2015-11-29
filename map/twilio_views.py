@@ -101,6 +101,11 @@ def hello_monkey():
                     message = "None of your mates are in the lab, sit anywhere you like, loser"
                 else:
                     message = friend + " of your friends are in The Drill Hall, try " + hostname
+            elif body == "busy" or body == "Busy":
+                if(people_in_labs > 15:
+                    message = "It's pretty busy in here"
+                else:
+                    message = "It's very quiet in here"
             else:
                 message = "You Nonce, use the right key words."
         else:
