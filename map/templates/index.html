@@ -13,27 +13,33 @@
             </h2>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-bordered">
-                {% for row in rows %}
-                    <tr>
-                        {% for cell in row %}
-                            <td>
-                                {% if cell.hostname %}
-                                    <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
-                                    {% if cell.user %}
-                                        <p id="status-{{ cell.hostname }}" class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
-                                    {% else %}
-                                        <p id="status-{{ cell.hostname }}" class="text-success">Available</p>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <br>
+    <div class="tabwrap">
+      <table class="table">
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>
+            {% if cell.hostname %}
+            {% if cell.user or cell.hostname in reserved %}
+            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="unavailable" id="status-{{ cell.hostname }}">
+              {% if current_user.has_friend(cell.user) %}
+              <i class="fa fa-star-o"></i>
+              {% else %}
+              <i class="fa fa-circle-thin"></i>
+              {% endif %}
+            </p>
+            {% else %}
+            <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
+            {% endif %}
+            <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
+            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ cell.user }}</small></p>{% endif %}
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
     </div>
 {% endblock %}
 
@@ -44,9 +50,11 @@
         $('.hostname').each(function () {
           $('#maintitle').text("Select a machine for us to consider 'Unavailable'");
           var hostname = $(this).html();
-          var status = $('#status-' + hostname).text();
+          var status = $('#status-' + hostname).data('state');
+          console.log(hostname);
+          console.log(status);
 
-          if (status == "Available") {
+          if (status == "available") {
             $('#host-' + hostname).html("<a href='/reserve/" + hostname + "'>" + hostname +  "</a>");
           }
         });
