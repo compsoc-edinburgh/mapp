@@ -20,7 +20,7 @@ class Snoop:
         self.client.connect(username=username,
                             password=password,
                             hostname=hostname,
-                            port=22)
+                            port=22, timeout=8)
         
 
 
@@ -30,10 +30,8 @@ class Snoop:
         users = stdout.readlines()
         
         data_dict = {
-            "hostname":str(self.hostname),
             "user":"",
-            "active":"",
-            "timestamp":str(datetime.utcnow().isoformat())
+            "active":""
         }
         ret = []
         
@@ -50,29 +48,40 @@ class Snoop:
                 pass
         
         sys.stderr.write("USER @ %s: %s\n" % (self.hostname, data_dict['user']))
-                
-        req = urllib2.Request(
-            "http://mapp.tardis.ed.ac.uk:5000/update",
-            json.dumps(data_dict),
-            {'Content-Type': 'application/json'})
-
-        try:
-            f = urllib2.urlopen(req)
-            print json.loads(f.read())['status']
-            f.close()
-        except Exception as e:
-            sys.stderr.write("DEBUG %s error when opening url : %s\n" % (self.hostname, str(e)))
+        Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
         return ret
-            
+
+    
     # $wall the remote host with message:str
     def wall(self,message):
         stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
 
 
+    # Callback to the web service to update
+    @staticmethod
+    def checkin(hostname, username="", active=""):
+        data_dict = {
+            "hostname":str(hostname),
+            "user":str(username),
+            "active":str(active),
+            "timestamp":str(datetime.utcnow().isoformat())
+        }
+        req = urllib2.Request(
+            "http://mapp.tardis.ed.ac.uk:5000/update",
+            json.dumps(data_dict),
+            {'Content-Type': 'application/json'})
+        try:
+            f = urllib2.urlopen(req)
+            print json.loads(f.read())['status']
+            f.close()
+        except Exception as e:
+            sys.stderr.write("DEBUG %s error when opening url : %s\n" % (hostname, str(e)))
+
         
         
 if __name__ == "__main__":
 
+    servers = ['ssh.tardis.ed.ac.uk','ssh1.tardis.ed.ac.uk']
     try:
         server_file = open(sys.argv[2])
         servers = json.loads(server_file.read())
@@ -82,8 +91,8 @@ if __name__ == "__main__":
         print("No input file")
     except ValueError:
         print("Malformed JSON input list")
-    finally:
-        servers = ['ssh.tardis.ed.ac.uk','ssh1.tardis.ed.ac.uk']    
+
+        
     try:
         username = str(sys.argv[1])
     except IndexError:
@@ -96,6 +105,7 @@ if __name__ == "__main__":
             s = Snoop(username, password, serv)
             userl = s.usercheck()
         except Exception as e:
+            Snoop.checkin(serv)
             sys.stderr.write("DEBUG no-go for host %s : %s\n" % (serv, str(e)))
     
     p = Pool(20)
