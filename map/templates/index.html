@@ -17,7 +17,7 @@
                             <td>
                                 {% if cell.hostname %}
                                     <p>{{ cell.hostname }}</p>
-                                    {% if "user" in cell %}
+                                    {% if cell.user %}
                                         <p class="text-{% if cell.user == "Cameron Gray" %}info{% else %}danger{% endif %}">{% if cell.user != "Cameron Gray" %}Unavailable{% else %}{{ cell.user }}{% endif %}</p>
                                     {% else %}
                                         <p class="text-success">Available</p>
