@@ -8,27 +8,33 @@
             <h2>{{ room.name }}</h2>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-bordered">
-                {% for row in rows %}
-                    <tr>
-                        {% for cell in row %}
-                            <td>
-                                {% if cell.hostname %}
-                                    <p>{{ cell.hostname }}</p>
-                                    {% if cell.user %}
-                                        <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}">{% if current_user.has_friend(cell.user) %}{{ cell.user }}{% else %}Unavailable{% endif %}</p>
-                                    {% else %}
-                                        <p class="text-success">Available</p>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <br>
+    <div class="tabwrap">
+      <table class="table">
+        {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+          <td>
+            {% if cell.hostname %}
+            {% if cell.user %}
+            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="Unavailable">
+              {% if current_user.has_friend(cell.user) %}
+              <i class="fa fa-star-o"></i>
+              {% else %}
+              <i class="fa fa-circle-thin"></i>
+              {% endif %}
+            </p>
+            {% else %}
+            <p class="text-success"  data-state="Unavailable"><i class="fa fa-circle-thin"></i></p>
+            {% endif %}
+            <p>{{ cell.hostname }}</p>
+            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ cell.user }}</small></p>{% endif %}
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
     </div>
 {% endblock %}
 <form id="checkout" method="post" action="/checkout">
