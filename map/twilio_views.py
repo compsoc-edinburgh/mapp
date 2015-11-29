@@ -63,12 +63,10 @@ def space(inpt,person):
     empty_pcs = [x for x in allMachines if x not in person_machines] #check that works
 #find out where friends are
     #print person_machines
-    if inpt == "avoid":
-        print("AVOID")
+    if inpt == "avoid" or inpt == "Avoid":
         return random.choice(empty_pcs)
-    if inpt == "find":
-        print("FIND")
-        return random.choice(empy_pcs)
+    if inpt == "find" or inpt=="Find":
+        return random.choice(empty_pcs)
         #find a computer close by
     return "NONE becuase you can't send a text correctly"
 
@@ -78,23 +76,28 @@ print space("avoid","Angus Pearson")
 
 @app.route("/respond", methods=['GET', 'POST'])
 def hello_monkey():
+    message = "Error: we fucked up hard"
     """Respond and greet the caller by name."""
     if request.method == "POST":
         from_number = request.values.get('From')
         body = request.values.get('Body')
         if from_number in callers:
-            if body == "avoid":
+	    print("Hitter")
+            if body == "avoid" or body == "Avoid":
                 hostname = space("avoid",callers.get(from_number));
                 message = "To Escape your friends, try " + hostname
-            elif body == "find":
+            elif body == "find" or body == "Find":
+		message = "Dun Dun Dun" #for testing purposes
                 hostname  = space("find", callers.get(from_number))
                 friend = friendCount(callers.get(from_number))
                 if friend == 0:
-                    message == "None of your mates are in the lab, sit anywhere you like loser"
-                message = friend + " of your friends are in The Drill Hall, try " + hostname
+                    message = "None of your mates are in the lab, sit anywhere you like, loser"
+                else:
+		    message = friend + " of your friends are in The Drill Hall, try " + hostname
             else:
                 message = "You Nonce, use the right key words."
         else:
+	    print("not_registered")
             message = "Mate, you're not a registered user. Do you you even go here blud?" #if the user does not have a profile
         resp = twilio.twiml.Response()
         resp.message(message)
