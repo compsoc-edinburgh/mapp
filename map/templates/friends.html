@@ -9,7 +9,7 @@
       <form method="POST" class="form-horizontal">
         <input type="hidden" name="type" value="del">
         <div class="form-group">
-          <select multiple class="form-control" name="delfriends">
+          <select multiple class="form-control" name="delfriends" style="height: 50vh;">
             {% for friend in friends %}
               <option>{{ friend }}</option>
             {% endfor %}
