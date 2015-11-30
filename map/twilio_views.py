@@ -100,7 +100,7 @@ def hello_monkey():
                 if friend == 0:
                     message = "None of your mates are in the lab, sit anywhere you like, loser"
                 else:
-                    message = friend + " of your friends are in The Drill Hall, try " + hostname
+                    message = str(friend) + " of your friends are in The Drill Hall, try " + hostname
             elif body == "busy" or body == "Busy":
                 if people_in_labs > 15:
                     message = "It's pretty busy in here"
@@ -123,7 +123,7 @@ def hello_monkey():
 @app.route("/carly", methods=['GET', 'POST'])
 def hello_monkey1():
     """Respond to incoming requests."""
-    from_number = requests.values.get('FROM')
+    from_number = request.values.get('FROM')
     if from_number in callers:
         name = callers.get(from_number)
     if people_in_labs > 15:
