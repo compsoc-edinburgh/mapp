@@ -38,10 +38,10 @@ class Snoop:
         for user in users:
             try:
                 user = re.split("\s+", user)
-                usr_i, usr_o, usr_e = self.client.exec_command("finger %s" % user[0])
+                usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                 out = re.search("Name: (.*)", usr_o.readline())
                 ret = (out.group(1), user[4])
-                if user[1] == ":0":
+                if ":" in user[2]:
                     data_dict['user']      = str(ret[0])
                     data_dict['active']    = str(ret[1])
             except AttributeError, IndexError:
