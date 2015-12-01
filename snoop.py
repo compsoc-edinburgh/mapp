@@ -67,7 +67,7 @@ class Snoop:
             "timestamp":str(datetime.utcnow().isoformat())
         }
         req = urllib2.Request(
-            "http://mapp.tardis.ed.ac.uk:5000/update",
+            "http://localhost:5000/update",
             json.dumps(data_dict),
             {'Content-Type': 'application/json'})
         try:
