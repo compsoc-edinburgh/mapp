@@ -41,7 +41,7 @@ class Snoop:
                 usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                 out = re.search("Name: (.*)", usr_o.readline())
                 ret = (out.group(1), user[4])
-                if ":" in user[2]:
+                if re.match(":\d+", user[2]) is not None:
                     data_dict['user']      = str(ret[0])
                     data_dict['active']    = str(ret[1])
             except AttributeError, IndexError:

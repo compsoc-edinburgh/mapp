@@ -1,7 +1,13 @@
 # Running:
 
+Open a tunnel to the callback host (Doing this because the callback
+wasn't using HTTPS)
 ```
 $ ssh -L 5000:localhost:5000 username@callback
+```
+
+Run the program:
+```
 $ python snoop.py <USERNAME FOR MACHINES TO SCAN> <MACHINE LIST>.json
 ```
 
@@ -13,4 +19,5 @@ provided, whose password will be asked for interactively when the
 program is run.
 
 callback host must be running the counterpart software, that takes the
-JSON object in the header and stores it in Redis.
+JSON object in the header and stores it in Redis. That's in a private
+repo because it contains LDAP authentication and Redis interfaces.
