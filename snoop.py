@@ -24,7 +24,7 @@ class Snoop:
         self.client.connect(username=username,
                             password=password,
                             hostname=hostname,
-                            port=22, timeout=8)
+                            port=22, timeout=15)
         
 
 
