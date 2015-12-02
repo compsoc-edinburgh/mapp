@@ -5,7 +5,12 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h2>{{ room.name }}</h2>
+            <h2>
+              <span id="maintitle">{{ room.name }}</span>
+              <span class="pull-right">
+                <a class="btn btn-primary btn-sm" id="reservemachine">Leave Me Alone</a>
+              </span>
+            </h2>
         </div>
     </div>
     <br>
@@ -16,8 +21,8 @@
           {% for cell in row %}
           <td>
             {% if cell.hostname %}
-            {% if cell.user %}
-            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="Unavailable">
+            {% if cell.user or cell.hostname in reserved %}
+            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="unavailable" id="status-{{ cell.hostname }}">
               {% if current_user.has_friend(cell.user) %}
               <i class="fa fa-star-o"></i>
               {% else %}
@@ -25,10 +30,10 @@
               {% endif %}
             </p>
             {% else %}
-            <p class="text-success"  data-state="Unavailable"><i class="fa fa-circle-thin"></i></p>
+            <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
             {% endif %}
-            <p>{{ cell.hostname }}</p>
-            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ cell.user }}</small></p>{% endif %}
+            <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
+            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ current_user.get_friend(cell.user) }}</small></p>{% endif %}
             {% endif %}
           </td>
           {% endfor %}
@@ -37,21 +42,23 @@
       </table>
     </div>
 {% endblock %}
-<form id="checkout" method="post" action="/checkout">
-  <div id="payment-form"></div>
-  <input type="submit" value="Pay $10">
-</form>
 
-<script src="https://js.braintreegateway.com/v2/braintree.js"></script>
-<script>
-// We generated a client token for you so you can test out this code
-// immediately. In a production-ready integration, you will need to
-// generate a client token on your server (see section below).
-var clientToken = "***REMOVED***=";
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#reservemachine').click(function () {
+        $('.hostname').each(function () {
+          $('#maintitle').text("Select a machine for us to consider 'Unavailable'");
+          var hostname = $(this).html();
+          var status = $('#status-' + hostname).data('state');
+          console.log(hostname);
+          console.log(status);
 
-braintree.setup(clientToken, "dropin", {
-  container: "payment-form"
-});
-</script>
-
-
+          if (status == "available") {
+            $('#host-' + hostname).html("<a href='/reserve/" + hostname + "'>" + hostname +  "</a>");
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

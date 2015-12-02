@@ -58,6 +58,22 @@ class User(UserMixin):
     def get_email(self):
         return self.mail[0]
 
-    def has_friend(self, friend_name):
+    def get_friend(self, friend_hash):
+        import hashlib
         from map import flask_redis
-        return flask_redis.sismember(self.get_id() + "-friends", friend_name)
+        
+        all_friends = flask_redis.smembers(self.get_id()+'-friends')
+
+        #return str(all_friends)
+        
+        for friend in all_friends:
+            hasher = hashlib.sha512()
+            hasher.update(friend)
+            if hasher.hexdigest() == friend_hash:
+                return friend
+        return ""
+
+    def has_friend(self, friend_hash):
+        if self.get_friend(friend_hash) != "":
+            return True
+        return False
