@@ -1,5 +1,9 @@
 # Running:
 
+THe environment variable MAPP_SECRET should be set to a long random 
+set of characters to make the hashes leaving the bot more secure.
+If it isn't set, 'None' will be used.
+
 Open a tunnel to the callback host (Doing this because the callback
 wasn't using HTTPS)
 ```

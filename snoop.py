@@ -7,6 +7,7 @@ import time
 import re
 import json
 import urllib2
+import hashlib
 from datetime import datetime
 from multiprocessing import Process, Pool
         
@@ -16,6 +17,7 @@ class Snoop:
     def __init__(self, username, password, hostname):
         self.hostname = hostname
         self.client = paramiko.SSHClient()
+        self.crypto = hashlib.sha512()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(username=username,
                             password=password,
@@ -40,19 +42,20 @@ class Snoop:
                 user = re.split("\s+", user)
                 usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                 out = re.search("Name: (.*)", usr_o.readline())
-                ret = (out.group(1), user[4])
-                if re.match(":\d+", user[2]) is not None:
+                self.crypto.update(str(out.group(1)) + str(os.environ.get("MAPP_SECRET")))
+                ret = (self.crypto.hexdigest(), user[4])
+                if re.match("tty\d+", user[1]) is not None:
                     data_dict['user']      = str(ret[0])
                     data_dict['active']    = str(ret[1])
             except AttributeError, IndexError:
                 pass
         
-        sys.stderr.write("USER @ %s: %s\n" % (self.hostname, data_dict['user']))
+        sys.stderr.write("USER on %s: %s\n" % (self.hostname, data_dict['user']))
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
         return ret
 
     
-    # $wall the remote host with message:str
+    # $ wall the remote host with message:str
     def wall(self,message):
         stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
 
@@ -81,7 +84,7 @@ class Snoop:
         
 if __name__ == "__main__":
 
-    servers = ['ssh.tardis.ed.ac.uk','ssh1.tardis.ed.ac.uk']
+    servers = ['localhost']
     try:
         server_file = open(sys.argv[2])
         servers = json.loads(server_file.read())
