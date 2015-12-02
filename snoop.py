@@ -10,7 +10,8 @@ import urllib2
 import hashlib
 from datetime import datetime
 from multiprocessing import Process, Pool
-        
+
+import config
 
 class Snoop:
     # Init method, creates SSH connection to remote host
@@ -42,7 +43,7 @@ class Snoop:
                 user = re.split("\s+", user)
                 usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                 out = re.search("Name: (.*)", usr_o.readline())
-                self.crypto.update(str(out.group(1)) + str(os.environ.get("MAPP_SECRET")))
+                self.crypto.update(str(out.group(1)) + str(config.MAPP_SECRET))
                 ret = (self.crypto.hexdigest(), user[4])
                 if re.match("tty\d+", user[1]) is not None:
                     data_dict['user']      = str(ret[0])
@@ -78,7 +79,7 @@ class Snoop:
             print json.loads(f.read())['status']
             f.close()
         except Exception as e:
-            sys.stderr.write("DEBUG %s error when opening url : %s\n" % (hostname, str(e)))
+            sys.stderr.write("********\nERROR %s error when opening url : %s\n" % (hostname, str(e)))
 
         
         
@@ -86,7 +87,7 @@ if __name__ == "__main__":
 
     servers = ['localhost']
     try:
-        server_file = open(sys.argv[2])
+        server_file = open(sys.argv[2], 'r')
         servers = json.loads(server_file.read())
     except IOError:
         print("Input server list '"+sys.argv[1]+"' not found.")
@@ -108,12 +109,15 @@ if __name__ == "__main__":
             s = Snoop(username, password, serv)
             userl = s.usercheck()
         except Exception as e:
+            sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             Snoop.checkin(serv)
-            sys.stderr.write("DEBUG no-go for host %s : %s\n" % (serv, str(e)))
 
-    p = Pool(20)
+    p = Pool(30)
 
     while True:
         p.map(mapf,servers)
         sys.stderr.write("INFO sleeping\n")
         time.sleep(300)
+
+    #for server in servers:
+    #    mapf(server)

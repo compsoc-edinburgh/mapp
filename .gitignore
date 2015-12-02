@@ -1,2 +1,4 @@
 VENV/
+*.pyc
 *.sh
+config.py
