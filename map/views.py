@@ -92,7 +92,7 @@ def update():
         ts     = content['timestamp']
         active = content['active']
     except Exception:
-        raise APIKeyNotAuthorised("Malformed JSON POST data", status_code=500)
+        raise APIKeyNotAuthorised("Malformed JSON POST data", status_code=400)
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
