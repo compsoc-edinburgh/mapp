@@ -33,7 +33,7 @@
             <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
             {% endif %}
             <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
-            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ cell.user }}</small></p>{% endif %}
+            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ current_user.get_friend(cell.user) }}</small></p>{% endif %}
             {% endif %}
           </td>
           {% endfor %}

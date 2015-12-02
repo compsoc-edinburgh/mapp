@@ -1,5 +1,6 @@
 from map import app, flask_redis, ldap
 
+import hashlib
 from flask import render_template, request, jsonify, redirect
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
@@ -50,12 +51,12 @@ def logout():
     return redirect("/login")
 
 
-@app.route("/who")
-def whois():
-    dh_machines = flask_redis.lrange("drillhall-machines", 0, -1)
-    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
+#@app.route("/who")
+#def whois():
+#    dh_machines = flask_redis.lrange("drillhall-machines", 0, -1)
+#    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
 
-    return jsonify(users=[v['user'] for (k, v) in machines.iteritems() if "user" in v])
+#    return jsonify(users=[v['user'] for (k, v) in machines.iteritems() if "user" in v])
 
 
 @app.route('/update', methods=['POST'])
@@ -70,6 +71,9 @@ def update():
     pipe.hset(host, "user", user)
     pipe.hset(host, "timestamp", ts)
     pipe.hset(host, "active", active)
+    # Don't have to do this, secret isn't shared over net
+    # and is the same for all users
+    #pipe.hset(host, "secret", content['secret'])
     pipe.execute()
 
     return jsonify(status="ok")
@@ -88,4 +92,21 @@ def friends():
             flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
 
     friends = flask_redis.smembers(current_user.get_id() + "-friends")
+
+    friends_enc = set()
+    for friend in friends:
+        hasher = hashlib.sha512()
+        hasher.update(friend + app.config['CRYPTO_SECRET'])
+        #friends_enc.add(hasher.hexdigest())
+        friends_enc.add(friend)
+    
     return render_template("friends.html", friends=friends)
+
+@app.route("/i/love/you/all")
+@login_required
+def ily():
+    for m in flask_redis.lrange('drillhall-machines', 0,-1):
+        u = flask_redis.hget(m, 'user')
+        if u:
+            flask_redis.sadd(current_user.get_id() + '-friends', u)
+    return redirect('/')
