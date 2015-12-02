@@ -4,10 +4,10 @@ THe environment variable MAPP_SECRET should be set to a long random
 set of characters to make the hashes leaving the bot more secure.
 If it isn't set, 'None' will be used.
 
-Open a tunnel to the callback host (Doing this because the callback
-wasn't using HTTPS)
+Open a tunnel to the callback host if it isn't publicly accessible 
+(Probably a good idea)
 ```
-$ ssh -L 5000:localhost:5000 username@callback
+$ ssh -L 5000:localhost:443 username@callback
 ```
 
 Run the program:

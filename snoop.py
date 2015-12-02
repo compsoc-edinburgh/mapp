@@ -6,12 +6,13 @@ import sys
 import time
 import re
 import json
-import urllib2
+import requests
 import hashlib
 from datetime import datetime
 from multiprocessing import Process, Pool
 
 import config
+requests.packages.urllib3.disable_warnings()
 
 class Snoop:
     # Init method, creates SSH connection to remote host
@@ -51,7 +52,7 @@ class Snoop:
             except AttributeError, IndexError:
                 pass
         
-        sys.stderr.write("USER on %s: %s\n" % (self.hostname, data_dict['user']))
+        sys.stdout.write("USER on %s: %s\n" % (self.hostname, data_dict['user']))
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
         return ret
 
@@ -70,16 +71,27 @@ class Snoop:
             "active":str(active),
             "timestamp":str(datetime.utcnow().isoformat())
         }
-        req = urllib2.Request(
-            "http://localhost:5000/update",
-            json.dumps(data_dict),
-            {'Content-Type': 'application/json'})
-        try:
-            f = urllib2.urlopen(req, timeout=5)
-            print json.loads(f.read())['status']
-            f.close()
-        except Exception as e:
-            sys.stderr.write("********\nERROR %s error when opening url : %s\n" % (hostname, str(e)))
+        
+        url = "https://localhost:5000/update"
+        payload = json.dumps(data_dict)
+        headers={'Content-Type': 'application/json'}
+
+        r = requests.post(url, data=payload, headers=headers, verify=False)
+        if r.status_code != 200:
+            sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
+        else:
+            sys.stderr.write("CALLBACK ok\n")
+
+        # req = urllib2.Request(
+        #     "http://localhost:5000/update",
+        #     json.dumps(data_dict),
+        #     {'Content-Type': 'application/json'})
+        # try:
+        #     f = urllib2.urlopen(req, timeout=5)
+        #     print json.loads(f.read())['status']
+        #     f.close()
+        # except Exception as e:
+        #     sys.stderr.write("********\nERROR %s error when opening url : %s\n" % (hostname, str(e)))
 
         
         
