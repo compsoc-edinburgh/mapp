@@ -59,21 +59,50 @@ def logout():
 #    return jsonify(users=[v['user'] for (k, v) in machines.iteritems() if "user" in v])
 
 
+
+class APIKeyNotAuthorised(Exception):
+    status_code = 401
+    
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+            
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+@app.errorhandler(APIKeyNotAuthorised)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+    
 @app.route('/update', methods=['POST'])
 def update():
     content = request.json
-    host = content['hostname']
-    user = content['user']
-    ts = content['timestamp']
-    active = content['active']
+
+    try:
+        key    = content['callback-key']
+        host   = content['hostname']
+        user   = content['user']
+        ts     = content['timestamp']
+        active = content['active']
+    except Exception:
+        raise APIKeyNotAuthorised("Malformed JSON POST data", status_code=500)
+
+    if key not in flask_redis.lrange("authorised-key", 0, -1):
+        # HTTP 401 Not Authorised
+        print "BAD KEY*******"
+        raise APIKeyNotAuthorised("Given key is not an authorised API key")
 
     pipe = flask_redis.pipeline()
     pipe.hset(host, "user", user)
     pipe.hset(host, "timestamp", ts)
     pipe.hset(host, "active", active)
-    # Don't have to do this, secret isn't shared over net
-    # and is the same for all users
-    #pipe.hset(host, "secret", content['secret'])
     pipe.execute()
 
     return jsonify(status="ok")
