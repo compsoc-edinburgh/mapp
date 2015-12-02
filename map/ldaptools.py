@@ -60,15 +60,14 @@ class User(UserMixin):
 
     def get_friend(self, friend_hash):
         import hashlib
+        from config import CRYPTO_SECRET as secret
         from map import flask_redis
         
         all_friends = flask_redis.smembers(self.get_id()+'-friends')
-
-        #return str(all_friends)
         
         for friend in all_friends:
             hasher = hashlib.sha512()
-            hasher.update(friend)
+            hasher.update(friend + str(secret))
             if hasher.hexdigest() == friend_hash:
                 return friend
         return ""
