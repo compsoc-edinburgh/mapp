@@ -66,32 +66,25 @@ class Snoop:
     @staticmethod
     def checkin(hostname, username="", active=""):
         data_dict = {
-            "hostname":str(hostname),
-            "user":str(username),
-            "active":str(active),
-            "timestamp":str(datetime.utcnow().isoformat())
+            "hostname"     : str(hostname),
+            "user"         : str(username),
+            "active"       : str(active),
+            "timestamp"    : str(datetime.utcnow().isoformat()),
+            "callback-key" : str(config.CALLBACK_KEY)
         }
         
         url = "https://localhost:5000/update"
         payload = json.dumps(data_dict)
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type':   'application/json'}
 
-        r = requests.post(url, data=payload, headers=headers, verify=False)
-        if r.status_code != 200:
-            sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
-        else:
-            sys.stderr.write("CALLBACK ok\n")
-
-        # req = urllib2.Request(
-        #     "http://localhost:5000/update",
-        #     json.dumps(data_dict),
-        #     {'Content-Type': 'application/json'})
-        # try:
-        #     f = urllib2.urlopen(req, timeout=5)
-        #     print json.loads(f.read())['status']
-        #     f.close()
-        # except Exception as e:
-        #     sys.stderr.write("********\nERROR %s error when opening url : %s\n" % (hostname, str(e)))
+        try:
+            r = requests.post(url, data=payload, headers=headers, verify=False)
+            if r.status_code != 200:
+                sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
+            else:
+                sys.stderr.write("CALLBACK ok for %s\n" % hostname)
+        except Exception as e:
+            sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
 
         
         
@@ -129,7 +122,7 @@ if __name__ == "__main__":
     while True:
         p.map(mapf,servers)
         sys.stderr.write("INFO sleeping\n")
-        time.sleep(300)
+        time.sleep(900)
 
     #for server in servers:
     #    mapf(server)

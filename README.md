@@ -7,7 +7,8 @@ If it isn't set, 'None' will be used.
 ./config.py must contain the following, It isn't included in the git repo.
 
 ```python
-MAPP_SECRET="some really long complex random string"
+MAPP_SECRET  = "some really long complex random string"
+CALLBACK_KEY = "another different really long string"
 ```
 
 Open a tunnel to the callback host if it isn't publicly accessible 
