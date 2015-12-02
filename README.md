@@ -4,6 +4,12 @@ THe environment variable MAPP_SECRET should be set to a long random
 set of characters to make the hashes leaving the bot more secure.
 If it isn't set, 'None' will be used.
 
+./config.py must contain the following, It isn't included in the git repo.
+
+```python
+MAPP_SECRET="some really long complex random string"
+```
+
 Open a tunnel to the callback host if it isn't publicly accessible 
 (Probably a good idea)
 ```
