@@ -94,6 +94,7 @@ body {
 .tabwrapwrap .table {
     width: auto;
     display: block;
+    border-top: 1px solid #cad7e2;
 }
 
 table.table {
