@@ -1,17 +1,103 @@
+::-webkit-scrollbar {
+    width: 0.75rem;
+    max-width: 0.75rem;
+    height: 0.75rem;
+    max-height: 0.75rem;
+}
+::-webkit-scrollbar-track{
+    background: #fff;
+}
+::-webkit-scrollbar-thumb{
+    background: #cbd7e2;
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: #cbd7e2;
+}
+
+* {
+    boz-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    min-width: 380px;
+    /* Disable selection so it doesn't snafu the UX */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.navbar-fixed-top .subbar { min-width: 380px; }
+
+body {
+    padding-top: 60px;
+}
+
+.btn:focus,
+.btn:active {
+    outline: none;
+}
+
+.navbar-brand {
+    padding-left: 0px;
+}
+
+.subbar {
+    /*background: #f0f5f9;*/
+    padding: 30px 0;
+    height: 95px;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid #99b2c7;
+    line-height: 1;
+}
+
+.subbar h2 {
+    margin: 0;
+    display: inline;
+    line-height: 1;
+}
+
+.tabwrap {
+    margin: 25rem;
+    display: inline-block;
+}
+
+.tabwrapwrap {
+    width: 100%;
+    overflow: scroll;
+    position: fixed;
+    top: 155px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.tabwrapwrap .table {
+    width: auto;
+    display: block;
+}
+
 table.table {
     table-layout: fixed;
     text-align: center;
-    border-top: 1px solid #cbd7e2;
 }
 
 table.table tr {
-    border-bottom: 1px solid #ebf0f4;
+    border-bottom: 1px solid #cad7e2;
 }
 
 table.table>tbody>tr>td {
-    /*width: 10rem;
-    height: 5rem;*/
-    padding: 1.8rem 1.2rem;
+    width: 9em;
+    height: 5em;
+    padding: 1.8em 1.2em;
+    overflow: hidden;
 }
 
 @media(max-width: 720px){
@@ -24,16 +110,19 @@ table.table>tbody>tr>td {
     overflow: hidden;
 }
 
-.col-md-12 {
-    overflow-x: auto;
-}
 
 .table p {
     display: block;
     margin: 0;
 }
 
-.table p i.fa {
-    font-size: 120%;
-    margin-bottom: -10px;
+.table p>i.fa {
+    font-size: 1.2em;
+    width: 1.2em;
+    height: 1.2em;
+    line-height: 1;
+}
+
+.table p>span.fa-stack {
+    font-size: 0.6em;
 }

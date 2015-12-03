@@ -131,11 +131,12 @@ def friends():
     
     return render_template("friends.html", friends=friends)
 
-@app.route("/i/love/you/all")
-@login_required
-def ily():
-    for m in flask_redis.lrange('drillhall-machines', 0,-1):
-        u = flask_redis.hget(m, 'user')
-        if u:
-            flask_redis.sadd(current_user.get_id() + '-friends', u)
-    return redirect('/')
+# Won't work because crypto :'(
+# @app.route("/i/love/you/all")
+# @login_required
+# def ily():
+#     for m in flask_redis.lrange('drillhall-machines', 0,-1):
+#         u = flask_redis.hget(m, 'user')
+#         if u:
+#             flask_redis.sadd(current_user.get_id() + '-friends', u)
+#     return redirect('/')
