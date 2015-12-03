@@ -41,16 +41,16 @@ body {
 }
 
 .btn-default {
-    background: #cad7e2;
-    border-color: #cad7e2;
+    background: #99b2c7;
+    border-color: #99b2c7;
 }
 
 .btn-default:hover,
 .btn-default:focus,
 .btn-default:active
 {
-    background: #99b2c7;
-    border-color: #99b2c7;
+    background:#89a6be;
+    border-color: #89a6be;
 }
 
 .navbar-brand {
@@ -153,8 +153,8 @@ table.table>tbody>tr>td {
 
 .harrys-fussy-buttons {
     position: fixed;
-    bottom: 2em;
-    right: 2em;
+    bottom: 2.2em;
+    right: 2.5em;
 }
 
 @media(max-width: 720px){
