@@ -1,0 +1,66 @@
+{% block content %}
+<div class="subbar">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 shrinklittle">
+        <h2>
+          <span id="maintitle" class="">{{ room.name }}</span>
+          <!--i class="fa fa-caret-down" style="font-size: 0.5em; vertical-align: middle;"></i-->
+        </h2>
+        <h2>
+          <span class="spacer"></span>
+          <span class="text-success">{{ num_free }}</span>
+          <span class="muted">/{{ num_machines }}</span>
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
+  <div class="tabwrap">
+    <table class="table">
+      {% for row in rows %}
+      <tr>
+        {% for cell in row %}
+        <td>
+          {% if cell.hostname %}
+          {% if cell.user or cell.hostname in reserved %}
+          
+          {% if current_user.has_friend(cell.user) %}
+          
+          <p class="text-info blip">
+            <i class="fa fa-star-o"></i>
+          </p>
+          <p>{{ cell.hostname }}</p>
+          <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}<p>
+            
+            {% else %}{# User doesn't have this person as friend #}
+            
+          <p class="blip muted">
+            <i class="fa fa-television"></i>
+          </p>
+          <p class="muted">{{ cell.hostname }}</p>
+          
+          {% endif %}
+          {% else %}{# These are the free machines #}
+          
+          <p class="text-success blip">
+            <i class="fa fa-television"></i>
+            <!--span class="fa-stack">
+                <i class="fa fa-television fa-stack-2x"></i>
+                <i class="fa fa-check-square fa-stack-2x"></i>
+            </span-->
+          </p>
+          <p>{{ cell.hostname }}</p>
+          
+          {% endif %}{# cell.user or cell.hostname in reserved #}
+          {% endif %}{# if cell.hostname #}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

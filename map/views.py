@@ -14,6 +14,9 @@ def index():
     num_rows = max([int(machines[m]['row']) for m in machines])
     num_cols = max([int(machines[m]['col']) for m in machines])
 
+    num_machines = len(machines.keys())
+    num_used = 0
+    
     rows = []
     for r in xrange(0, num_rows+1):
         unsorted_cells = []
@@ -24,14 +27,63 @@ def index():
                 cell = default_cell
             else:
                 cell = cell[0]
+
+            try:
+                if cell['user'] is not "":
+                    num_used += 1
+            except Exception:
+                pass
+            
             unsorted_cells.append(cell)
 
         cells = unsorted_cells
         rows.append(cells)
 
+    num_free = num_machines - num_used
+    
     reserved = flask_redis.smembers('reserved-machines')
 
-    return render_template('index.html', room=room, rows=rows, reserved=reserved)
+    return render_template('index.html', room=room, rows=rows, reserved=reserved,
+                           num_machines=num_machines,  num_free=num_free)
+
+@app.route('/refresh')
+@login_required
+def refresh():
+    room = flask_redis.hgetall("drillhall")
+    dh_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
+    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
+    num_rows = max([int(machines[m]['row']) for m in machines])
+    num_cols = max([int(machines[m]['col']) for m in machines])
+
+    num_machines = len(machines.keys())
+    num_used = 0
+    
+    rows = []
+    for r in xrange(0, num_rows+1):
+        unsorted_cells = []
+        for c in xrange(0, num_cols+1):
+            default_cell = {'hostname': None, 'col': c, 'row': r}
+            cell = [v for (k, v) in machines.iteritems() if int(v['row']) == r and int(v['col']) == c]
+            if not cell:
+                cell = default_cell
+            else:
+                cell = cell[0]
+
+            try:
+                if cell['user'] is not "":
+                    num_used += 1
+            except Exception:
+                pass
+            unsorted_cells.append(cell)
+
+        cells = unsorted_cells
+        rows.append(cells)
+
+    num_free = num_machines - num_used
+
+    reserved = flask_redis.smembers('reserved-machines')
+    return render_template('refresh.xml', room=room, rows=rows, reserved=reserved,
+                           num_machines=num_machines, num_free=num_free)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -106,12 +158,6 @@ def update():
     pipe.execute()
 
     return jsonify(status="ok")
-
-
-@app.route("/overview", methods=['GET'])
-@login_required
-def overview():
-    return render_template("friends.html", friends=set())
 
 @app.route("/friends", methods=['GET', 'POST'])
 @login_required

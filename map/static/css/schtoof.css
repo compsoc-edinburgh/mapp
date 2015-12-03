@@ -40,6 +40,19 @@ body {
     outline: none;
 }
 
+.btn-default {
+    background: #cad7e2;
+    border-color: #cad7e2;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active
+{
+    background: #99b2c7;
+    border-color: #99b2c7;
+}
+
 .navbar-brand {
     padding-left: 0px;
 }
@@ -93,7 +106,7 @@ table.table tr {
 }
 
 table.table>tbody>tr>td {
-    width: 9em;
+    width: 10em;
     height: 5em;
     padding: 1.2em 1em;
     overflow: hidden;
@@ -107,6 +120,18 @@ table.table>tbody>tr>td {
     display: block;
     font-size: 0.9em;
     line-height: 0;
+}
+
+.table .blip .fa-stack {
+    font-size: 0.5em;
+}
+
+.muted {
+    color: #C3D6E6 !important;
+}
+.spacer {
+    display: inline-block;
+    width: 1em;
 }
 
 @media(max-width: 720px){
@@ -125,12 +150,18 @@ table.table>tbody>tr>td {
     margin: 0;
 }
 
+.harrys-fussy-buttons {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+}
+
 @media(max-width: 720px){
     .shrinklittle {
         font-size: 0.6em;
     }
 
-    .subbar {
-        padding: 10px 0;
+    .spacer {
+        width: 0.5em;
     }
 }
