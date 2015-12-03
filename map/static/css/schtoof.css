@@ -45,7 +45,6 @@ body {
 }
 
 .subbar {
-    /*background: #f0f5f9;*/
     padding: 30px 0;
     height: 95px;
     width: 100%;
@@ -96,8 +95,12 @@ table.table tr {
 table.table>tbody>tr>td {
     width: 9em;
     height: 5em;
-    padding: 1.8em 1.2em;
+    padding: 1.2em 1em;
     overflow: hidden;
+}
+
+.userat-name {
+    font-size: 0.8em;
 }
 
 @media(max-width: 720px){
@@ -125,4 +128,14 @@ table.table>tbody>tr>td {
 
 .table p>span.fa-stack {
     font-size: 0.6em;
+}
+
+@media(max-width: 720px){
+    .shrinklittle {
+        font-size: 0.6em;
+    }
+
+    .subbar {
+        padding: 10px 0;
+    }
 }

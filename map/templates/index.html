@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-md-12">
         <h2>
-          <span id="maintitle">{{ room.name }}</span>
+          <span id="maintitle" class="shrinklittle">{{ room.name }}</span>
           <i class="fa fa-caret-down" style="font-size: 0.5em; vertical-align: middle;"></i>
         </h2>
         <div class="pull-right">
@@ -38,7 +38,7 @@
   </div>
 </div>
 
-<div class="tabwrapwrap" style="font-size: 3em" id="mapscroll">
+<div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
   <div class="tabwrap">
     <table class="table">
       {% for row in rows %}
@@ -64,7 +64,7 @@
           <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
           {% endif %}
           {% if current_user.has_friend(cell.user) %}
-          <p class="text-info"><small>{{ current_user.get_friend(cell.user) }}</small></p>
+          <p class="text-info"><span class="userat-name">{{ current_user.get_friend(cell.user) }}</span></p>
           {% endif %}
           {% endif %}
         </td>
@@ -109,6 +109,10 @@
         var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
         myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
     };
+
+    function zoomBox() {
+        var myDi
+    }
 
     var clicked = false, clickY, clickX;
     $(document).on({
