@@ -3,44 +3,77 @@
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
+<div class="subbar">
+  <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <h2>
-              <span id="maintitle">{{ room.name }}</span>
-              <span class="pull-right">
-                <a class="btn btn-primary btn-sm" id="reservemachine">Leave Me Alone</a>
-              </span>
-            </h2>
+      <div class="col-md-12">
+        <h2>
+          <span id="maintitle">{{ room.name }}</span>
+          <i class="fa fa-caret-down" style="font-size: 0.5em; vertical-align: middle;"></i>
+        </h2>
+        <div class="pull-right">
+          <div class="btn-group" role="group" aria-label="Filter">
+            <button type="button" class="btn btn-primary btn-sm" title="Hide active computers">
+              Available
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" title="Show only friends">
+              Friends
+            </button>
+            <button type="button" class="btn btn-default btn-sm" title="Re-centre the map"
+                    onclick="smoothCentreMap();">
+              <i class="fa fa-crosshairs"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-sm" title="Zoom Out"
+                    onclick="$('#mapscroll').css('font-size','0.8em');">
+              <i class="fa fa-minus" style="font-size: 0.9em;"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-sm" title="Zoom In"
+                    onclick="$('#mapscroll').css('font-size','1em');">
+              <i class="fa fa-plus" style="font-size: 0.9em;"></i>
+            </button>
+          </div>
         </div>
+      </div>
     </div>
-    <br>
-    <div class="tabwrap">
-      <table class="table">
-        {% for row in rows %}
-        <tr>
-          {% for cell in row %}
-          <td>
-            {% if cell.hostname %}
-            {% if cell.user or cell.hostname in reserved %}
-            <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" data-state="unavailable" id="status-{{ cell.hostname }}">
-              {% if current_user.has_friend(cell.user) %}
-              <i class="fa fa-star-o"></i>
-              {% else %}
-              <i class="fa fa-circle-thin"></i>
-              {% endif %}
-            </p>
+  </div>
+</div>
+
+<div class="tabwrapwrap" style="font-size: 3em" id="mapscroll">
+  <div class="tabwrap">
+    <table class="table">
+      {% for row in rows %}
+      <tr>
+        {% for cell in row %}
+        <td>
+          {% if cell.hostname %}
+          {% if cell.user or cell.hostname in reserved %}
+          <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}"
+             data-state="unavailable" id="status-{{ cell.hostname }}">
+            {% if current_user.has_friend(cell.user) %}
+            <i class="fa fa-star-o"></i>
             {% else %}
-            <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
+            <span class="fa-stack fa-lg">
+              <i class="fa fa-circle-thin fa-stack-2x"></i>
+              <i class="fa fa-minus fa-stack-1x" style="font-size: 0.8em;"></i>
+            </span>
             {% endif %}
             <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
-            {% if current_user.has_friend(cell.user) %}<p class="text-info"><small>{{ current_user.get_friend(cell.user) }}</small></p>{% endif %}
-            {% endif %}
-          </td>
-          {% endfor %}
-        </tr>
+          </p>
+          {% else %}
+          <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
+          <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
+          {% endif %}
+          {% if current_user.has_friend(cell.user) %}
+          <p class="text-info"><small>{{ current_user.get_friend(cell.user) }}</small></p>
+          {% endif %}
+          {% endif %}
+        </td>
         {% endfor %}
-      </table>
-    </div>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -60,5 +93,47 @@
         });
       });
     });
+
+
+    function centreMap() {
+        var myDiv = $("#mapscroll");
+        var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
+        var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
+        myDiv.scrollTop(scrolltoh);
+        myDiv.scrollLeft(scrolltow);
+    };
+
+    function smoothCentreMap() {
+        var myDiv = $("#mapscroll");
+        var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
+        var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
+        myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
+    };
+
+    var clicked = false, clickY, clickX;
+    $(document).on({
+        'mousemove': function(e) {
+             clicked && updateScrollPos(e);
+        },
+        'mousedown': function(e) {
+            clicked = true;
+            clickY = e.pageY;
+            clickX = e.pageX;
+            iPosY = $("#mapscroll").scrollTop();
+            iPosX = $("#mapscroll").scrollLeft();
+        },
+        'mouseup': function() {
+            clicked = false;
+            $('html').css('cursor', 'auto');
+        }
+    });
+
+    var updateScrollPos = function(e) {
+        $('html').css('cursor', 'move');
+        $("#mapscroll").scrollTop(iPosY - (e.pageY - clickY));
+        $("#mapscroll").scrollLeft(iPosX - (e.pageX - clickX));
+    }
+    
+    $(document).ready(centreMap());
   </script>
 {% endblock %}
