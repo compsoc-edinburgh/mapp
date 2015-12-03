@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Summary{% endblock %}
 
 {% block content %}
 <div class="subbar">
@@ -47,46 +47,26 @@
         <td>
           {% if cell.hostname %}
           {% if cell.user or cell.hostname in reserved %}
-
-          {% if current_user.has_friend(cell.user) %}
-
-          <p class="text-info blip"><i class="fa fa-star-o"></i></p>
-          <p>{{ cell.hostname }}</p>
-          <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}<p>
-          
-          {% else %}{# User doesn't have this person as friend #}
-
-          <p class="blip" style="color: #B8C8D6;"><i class="fa fa-television"></i></p>
-          <p style="color: #99B2C7;">{{ cell.hostname }}</p>
-          
+          <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}"
+             data-state="unavailable" id="status-{{ cell.hostname }}">
+            {% if current_user.has_friend(cell.user) %}
+            <i class="fa fa-star-o"></i>
+            {% else %}
+            <span class="fa-stack fa-lg">
+              <i class="fa fa-circle-thin fa-stack-2x"></i>
+              <i class="fa fa-minus fa-stack-1x" style="font-size: 0.8em;"></i>
+            </span>
+            {% endif %}
+            <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
+          </p>
+          {% else %}
+          <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p>
+          <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p>
           {% endif %}
-          {% else %}{# These are the free machines #}
-
-          <p class="text-success blip"><i class="fa fa-television"></i></p>
-          <p>{{ cell.hostname }}</p>
-          
-          {% endif %}{# cell.user or cell.hostname in reserved #}
-          {% endif %}{# if cell.hostname #}
-          <!-- {% if cell.user or cell.hostname in reserved %} -->
-          <!-- <p class="text-{% if current_user.has_friend(cell.user) %}info{% else %}danger{% endif %}" -->
-          <!--    data-state="unavailable" id="status-{{ cell.hostname }}"> -->
-          <!--   {% if current_user.has_friend(cell.user) %} -->
-          <!--   <i class="fa fa-star-o"></i> -->
-          <!--   {% else %} -->
-          <!--   <span class="fa-stack fa-lg"> -->
-          <!--     <i class="fa fa-circle-thin fa-stack-2x"></i> -->
-          <!--     <i class="fa fa-minus fa-stack-1x" style="font-size: 0.8em;"></i> -->
-          <!--   </span> -->
-          <!--   {% endif %} -->
-          <!--   <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p> -->
-          <!-- </p> -->
-          <!-- {% else %} -->
-          <!-- <p class="text-success" data-state="available" id="status-{{ cell.hostname }}"><i class="fa fa-circle-thin"></i></p> -->
-          <!-- <p class="hostname" id="host-{{ cell.hostname }}">{{ cell.hostname }}</p> -->
-          <!-- {% endif %} -->
-          <!-- {% if current_user.has_friend(cell.user) %} -->
-          <!-- <p class="text-info"><span class="userat-name">{{ current_user.get_friend(cell.user) }}</span></p> -->
-          <!-- {% endif %} -->
+          {% if current_user.has_friend(cell.user) %}
+          <p class="text-info"><span class="userat-name">{{ current_user.get_friend(cell.user) }}</span></p>
+          {% endif %}
+          {% endif %}
         </td>
         {% endfor %}
       </tr>
@@ -160,4 +140,5 @@
     
     $(document).ready(centreMap());
   </script>
-{% endblock %}
+  {% endblock %}
+  

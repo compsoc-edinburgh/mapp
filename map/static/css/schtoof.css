@@ -15,7 +15,7 @@
 }
 
 * {
-    boz-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body, html {
@@ -54,7 +54,7 @@ body {
     left: 0;
     right: 0;
     border-bottom: 1px solid #99b2c7;
-    line-height: 1;
+    line-height: 2em;
 }
 
 .subbar h2 {
@@ -103,6 +103,12 @@ table.table>tbody>tr>td {
     font-size: 0.8em;
 }
 
+.table .blip {
+    display: block;
+    font-size: 0.9em;
+    line-height: 0;
+}
+
 @media(max-width: 720px){
     .container {
         width: 90%; 
@@ -117,17 +123,6 @@ table.table>tbody>tr>td {
 .table p {
     display: block;
     margin: 0;
-}
-
-.table p>i.fa {
-    font-size: 1.2em;
-    width: 1.2em;
-    height: 1.2em;
-    line-height: 1;
-}
-
-.table p>span.fa-stack {
-    font-size: 0.6em;
 }
 
 @media(max-width: 720px){
