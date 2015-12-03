@@ -108,6 +108,11 @@ def update():
     return jsonify(status="ok")
 
 
+@app.route("/overview", methods=['GET'])
+@login_required
+def overview():
+    return render_template("friends.html", friends=set())
+
 @app.route("/friends", methods=['GET', 'POST'])
 @login_required
 def friends():
