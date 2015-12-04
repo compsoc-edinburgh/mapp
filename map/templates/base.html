@@ -8,8 +8,6 @@
     <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{  url_for('static', filename='css/marauders-app.css') }}" rel="stylesheet">
     <link href="{{  url_for('static', filename='css/schtoof.css') }}" rel="stylesheet">
-    <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
-    <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
 </head>
 <body>
     <nav class="nav navbar-default navbar-fixed-top">
@@ -45,8 +43,10 @@
     {% block content %}
     {% endblock %}
     
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   {% block scripts %}
+    <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
+    <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script>
   {% endblock %}
 </body>
 </html>
