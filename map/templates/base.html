@@ -38,27 +38,23 @@
                                 <div class="dropdown-menu">
                                     <div class="container-fluid">
                                         <h4>Friends</h4>
-                                        {% if friends %}
-                                        <form method="POST" class="form-horizontal">
+                                        <div id = "del-form-container">  
+                                        <form method="POST" class="form-horizontal" id="del-form">
                                             <input type="hidden" name="type" value="del">
                                             <div class="form-group">
-                                                <select multiple class="form-control" name="delfriends">
-                                                    {% for friend in friends %}
-                                                        <option>{{ friend }}</option>
-                                                    {% endfor %}
+                                                <select multiple class="form-control" name="delfriends" id ="friend-list">
                                                 </select>
                                             </div>
                                             <div class="form-group">
                                                 <button type="submit" class="btn btn-block btn-primary">Remove Friend(s)</button>
                                             </div>
                                         </form>
-                                        {% else %}
-                                            <h5>Looks like you don't have any friends!</h5>
-                                        {% endif %}
-                                        <form method="POST" class="form-horizontal" style="">
+                                            <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
+                                        </div>
+                                        <form method="POST" class="form-horizontal" id="add-form">
                                             <input type="hidden" name="type" value="add">
                                             <div class="form-group">
-                                                <input type="text" name="newfriend" class="form-control" placeholder="New Friend">
+                                                <input type="text" name="newfriend" id ="new-friend"class="form-control" placeholder="New Friend">
                                             </div>
                                             <div class="form-group">
                                                 <button type="submit" class="btn btn-primary btn-block">Add Friend</button>
