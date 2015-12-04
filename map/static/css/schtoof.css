@@ -68,6 +68,7 @@ body {
     right: 0;
     border-bottom: 1px solid #99b2c7;
     line-height: 2em;
+    z-index: 100;
 }
 
 .subbar h2 {
@@ -141,10 +142,6 @@ table.table>tbody>tr>td {
     }
 }
 
-.container {
-    overflow: hidden;
-}
-
 
 .table p {
     display: block;
@@ -156,7 +153,16 @@ table.table>tbody>tr>td {
     bottom: 2.2em;
     right: 2.5em;
 }
+.dropdown-menu{
+    width: 27em;
+    margin-top: 4px !important;
+}
 
+.form-horizontal{
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 10px;
+}
 @media(max-width: 720px){
     .shrinklittle {
         font-size: 0.6em;
