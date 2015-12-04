@@ -10,6 +10,13 @@ $(function(){
         myDiv.scrollTop(scrolltoh);
         myDiv.scrollLeft(scrolltow);
     })();
+    //Default call on startup
+    $.ajax({
+        url: '/friends'
+    })
+    .done(function(data) {
+        renderFriendList(data);
+    });
 
     var smoothCentreMap = function () {
         var myDiv = $("#mapscroll");
@@ -44,4 +51,49 @@ $(function(){
             $('html').css('cursor', 'auto');
         }
     });
+
+    /* form handling ajaxes */
+    $('#del-form').on('submit',function(e){
+        e.preventDefault();
+        $.ajax({
+            url: '/friends',
+            type: 'POST',
+            data: $(this).serialize()
+        })
+        .done(function(data) {
+            renderFriendList(data);
+        });
+        
+    });
+
+    $('#add-form').on('submit',function(e){
+        e.preventDefault();
+        $.ajax({
+            url: '/friends',
+            type: 'POST',
+            data: $(this).serialize()
+        })
+        .done(function(data) {
+            $("#new-friend").val(''); //Reset the form!
+            renderFriendList(data);
+        });
+    });
+
+    var renderFriendList = function(data){
+        var friends = data['friendList'],
+            htmlOptions = '';
+        if (friends.length > 0){
+            $('#del-form').removeClass('hidden');
+            $('#no-friends').addClass('hidden');
+            friends.forEach(function(value){
+                htmlOptions+='<option>'+value+'</option>'
+            })
+            $('#friend-list').html(htmlOptions);
+        }
+        else {
+            $('#del-form').addClass('hidden');
+            $('#no-friends').removeClass('hidden');            
+        }
+
+    }
 });

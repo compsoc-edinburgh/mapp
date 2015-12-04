@@ -43,26 +43,8 @@ def index():
     
     reserved = flask_redis.smembers('reserved-machines')
 
-    if request.method == "POST":
-        formtype = request.form.get('type')
-        if formtype == "del":
-            remove_friends = request.form.getlist('delfriends')
-            flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
-        elif formtype == "add":
-            add_friend = request.form.get('newfriend')
-            flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
-
-    friends = flask_redis.smembers(current_user.get_id() + "-friends")
-
-    friends_enc = set()
-    for friend in friends:
-        hasher = hashlib.sha512()
-        hasher.update(friend + app.config['CRYPTO_SECRET'])
-        #friends_enc.add(hasher.hexdigest())
-        friends_enc.add(friend)
-
     return render_template('index.html', room=room, rows=rows, reserved=reserved,
-                           num_machines=num_machines,  num_free=num_free, friends = friends)
+                           num_machines=num_machines,  num_free=num_free)
 
 @app.route('/refresh')
 @login_required
@@ -178,28 +160,28 @@ def update():
     return jsonify(status="ok")
 
 
-#@app.route("/friends", methods=['GET', 'POST'])
-#@login_required
-#def friends():
-#   if request.method == "POST":
-#       formtype = request.form.get('type')
-#       if formtype == "del":
-#           remove_friends = request.form.getlist('delfriends')
-#           flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
-#       elif formtype == "add":
-#           add_friend = request.form.get('newfriend')
-#           flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
-#
-#   friends = flask_redis.smembers(current_user.get_id() + "-friends")
-#
-#    friends_enc = set()
-#    for friend in friends:
-#        hasher = hashlib.sha512()
-#        hasher.update(friend + app.config['CRYPTO_SECRET'])
-#        #friends_enc.add(hasher.hexdigest())
-#        friends_enc.add(friend)
-#   
-#    return render_template("friends.html", friends=friends) 
+@app.route("/friends", methods=['GET', 'POST'])
+@login_required
+def friends():
+    if request.method == "POST":
+       formtype = request.form.get('type')
+       if formtype == "del":
+           remove_friends = request.form.getlist('delfriends')
+           flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
+       elif formtype == "add":
+           add_friend = request.form.get('newfriend')
+           flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
+
+    friends = flask_redis.smembers(current_user.get_id() + "-friends")
+
+    friends_enc = set()
+    for friend in friends:
+        hasher = hashlib.sha512()
+        hasher.update(friend + app.config['CRYPTO_SECRET'])
+        #friends_enc.add(hasher.hexdigest())
+        friends_enc.add(friend)
+
+    return jsonify(friendList=list(friends)) #Set up for ajax responses
 
 # Won't work because crypto :'(
 # @app.route("/i/love/you/all")
