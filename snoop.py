@@ -82,10 +82,9 @@ class Snoop:
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
             else:
-                sys.stderr.write("CALLBACK ok for %s\n" % hostname)
+                sys.stdout.write("CALLBACK ok for %s\n" % hostname)
         except Exception as e:
             sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
-
         
         
 if __name__ == "__main__":
@@ -94,8 +93,9 @@ if __name__ == "__main__":
     try:
         server_file = open(sys.argv[2], 'r')
         servers = json.loads(server_file.read())
+        server_file.close()
     except IOError:
-        print("Input server list '"+sys.argv[1]+"' not found.")
+        print("Input server list '"+sys.argv[2]+"' not found.")
     except IndexError:
         print("No input file")
     except ValueError:
@@ -105,10 +105,10 @@ if __name__ == "__main__":
     try:
         username = str(sys.argv[1])
     except IndexError:
-        raise Exception("Expect command line arguments <username>")
+        raise Exception("Expect command line arguments <username> <hosts.json>")
 
     password = getpass.getpass("Remote Password for %s on all machines:" % username)
-    
+
     def mapf(serv):
         try:
             s = Snoop(username, password, serv)
@@ -116,13 +116,8 @@ if __name__ == "__main__":
         except Exception as e:
             sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             Snoop.checkin(serv)
-
-    p = Pool(30)
-
+    
     while True:
+        p = Pool(30)
         p.map(mapf,servers)
-        sys.stderr.write("INFO sleeping\n")
         time.sleep(900)
-
-    #for server in servers:
-    #    mapf(server)
