@@ -89,6 +89,10 @@ $(function(){
                 htmlOptions+='<option>'+value+'</option>'
             })
             $('#friend-list').html(htmlOptions);
+            if (friends.length === 1)
+                $('#remove-btn').text("Remove Friend");
+            else
+                $('#remove-btn').text("Remove Friend(s)");
         }
         else {
             $('#del-form').addClass('hidden');
