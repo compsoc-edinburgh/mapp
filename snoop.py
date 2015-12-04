@@ -82,7 +82,7 @@ class Snoop:
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
             else:
-                sys.stdout.write("CALLBACK ok for %s\n" % hostname)
+                sys.stdout.write("CALLBACK ok for %s %s\n" % (hostname, data_dict['timestamp']))
         except Exception as e:
             sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
         
