@@ -70,21 +70,23 @@
 <div class="harrys-fussy-buttons">
   <div class="btn-group" role="group" aria-label="Filter and map controls">
     <button type="button" class="btn btn-primary btn-sm" title="Hide active computers">
-      Available
+      <span class="hidden-xs">Available</span>
+      <span class="visible-xs"><i class="fa fa-check"></i></span>
     </button>
     <button type="button" class="btn btn-primary btn-sm" title="Show only friends">
-      Friends
+      <span class="hidden-xs">Friends</span>
+      <span class="visible-xs"><i class="fa fa-users"></i></span>
     </button>
     <button type="button" class="btn btn-default btn-sm" title="Re-centre the map"
-            onclick="smoothCentreMap();">
+            onclick="mapZoom(0,'15px');centreMap();">
       <i class="fa fa-crosshairs"></i>
     </button>
     <button type="button" class="btn btn-default btn-sm" title="Zoom Out"
-            onclick="$('#mapscroll').css('font-size','1em');centreMap();">
+            onclick="mapZoom(-1);">
       <i class="fa fa-minus" style="font-size: 0.9em;"></i>
     </button>
     <button type="button" class="btn btn-default btn-sm" title="Zoom In"
-            onclick="$('#mapscroll').css('font-size','1.5em');centreMap();">
+            onclick="mapZoom(1);">
       <i class="fa fa-plus" style="font-size: 0.9em;"></i>
     </button>
   </div>

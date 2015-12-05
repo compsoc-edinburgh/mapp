@@ -5,10 +5,8 @@ from flask import render_template, request, jsonify, redirect
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
 
-@app.route('/', methods=['GET', 'POST'])
-@login_required
-def index():
-    room = flask_redis.hgetall("drillhall")
+def map_routine(which_room):
+    room = flask_redis.hgetall(str(which_room))
     dh_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
     machines = {m: flask_redis.hgetall(m) for m in dh_machines}
     num_rows = max([int(machines[m]['row']) for m in machines])
@@ -33,57 +31,37 @@ def index():
                     num_used += 1
             except Exception:
                 pass
-            
             unsorted_cells.append(cell)
 
         cells = unsorted_cells
         rows.append(cells)
 
     num_free = num_machines - num_used
-    
+
     reserved = flask_redis.smembers('reserved-machines')
 
-    return render_template('index.html', room=room, rows=rows, reserved=reserved,
-                           num_machines=num_machines,  num_free=num_free)
+    return {
+        "room"         : room,
+        "rows"         : rows,
+        "reserved"     : reserved,
+        "num_free"     : num_free,
+        "num_machines" : num_machines
+        }
+
+
+@app.route('/', methods=['GET', 'POST'])
+@login_required
+def index():
+    this = map_routine("drillhall")
+    return render_template('index.html', room=this['room'], rows=this['rows'], reserved=this['reserved'],
+                           num_machines=this['num_machines'],  num_free=this['num_free'])
 
 @app.route('/refresh')
 @login_required
 def refresh():
-    room = flask_redis.hgetall("drillhall")
-    dh_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
-    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
-    num_rows = max([int(machines[m]['row']) for m in machines])
-    num_cols = max([int(machines[m]['col']) for m in machines])
-
-    num_machines = len(machines.keys())
-    num_used = 0
-    
-    rows = []
-    for r in xrange(0, num_rows+1):
-        unsorted_cells = []
-        for c in xrange(0, num_cols+1):
-            default_cell = {'hostname': None, 'col': c, 'row': r}
-            cell = [v for (k, v) in machines.iteritems() if int(v['row']) == r and int(v['col']) == c]
-            if not cell:
-                cell = default_cell
-            else:
-                cell = cell[0]
-
-            try:
-                if cell['user'] is not "":
-                    num_used += 1
-            except Exception:
-                pass
-            unsorted_cells.append(cell)
-
-        cells = unsorted_cells
-        rows.append(cells)
-
-    num_free = num_machines - num_used
-
-    reserved = flask_redis.smembers('reserved-machines')
-    return render_template('refresh.xml', room=room, rows=rows, reserved=reserved,
-                           num_machines=num_machines, num_free=num_free)
+    this = map_routine("drillhall")
+    return render_template('refresh.xml', room=this['room'], rows=this['rows'], reserved=this['reserved'],
+                           num_machines=this['num_machines'],  num_free=this['num_free'])
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -103,14 +81,6 @@ def logout():
     return redirect("/login")
 
 
-#@app.route("/who")
-#def whois():
-#    dh_machines = flask_redis.lrange("drillhall-machines", 0, -1)
-#    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
-
-#    return jsonify(users=[v['user'] for (k, v) in machines.iteritems() if "user" in v])
-
-
 
 class APIKeyNotAuthorised(Exception):
     status_code = 401
@@ -127,12 +97,14 @@ class APIKeyNotAuthorised(Exception):
         rv['message'] = self.message
         return rv
 
+
 @app.errorhandler(APIKeyNotAuthorised)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
     
+
 @app.route('/update', methods=['POST'])
 def update():
     content = request.json
@@ -173,22 +145,8 @@ def friends():
            flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
 
     friends = flask_redis.smembers(current_user.get_id() + "-friends")
+    friends = list(friends)
+    friends.sort()
 
-    friends_enc = set()
-    for friend in friends:
-        hasher = hashlib.sha512()
-        hasher.update(friend + app.config['CRYPTO_SECRET'])
-        #friends_enc.add(hasher.hexdigest())
-        friends_enc.add(friend)
+    return jsonify(friendList=friends) #Set up for ajax responses
 
-    return jsonify(friendList=list(friends)) #Set up for ajax responses
-
-# Won't work because crypto :'(
-# @app.route("/i/love/you/all")
-# @login_required
-# def ily():
-#     for m in flask_redis.lrange('drillhall-machines', 0,-1):
-#         u = flask_redis.hget(m, 'user')
-#         if u:
-#             flask_redis.sadd(current_user.get_id() + '-friends', u)
-#     return redirect('/')
