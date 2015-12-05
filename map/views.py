@@ -41,13 +41,15 @@ def map_routine(which_room):
     reserved = flask_redis.smembers('reserved-machines')
 
     num_free -= len(reserved)
+    low_availability = num_free <= 0.2 * num_machines
 
     return {
-        "room"         : room,
-        "rows"         : rows,
-        "reserved"     : reserved,
-        "num_free"     : num_free,
-        "num_machines" : num_machines
+        "room"             : room,
+        "rows"             : rows,
+        "reserved"         : reserved,
+        "num_free"         : num_free,
+        "num_machines"     : num_machines,
+        "low_availability" : low_availability
         }
 
 
@@ -55,15 +57,25 @@ def map_routine(which_room):
 @login_required
 def index():
     this = map_routine("drillhall")
-    return render_template('index.html', room=this['room'], rows=this['rows'], reserved=this['reserved'],
-                           num_machines=this['num_machines'],  num_free=this['num_free'])
+    return render_template('index.html',
+                           room=this['room'],
+                           rows=this['rows'],
+                           reserved=this['reserved'],
+                           num_machines=this['num_machines'],
+                           num_free=this['num_free'],
+                           low_availability=this['low_availability'])
 
 @app.route('/refresh')
 @login_required
 def refresh():
     this = map_routine("drillhall")
-    return render_template('refresh.xml', room=this['room'], rows=this['rows'], reserved=this['reserved'],
-                           num_machines=this['num_machines'],  num_free=this['num_free'])
+    return render_template('refresh.xml',
+                           room=this['room'],
+                           rows=this['rows'],
+                           reserved=this['reserved'],
+                           num_machines=this['num_machines'],
+                           num_free=this['num_free'],
+                           low_availability=this['low_availability'])
 
 
 @app.route("/login", methods=['GET', 'POST'])
