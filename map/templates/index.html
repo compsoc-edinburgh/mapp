@@ -22,6 +22,11 @@
           <span class="muted">/ {{ num_machines }}</span>
         </h2>
         <span class="muted hidden" style="font-size: 1em;"> Available</span>
+        {% if last_update %}
+        <span class="pull-right muted small"
+              style="line-height: 32px; vertical-align: middle;">
+          <i class="fa fa-clock-o"></i> {{ last_update }}</span>
+        {% endif %}
       </div>
     </div>
   </div>
