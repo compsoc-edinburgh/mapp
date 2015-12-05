@@ -1,4 +1,5 @@
 VENV/
 *.pyc
 *.sh
+*.json
 config.py
