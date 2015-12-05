@@ -104,7 +104,7 @@ body {
 .tabwrapwrap .table {
     width: auto;
     display: block;
-    border-top: 1px solid #cad7e2;
+    border-top: 1px solid #ecf0f1;
 }
 
 table.table {
@@ -113,7 +113,7 @@ table.table {
 }
 
 table.table tr {
-    border-bottom: 1px solid #cad7e2;
+    border-bottom: 1px solid #ecf0f1;
 }
 
 table.table>tbody>tr>td {
