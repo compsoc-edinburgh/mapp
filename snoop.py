@@ -53,8 +53,11 @@ class Snoop:
                 pass
 
         print_usr = "None"
-        if ret[0] != "" and len(ret[0] > 15):
-            print_usr = ret[0][:15] + "..."
+        try:
+            if ret[0] != "" and len(ret[0] > 15):
+                print_usr = ret[0][:15] + "..."
+        except IndexError:
+            pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
