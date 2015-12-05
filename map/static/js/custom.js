@@ -118,7 +118,7 @@ $(function(){
             data: $(this).serialize()
         })
             .done(function(data) {
-                $("#new-friend").val('').attr('style','color: #fff !important'); //Reset the form!
+                $("#new-friend").val(''); //Reset the form!
                 renderFriendList(data);
             });
     });
