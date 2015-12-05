@@ -269,16 +269,19 @@ def friends():
     return jsonify(friendList=friends) #Set up for ajax responses
 
 
-@app.route("/rooms")
-@login_required
-def rooms():
+def rooms_dict():
     out = dict({})
     rooms = list(flask_redis.smembers("forresthill-rooms"))
     rooms.sort()
-
+    
     for room in rooms:
         out[room] = flask_redis.hget(room, "name")
 
-    return jsonify(out)
+    return out
+        
+@app.route("/rooms")
+@login_required
+def rooms():
+    return jsonify(rooms_dict())
     
 
