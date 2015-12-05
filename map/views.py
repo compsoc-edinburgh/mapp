@@ -99,6 +99,66 @@ def logout():
 def about():
     return render_template("about.html")
 
+@app.route("/demo")
+def demo():
+    # Manual render, for demo purpoises.
+    # DOES NOT REQUIRE AUTH
+    return render_template(
+        "index.html",
+        room={"name":"Mapp Demo"},
+        rows=[
+            [
+                {},
+                {"hostname":"dish"},
+                {"hostname":"paulajennings"},
+                {},
+                {},
+                {},
+                {},
+                {}
+            ],[
+                {"hostname":"dent"},
+                {"hostname":"prefect"},
+                {"hostname":"slartibartfast", "user":" ","friend":"moony"},
+                {"hostname":"random", "user":" ","friend":"wormtail"},
+                {"hostname":"colin"},
+                {},
+                {"hostname":"marvin"},
+                {"hostname":"vogon"}
+            ],[
+                {"hostname":"beeblebrox", "user":" ","friend":"padfoot"},
+                {"hostname":"trillian", "user":" "},
+                {"hostname":"agrajag"},
+                {"hostname":"krikkit", "user":" "},
+                {"hostname":"almightybob"},
+                {},
+                {"hostname":"jynnan", "user":" "},
+                {"hostname":"tonyx"}
+            ],[
+                {},
+                {},
+                {},
+                {"hostname":"eddie"},
+                {"hostname":"fenchurch", "user":" "},
+                {},
+                {},
+                {}
+            ],[
+                {},
+                {},
+                {},
+                {"hostname":"frankie"},
+                {"hostname":"benjy", "user":" ","friend":"prongs"},
+                {},
+                {},
+                {}
+            ]
+        ],
+        reserved=set(),
+        num_machines=20,
+        num_free=12,
+        low_availability=False)
+
 
 class APIError(Exception):
     status_code = 401
