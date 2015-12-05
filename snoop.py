@@ -56,7 +56,7 @@ class Snoop:
         try:
             if ret[0] != "" and len(ret[0] > 15):
                 print_usr = ret[0][:15] + "..."
-        except IndexError:
+        except Exception:
             pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
