@@ -1,21 +1,90 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}About{% endblock %}
 
 {% block content %}
 
-<div class="container prose">
-  <h2>About "The Marauder's App"</h2>
+<article class="container prose">
+  <div class="text-center padder">
+    <h2>About The Marauder's App</h2>
+  </div>
 
   <p>
     Built at <a href="http://hacknotts.com" target=_blank>HackNotts</a>,
     an MLH student hackathon in 2015, by Angus, Harry and James. We're
-    always messaging out coursemates with crap like
+    always messaging out coursemates with crap like:
   </p>
   <p>
-    <img src="{{  url_for('static', filename='img/fbmessage_1.jpg') }}"
+    <img class="img-thumbnail center-block img-responsive padder"
+         src="{{  url_for('static', filename='img/fbmessage_1.jpg') }}"
          alt="Facebook message: 'Where are people sitting in the labs?'">
   </p>
-</div>
+  <p>
+    So we made a webapp to rid ourselves of this annoyance (Though James still
+    insists on using Messenger...). You can add friends by popping open the
+    'Manage Friends' modal, and entering their full names one at a time. The
+    format is <code>FirstName SecondName</code>, in fact it is <em>exactly</em>
+    the same as what <code>$ finger s13371337</code> returns on DICE, because,
+    well, that's where we get people's names from.
+  </p>
+
+  <p>
+    If you've never heard of <code>finger</code> before then yes, that exists.
+    Also it never gets old.
+  </p>
+
+  <div class="text-center padder">
+    <h2>Privacy</h2>
+  </div>
+
+  <p>
+    Obviously we take people's privacy pretty seriously, which is why the app
+    only works over a secured (ish) connection, using HTTPS. We don't currently
+    have a certificate but then again half of the School's pages don't either.
+  </p>
+
+  <p>
+    We scan DICE machines over SSH, running <code>finger</code> on each one
+    to see who's on it. The username of the person on the machine then gets
+    hashed using sha-512 and a salt. The hash and machine details are then
+    pushed back here and stored in <a href="http://redis.io">Redis</a> before
+    being rendered as a map for you, dear user.
+  </p>
+
+  <p>
+    This means two important things - We don't know who is where, as all we see
+    is a big nasty hash like <code>5d96a594f5 485a89fa0f ac073f1b6b d5b2e5cf81
+      c193495e93 4c2a6ece4b 007709a4c1 db1070a7b5 9f571f269b 7ef69bfb5b
+      ab3e8a2e04 835e6635ec 7271a03a</code> which is what we store, and second,
+    everything we knew about the lab last time we checked it out is overwritten,
+    as we don't log nor do we have persistent storage.
+  </p>
+
+  <p>
+    None of the collected data ever leaves .ed.ac.uk or the Informatics firewall,
+    and all update information is sent between servers securely.
+  </p>
+
+</article>
+
+<aside class="container prose">
+  <hr>
+  <div class="text-center">
+    <h1><i class="fa fa-star-o"></i></h1>
+  </div>
+  <p>The hack won the <em>Best use of Braintree
+      (a PayPal company) API</em> prize, and the Nottingham University
+    Information Services <em>Best Hack for University</em> prize. </p>
+  <p>AngusP
+    has yet to be murdered my Computing Support for creating a SSH bot.
+  </p>
+
+  <p>
+    Marauder's App on DevPost: <a href="http://devpost.com/software/the-marauder-s-app">
+      devpost.com/software/the-marauder-s-app</a>
+    &mdash;
+    HackNotts: <a href="http://hacknotts.com">hacknotts.com</a><br>
+  </p>
+</aside>
 
 {% endblock %}
 
