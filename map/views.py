@@ -1,6 +1,7 @@
 from map import app, flask_redis, ldap
 from datetime import datetime
 import hashlib
+import json
 from flask import render_template, request, jsonify, redirect
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
@@ -55,7 +56,7 @@ def map_routine(which_room):
         "num_machines"     : num_machines,
         "low_availability" : low_availability,
         "last_update"      : last_update
-        }
+    }
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -110,7 +111,7 @@ def login():
         if ldap.check_credentials(request.form['username'], request.form['password']):
             user=ldap.getuser(request.form['username'])
             login_user(user)
-            return redirect("/")
+            return redirect(request.args.get('next', ''))
         else:
             login_status = "Incorrect username or password."
 
@@ -126,6 +127,7 @@ def logout():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 @app.route("/demo")
 def demo():
@@ -265,4 +267,18 @@ def friends():
     friends.sort()
 
     return jsonify(friendList=friends) #Set up for ajax responses
+
+
+@app.route("/rooms")
+@login_required
+def rooms():
+    out = dict({})
+    rooms = list(flask_redis.smembers("forresthill-rooms"))
+    rooms.sort()
+
+    for room in rooms:
+        out[room] = flask_redis.hget(room, "name")
+
+    return jsonify(out)
+    
 
