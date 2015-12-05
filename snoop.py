@@ -82,7 +82,7 @@ class Snoop:
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
             else:
-                sys.stdout.write("CALLBACK ok for %s %s\n" % (hostname, data_dict['timestamp']))
+                sys.stderr.write("CALLBACK ok for %s %s\n" % (hostname, data_dict['timestamp']))
         except Exception as e:
             sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
         
@@ -120,5 +120,5 @@ if __name__ == "__main__":
     while True:
         p = Pool(30)
         p.map(mapf,servers)
-        sys.stdout.write("DONE iteration at %s" % str(datetime.utcnow().isoformat()))
+        sys.stdout.write("DONE iteration at %s\n" % str(datetime.utcnow().isoformat()))
         time.sleep(900)
