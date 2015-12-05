@@ -34,7 +34,11 @@
           {% if current_user.has_friend(cell.user) %}
           
           <p class="text-info blip">
-            <i class="fa fa-hand-peace-o" title="EYYYyyyyyyyYYYyYYyy"></i>
+            {% if cell.hostname == 'ceilingcat' %}
+            <i class="fa fa-paw"></i>
+            {% else %}
+            <i class="fa fa-hand-peace-o"></i>
+            {% endif %}
           </p>
           <p>{{ cell.hostname }}</p>
           <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}<p>
@@ -51,10 +55,6 @@
           
           <p class="text-success blip">
             <i class="fa fa-television"></i>
-            <!--span class="fa-stack">
-                <i class="fa fa-television fa-stack-2x"></i>
-                <i class="fa fa-check-square fa-stack-2x"></i>
-            </span-->
           </p>
           <p>{{ cell.hostname }}</p>
           
