@@ -51,8 +51,12 @@ class Snoop:
                     data_dict['active']    = str(ret[1])
             except AttributeError, IndexError:
                 pass
-        
-        sys.stdout.write("USER on %s: %s\n" % (self.hostname, data_dict['user']))
+
+        print_usr = "None"
+        if ret[0] is not "":
+            print_usr = ret[0][:15] + "..."
+            
+        sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
         return ret
 
