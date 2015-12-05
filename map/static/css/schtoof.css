@@ -136,9 +136,22 @@ table.table>tbody>tr>td {
     width: 1em;
 }
 
-@media(max-width: 720px){
+.container.prose {
+    width: 80%;
+    padding: 2em 0;
+}
+
+@media(max-width: 992px){
     .container {
-        width: 90%; 
+        width: 90%;
+    }
+}
+@media(min-width: 992px){
+    .container {
+        width: 85%;
+    }
+    .container.prose {
+        width: 880px;
     }
 }
 
@@ -150,9 +163,17 @@ table.table>tbody>tr>td {
 
 .harrys-fussy-buttons {
     position: fixed;
-    bottom: 2.2em;
-    right: 2.5em;
+    bottom: 1em;
+    right: 0.5em;
 }
+
+@media(min-width: 768px){
+    .harrys-fussy-buttons {
+        bottom: 2.5em;
+        right: 2.5em;
+    }
+}
+
 .dropdown-menu{
     width: 27em;
     margin-top: 4px !important;
@@ -168,6 +189,7 @@ table.table>tbody>tr>td {
     height: 25vh;
     width: 99%;
 }
+
 @media(max-width: 720px){
     .shrinklittle {
         font-size: 0.6em;

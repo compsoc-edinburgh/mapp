@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="container prose">
+  <h2>About "The Marauder's App"</h2>
+
+  <p>
+    Built at <a href="http://hacknotts.com" target=_blank>HackNotts</a>,
+    an MLH student hackathon in 2015, by Angus, Harry and James. We're
+    always messaging out coursemates with crap like
+  </p>
+  <p>
+    <img src="{{  url_for('static', filename='img/fbmessage_1.jpg') }}"
+         alt="Facebook message: 'Where are people sitting in the labs?'">
+  </p>
+</div>
+
+{% endblock %}
+

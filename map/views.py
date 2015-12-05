@@ -40,6 +40,8 @@ def map_routine(which_room):
 
     reserved = flask_redis.smembers('reserved-machines')
 
+    num_free -= len(reserved)
+
     return {
         "room"         : room,
         "rows"         : rows,
@@ -80,6 +82,10 @@ def logout():
     logout_user()
     return redirect("/login")
 
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 
 class APIKeyNotAuthorised(Exception):
