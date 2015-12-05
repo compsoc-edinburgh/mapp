@@ -51,19 +51,69 @@
   </p>
 
   <p>
-    This means two important things - We don't know who is where, as all we see
+    This means a couple of important things - We don't know who is where, as all we see
     is a big nasty hash like <code>5d96a594f5 485a89fa0f ac073f1b6b d5b2e5cf81
       c193495e93 4c2a6ece4b 007709a4c1 db1070a7b5 9f571f269b 7ef69bfb5b
-      ab3e8a2e04 835e6635ec 7271a03a</code> which is what we store, and second,
-    everything we knew about the lab last time we checked it out is overwritten,
-    as we don't log nor do we have persistent storage.
+      ab3e8a2e04 835e6635ec 7271a03a</code> which is what we store. There's no software
+    running persistently on DICE machines, no way to execute arbitrary code on the DICE
+    boxes and communication between the bot and this server is one-way. Also everything
+    we knew about the lab last time we checked it out is overwritten, as we don't log
+    nor do we have persistent storage. Redis is great like that.
   </p>
 
   <p>
     None of the collected data ever leaves .ed.ac.uk or the Informatics firewall,
-    and all update information is sent between servers securely.
+    and all update information is sent between servers securely. API keys and
+    hashing salts are easily changed and all our data is meaningless with incorrect
+    copies of these.
   </p>
 
+  <div class="text-center padder">
+    <h2>FAQ</h2>
+  </div>
+
+  <blockquote>
+    Doesn't something like this already exist?
+  </blockquote>
+
+  <p>
+    Apparently it does, <a href="http://www.linuxcommand.org/man_pages/rwho1.html">rwho</a>
+    is a thing. Apparently it also used to be on DICE, but no more. So now you have
+    this snazzy thing instead.
+  </p>
+
+  <blockquote>
+    Tardis??! What's that and why can't I log in with DICE/Facebook/Other?
+  </blockquote>
+
+  <p>
+    Logging in with DICE accounts isn't too easy, so we're using
+    <a href="https://wiki.tardis.ed.ac.uk">Tardis</a> accounts at the moment as we know
+    how to talk to our LDAP server. We'd love to work with the school to be able to use
+    Cosign, but this app is currently a little too indev for that.
+  </p>
+
+  <blockquote>
+    Plans for the future?
+  </blockquote>
+
+  <p>
+    Biggest planned improvements are expansion out of the Drill Hall into other labs
+    and rooms in Forrest Hill; Adding some additional privacy wherein people have to
+    'accept' a friendship to show up on another person's map; And finally handy things
+    like notifying users of where friends are, where there are free computers and
+    where empty rooms (if any) are.
+  </p>
+
+  <blockquote>
+    Is this legal?
+  </blockquote>
+
+  <p>
+    Yes, all DICE users have access to the same information that we do, and we're
+    within the bounds of the DPA and CMA.
+  </p>
+  
 </article>
 
 <aside class="container prose">
@@ -74,6 +124,8 @@
   <p>The hack won the <em>Best use of Braintree
       (a PayPal company) API</em> prize, and the Nottingham University
     Information Services <em>Best Hack for University</em> prize. </p>
+  <p>It used to have a "pay us £5 to reserve a computer" feature but come on,
+    that's a tad silly.</p>
   <p>AngusP
     has yet to be murdered my Computing Support for creating a SSH bot.
   </p>
