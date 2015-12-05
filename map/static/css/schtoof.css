@@ -223,7 +223,9 @@ code {
     height: 25vh;
     width: 99%;
 }
-
+#name-error-alert, #select-error-alert{
+    color: red;
+}
 @media(max-width: 767px){
     .shrinklittle {
         font-size: 0.6em;

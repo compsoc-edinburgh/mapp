@@ -1,88 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}The Marauder's App{% endblock %} :: The Marauder's App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{  url_for('static', filename='css/marauders-app.css') }}" rel="stylesheet">
-    <link href="{{  url_for('static', filename='css/schtoof.css') }}" rel="stylesheet">
-  </head>
-  <body>
-    <nav class="nav navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mapp-nav">
-            <span class="sr-only">Toggle Navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a href="/" class="navbar-brand">The Marauder's App</a>
-        </div>
-        <div class="collapse navbar-collapse" id="mapp-nav">
-          <ul class="nav navbar-nav">
-          </ul>
-          <ul class="nav navbar-nav navbar-right ">
-            {% if current_user.is_anonymous %}
-            <li><a href="/login">Log In</a></li>
-            {% else %}
-            <li class="dropdown" id="friends-dropdown">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true" aria-expanded="false">
-                Manage Friends <span class="caret"></span>
-              </a>
-              <div class="dropdown-menu mobile-dropdown">
-                <div class="container-fluid">
-                  <h4>Friends</h4>
-                  <div id = "del-form-container">
-                    <form method="POST" class="form-horizontal" id="del-form">
-                      <input type="hidden" name="type" value="del">
-                      <div class="form-group">
-                        <select multiple class="form-control" name="delfriends" id ="friend-list">
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <button type="submit" class="btn btn-block btn-primary" id="remove-btn">Remove Friend(s)</button>
-                      </div>
-                    </form>
-                    <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
-                  </div>
-                  <form method="POST" class="form-horizontal" id="add-form">
-                    <input type="hidden" name="type" value="add">
-                    <div class="form-group">
-                      <input type="text" name="newfriend" id ="new-friend"class="form-control" placeholder="New Friend">
-                    </div>
-                    <div class="form-group">
-                      <button type="submit" class="btn btn-primary btn-block">Add Friend</button>
-                    </div>
-                  </form>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}The Marauder's App{% endblock %} :: The Marauder's App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{  url_for('static', filename='css/marauders-app.css') }}" rel="stylesheet">
+        <link href="{{  url_for('static', filename='css/schtoof.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="nav navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mapp-nav">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="navbar-brand">The Marauder's App</a>
                 </div>
-              </div>
-            </li>
-            <li><a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_id() }})</a></li>
-            {% endif %}
-            <li><a href="/about" title="About &amp; privacy.">
-                <span class="hidden-xs">
-                  <i class="fa fa-question-circle"></i>
-                </span>
-                <span class="visible-xs">
-                  About
-                </span>
-            </a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    {% block content %}
-    {% endblock %}
-    
-    {% block scripts %}
-    <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
-    <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script>
-    {% endblock %}
-  </body>
+                <div class="collapse navbar-collapse" id="mapp-nav">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right ">
+                        {% if current_user.is_anonymous %}
+                        {% else %}
+                            <li class="dropdown" id="friends-dropdown">
+                                <a href="#" class="dropdown-toggle"
+                                    data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Manage Friends <span class="caret"></span>
+                                </a>
+                                <div class="dropdown-menu mobile-dropdown">
+                                    <div class="container-fluid">
+                                        <h4>Friends</h4>
+                                        <div id = "del-form-container">
+                                            <form method="POST" class="form-horizontal" id="del-form">
+                                                <input type="hidden" name="type" value="del">
+                                                <p id ="select-error-alert" class="hidden"></p>
+                                                <div class="form-group">
+                                                    <select multiple class="form-control" name="delfriends" id ="friend-list">
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-block btn-primary" id="remove-btn">Remove Friend(s)</button>
+                                                </div>
+                                            </form>
+                                            <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
+                                        </div>
+                                        <form method="POST" class="form-horizontal" id="add-form">
+                                            <input type="hidden" name="type" value="add">
+                                            <p id ="name-error-alert" class="hidden"></p>
+                                            <div class="form-group">
+                                                <input type="text" name="newfriend" id ="new-friend"class="form-control" placeholder="New Friend">
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary btn-block" id ="add-btn">Add Friend</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_id() }})</a></li>
+                        {% endif %}
+                        <li><a href="/about" title="About &amp; privacy.">
+                            <span class="hidden-xs">
+                                <i class="fa fa-question-circle"></i>
+                            </span>
+                            <span class="visible-xs">
+                                About
+                            </span>
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}
+        {% endblock %}
+        
+        {% block scripts %}
+            <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
+            <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
+            <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script>
+        {% endblock %}
+    </body>
 </html>
