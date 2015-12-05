@@ -9,6 +9,15 @@
                 col-sm-8 col-sm-offset-2">
       <h3 style="text-align: center;">Login</h3>
       <form action method="POST" class="well">
+        {% if login_status %}
+        <p  style="opacity: 0.6; text-align: center;">
+          <span class="text-danger">
+            <i class="fa fa-warning"></i>
+            <span class="spacer"></span>
+            {{ login_status }}
+          </span>
+        </p>
+        {% endif %}
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Tardis LDAP Username" name="username">
         </div>
