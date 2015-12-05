@@ -28,6 +28,7 @@
             {% if current_user.is_anonymous %}
             <li><a href="/login">Log In</a></li>
             {% else %}
+            
             <li class="dropdown" id="friends-dropdown">
               <a href="#" class="dropdown-toggle"
                  data-toggle="dropdown" role="button"
@@ -40,6 +41,7 @@
                   <div id = "del-form-container">
                     <form method="POST" class="form-horizontal" id="del-form">
                       <input type="hidden" name="type" value="del">
+                      <p id ="select-error-alert" class="hidden"></p>
                       <div class="form-group">
                         <select multiple class="form-control" name="delfriends" id ="friend-list">
                         </select>
@@ -52,11 +54,12 @@
                   </div>
                   <form method="POST" class="form-horizontal" id="add-form">
                     <input type="hidden" name="type" value="add">
+                    <p id ="name-error-alert" class="hidden"></p>
                     <div class="form-group">
                       <input type="text" name="newfriend" id ="new-friend"class="form-control" placeholder="New Friend">
                     </div>
                     <div class="form-group">
-                      <button type="submit" class="btn btn-primary btn-block">Add Friend</button>
+                      <button type="submit" class="btn btn-primary btn-block" id ="add-btn">Add Friend</button>
                     </div>
                   </form>
                 </div>
