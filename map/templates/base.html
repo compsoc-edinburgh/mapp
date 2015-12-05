@@ -29,21 +29,25 @@
                             <li><a href="/login">Log In</a></li>
                         {% else %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage Friends <span class="caret"></span></a>
-                                <div class="dropdown-menu">
+                                <a href="#" class="dropdown-toggle"
+                                    data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Manage Friends <span class="caret"></span>
+                                </a>
+                                <div class="dropdown-menu mobile-dropdown">
                                     <div class="container-fluid">
                                         <h4>Friends</h4>
-                                        <div id = "del-form-container">  
-                                        <form method="POST" class="form-horizontal" id="del-form">
-                                            <input type="hidden" name="type" value="del">
-                                            <div class="form-group">
-                                                <select multiple class="form-control" name="delfriends" id ="friend-list">
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <button type="submit" class="btn btn-block btn-primary" id="remove-btn">Remove Friend(s)</button>
-                                            </div>
-                                        </form>
+                                        <div id = "del-form-container">
+                                            <form method="POST" class="form-horizontal" id="del-form">
+                                                <input type="hidden" name="type" value="del">
+                                                <div class="form-group">
+                                                    <select multiple class="form-control" name="delfriends" id ="friend-list">
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-block btn-primary" id="remove-btn">Remove Friend(s)</button>
+                                                </div>
+                                            </form>
                                             <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
                                         </div>
                                         <form method="POST" class="form-horizontal" id="add-form">
@@ -58,7 +62,15 @@
                                     </div>
                                 </div>
                             </li>
-                            <li><a href="/logout">Log Out ({{ current_user.get_id() }})</a></li>
+                            <li><a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_id() }})</a></li>
+                            <li><a href="/about" title="About, privacy &amp; FAQ.">
+                                <span class="hidden-xs">
+                                    <i class="fa fa-question-circle"></i>
+                                </span>
+                                <span class="visible-xs">
+                                    About &amp; FAQ
+                                </span>
+                            </a></li>
                         {% endif %}
                     </ul>
                 </div>
