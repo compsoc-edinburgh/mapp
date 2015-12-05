@@ -120,4 +120,5 @@ if __name__ == "__main__":
     while True:
         p = Pool(30)
         p.map(mapf,servers)
+        sys.stdout.write("DONE iteration at %s" % str(datetime.utcnow().isoformat()))
         time.sleep(900)
