@@ -37,7 +37,7 @@
           {% if cell.hostname %}
           {% if cell.user or cell.hostname in reserved %}
           
-          {% if current_user.has_friend(cell.user) %}
+          {% if not current_user.is_anonymous and current_user.has_friend(cell.user) %}
           
           <p class="text-info blip">
             {% if cell.hostname == 'ceilingcat' %}
@@ -47,10 +47,18 @@
             {% endif %}
           </p>
           <p>{{ cell.hostname }}</p>
-          <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}<p>
-            
-            {% else %}{# User doesn't have this person as friend #}
-            
+          <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}</p>
+          
+          {% elif cell.friend %}{# Insecure way to pass a friend over, not reccomended #}
+          
+          <p class="text-info blip">
+            <i class="fa fa-hand-peace-o"></i>
+          </p>
+          <p>{{ cell.hostname }}</p>
+          <p class="userat-name text-info">{{ cell.friend }}</p>
+
+          {% else %}{# User doesn't have this person as friend #}
+          
           <p class="blip muted">
             <i class="fa fa-television"></i>
           </p>
