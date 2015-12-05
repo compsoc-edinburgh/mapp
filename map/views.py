@@ -43,13 +43,18 @@ def map_routine(which_room):
     num_free -= len(reserved)
     low_availability = num_free <= 0.2 * num_machines
 
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
+    last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
+    last_update = last_update.strftime("%H:%M:%S")
+    
     return {
         "room"             : room,
         "rows"             : rows,
         "reserved"         : reserved,
         "num_free"         : num_free,
         "num_machines"     : num_machines,
-        "low_availability" : low_availability
+        "low_availability" : low_availability,
+        "last_update"      : last_update
         }
 
 
@@ -63,7 +68,8 @@ def index():
                            reserved=this['reserved'],
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
-                           low_availability=this['low_availability'])
+                           low_availability=this['low_availability'],
+                           last_update=this['last_update'])
 
 @app.route('/refresh')
 @login_required
@@ -75,7 +81,8 @@ def refresh():
                            reserved=this['reserved'],
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
-                           low_availability=this['low_availability'])
+                           low_availability=this['low_availability'],
+                           last_update=this['last_update'])
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -157,7 +164,8 @@ def demo():
         reserved=set(),
         num_machines=20,
         num_free=12,
-        low_availability=False)
+        low_availability=False,
+        last_update="1980-01-01 13:37")
 
 
 class APIError(Exception):
