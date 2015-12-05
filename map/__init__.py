@@ -23,4 +23,4 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 def get_user(uid):
     return ldap.getuser(uid)
 
-from . import views, twilio_views
+from . import views
