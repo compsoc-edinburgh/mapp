@@ -7,8 +7,8 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 
 def map_routine(which_room):
     room = flask_redis.hgetall(str(which_room))
-    dh_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
-    machines = {m: flask_redis.hgetall(m) for m in dh_machines}
+    room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
+    machines = {m: flask_redis.hgetall(m) for m in room_machines}
     num_rows = max([int(machines[m]['row']) for m in machines])
     num_cols = max([int(machines[m]['col']) for m in machines])
 
@@ -87,13 +87,16 @@ def refresh():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    login_status = ""
     if request.method == "POST":
         if ldap.check_credentials(request.form['username'], request.form['password']):
             user=ldap.getuser(request.form['username'])
             login_user(user)
             return redirect("/")
+        else:
+            login_status = "Incorrect username or password."
 
-    return render_template("login.html")
+    return render_template("login.html", login_status=login_status)
 
 
 @app.route("/logout")
@@ -118,11 +121,7 @@ def demo():
                 {},
                 {"hostname":"dish"},
                 {"hostname":"paulajennings"},
-                {},
-                {},
-                {},
-                {},
-                {}
+                {},{},{},{},{}
             ],[
                 {"hostname":"dent"},
                 {"hostname":"prefect"},
@@ -142,23 +141,15 @@ def demo():
                 {"hostname":"jynnan", "user":" "},
                 {"hostname":"tonyx"}
             ],[
-                {},
-                {},
-                {},
+                {},{},{},
                 {"hostname":"eddie"},
                 {"hostname":"fenchurch", "user":" "},
-                {},
-                {},
-                {}
+                {},{},{}
             ],[
-                {},
-                {},
-                {},
+                {},{},{},
                 {"hostname":"frankie"},
                 {"hostname":"benjy", "user":" ","friend":"prongs"},
-                {},
-                {},
-                {}
+                {},{},{}
             ]
         ],
         reserved=set(),
