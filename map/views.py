@@ -1,5 +1,5 @@
 from map import app, flask_redis, ldap
-
+from datetime import datetime
 import hashlib
 from flask import render_template, request, jsonify, redirect
 from flask.ext.login import login_user, logout_user, login_required, current_user
@@ -88,7 +88,7 @@ def about():
     return render_template("about.html")
 
 
-class APIKeyNotAuthorised(Exception):
+class APIError(Exception):
     status_code = 401
     
     def __init__(self, message, status_code=None, payload=None):
@@ -104,7 +104,7 @@ class APIKeyNotAuthorised(Exception):
         return rv
 
 
-@app.errorhandler(APIKeyNotAuthorised)
+@app.errorhandler(APIError)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
@@ -122,20 +122,41 @@ def update():
         ts     = content['timestamp']
         active = content['active']
     except Exception:
-        raise APIKeyNotAuthorised("Malformed JSON POST data", status_code=400)
+        raise APIError("Malformed JSON POST data", status_code=400)
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
         print "BAD KEY*******"
-        raise APIKeyNotAuthorised("Given key is not an authorised API key")
+        raise APIError("Given key is not an authorised API key")
 
     pipe = flask_redis.pipeline()
     pipe.hset(host, "user", user)
     pipe.hset(host, "timestamp", ts)
     pipe.hset(host, "active", active)
+    pipe.set("last-update", str(datetime.utcnow().isoformat()))
     pipe.execute()
 
     return jsonify(status="ok")
+
+
+
+@app.route("/update_available", methods=['POST'])
+@login_required
+def update_available():
+    content = request.json
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
+    
+    try:
+        client_time = datetime.strptime(content['timestamp'],date_format)
+    except Exception as e:
+        raise APIError("Malformed JSON POST data", status_code=400)
+
+    last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
+
+    user_behind = client_time < last_update
+    
+    return jsonify(status=str(user_behind))
+
 
 
 @app.route("/friends", methods=['GET', 'POST'])
