@@ -12,7 +12,13 @@
         </h2>
         <span class="spacer"></span>
         <h2>
-          <span class="text-success">{{ num_free }}</span>
+          <span class=
+          {% if low_availability %}
+                "text-warning"
+                {% else %}
+                "text-success"
+                {% endif %}>
+            {{ num_free }}</span>
           <span class="muted">/ {{ num_machines }}</span>
         </h2>
         <span class="muted hidden" style="font-size: 1em;"> Available</span>

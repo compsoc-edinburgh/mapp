@@ -9,7 +9,13 @@
         </h2>
         <h2>
           <span class="spacer"></span>
-          <span class="text-success">{{ num_free }}</span>
+          <span class=
+          {% if low_availability %}
+                "text-warning"
+                {% else %}
+                "text-success"
+                {% endif %}>
+            {{ num_free }}</span>
           <span class="muted">/{{ num_machines }}</span>
         </h2>
       </div>
