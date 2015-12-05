@@ -61,7 +61,16 @@ def map_routine(which_room):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    this = map_routine("drillhall")
+    default = "drillhall"
+    which = request.args.get('site', '')
+    if which == "":
+        which = default
+
+    try:
+        this = map_routine(which)
+    except KeyError:
+        this = map_routine(default)
+        
     return render_template('index.html',
                            room=this['room'],
                            rows=this['rows'],
@@ -74,7 +83,16 @@ def index():
 @app.route('/refresh')
 @login_required
 def refresh():
-    this = map_routine("drillhall")
+    default = "drillhall"
+    which = request.args.get('site', '')
+    if which == "":
+        which = default
+
+    try:
+        this = map_routine(which)
+    except KeyError:
+        this = map_routine(default)
+        
     return render_template('refresh.xml',
                            room=this['room'],
                            rows=this['rows'],
