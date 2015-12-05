@@ -1,6 +1,9 @@
 $(function(){
     //Move function expressions to top because hoisting doesn't work for them
-    var clicked = false, clickY, clickX;
+    var clicked = false, clickY, clickX,
+        $zoomIn = $('#zoom-in'),
+        $zoomOut = $('#zoom-out'),
+        $zoomCenter = $('#center-map');
     var renderFriendList = function(data){
         var friends = data['friendList'],
             htmlOptions = '';
@@ -63,7 +66,17 @@ $(function(){
     centreMap();
 
 /*Listeners*/
-
+    
+    $zoomIn.on('click',function(){
+        mapZoom(1)
+    });
+    $zoomOut.on('click',function(){
+        mapZoom(-1)
+    });
+    $zoomCenter.on('click',function(){
+        mapZoom(0,'15px');
+        centreMap();
+    });
     $('#mapscroll').on({
         'mousemove': function(e) {
             clicked && updateScrollPos(e);
@@ -108,13 +121,6 @@ $(function(){
                 $("#new-friend").val('').attr('style','color: #fff !important'); //Reset the form!
                 renderFriendList(data);
             });
-    });
-
-    $('#friends-dropdown').on("hide.bs.dropdown",function(){
-        $(this).children('a[href="#"]').addClass('no-hover');
-    });
-    $('#friends-dropdown').on("hidden.bs.dropdown",function(){
-        $(this).children('a[href="#"]').removeClass('no-hover');
     });
 
 });
