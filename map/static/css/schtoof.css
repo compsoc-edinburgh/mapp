@@ -135,10 +135,23 @@ table.table>tbody>tr>td {
     display: inline-block;
     width: 1em;
 }
+.padder {
+    padding: 1em;
+}
 
 .container.prose {
     width: 80%;
     padding: 2em 0;
+}
+
+.prose p {
+    font-size: 1.2em;
+    padding: 0.5em 0;
+}
+
+code {
+    color: #0EA084;
+    background-color: #EDF7F5;
 }
 
 @media(max-width: 992px){
