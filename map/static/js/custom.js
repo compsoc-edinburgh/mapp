@@ -1,9 +1,18 @@
 $(function(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
+        regexName = /^([a-zA-Z]+( )*)+$/, //Fucked up regex, somebody pls fix it
         $zoomIn = $('#zoom-in'),
         $zoomOut = $('#zoom-out'),
-        $zoomCenter = $('#center-map');
+        $zoomCenter = $('#center-map'),
+        $mapScroll = $('#mapscroll'),
+        $friendName = $("#new-friend"),
+        $nameError = $('#name-error-alert'),
+        $selectError = $('#select-error-alert'),
+        $friendList = $('#friend-list'),
+        $addButton = $('#add-btn'),
+        $removeButton = $('#remove-btn');
+
     var renderFriendList = function(data){
         var friends = data['friendList'],
             htmlOptions = '';
@@ -13,11 +22,11 @@ $(function(){
             friends.forEach(function(value){
                 htmlOptions+='<option>'+value+'</option>'
             })
-            $('#friend-list').html(htmlOptions);
+            $friendList.html(htmlOptions);
             if (friends.length === 1)
-                $('#remove-btn').text("Remove Friend");
+                $removeButton.text("Remove Friend");
             else
-                $('#remove-btn').text("Remove Friend(s)");
+                $removeButton.text("Remove Friend(s)");
         }
         else {
             $('#del-form').addClass('hidden');
@@ -33,27 +42,27 @@ $(function(){
     };
 
     var smoothCentreMap = function () {
-        var myDiv = $("#mapscroll");
+        var myDiv = $mapScroll.get(0);
         var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
         var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
         myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
     };
     var mapZoom = function  (multiplier, start) {
-        if ($('#mapscroll').css('font-size') == "") {
-            $('#mapscroll').css({'font-size':'15px'});
+        if ($mapScroll.css('font-size') == "") {
+            $mapScroll.css({'font-size':'15px'});
         }
 
         if (typeof start === "undefined"){
-            start = $('#mapscroll').css('font-size');
+            start = $mapScroll.css('font-size');
         }
         
         var newsize = parseFloat(start) + (multiplier * 1) + "px";
-        $('#mapscroll').css({'font-size' : newsize});
+        $mapScroll.css({'font-size' : newsize});
     };
     var updateScrollPos = function(e) {
         $('html').css('cursor', 'move');
-        $("#mapscroll").scrollTop(iPosY - (e.pageY - clickY));
-        $("#mapscroll").scrollLeft(iPosX - (e.pageX - clickX));
+        $mapScroll.scrollTop(iPosY - (e.pageY - clickY));
+        $mapScroll.scrollLeft(iPosX - (e.pageX - clickX));
     };
 
 /* Execute, self */
@@ -77,7 +86,7 @@ $(function(){
         mapZoom(0,'15px');
         centreMap();
     });
-    $('#mapscroll').on({
+    $mapScroll.on({
         'mousemove': function(e) {
             clicked && updateScrollPos(e);
         },
@@ -99,35 +108,47 @@ $(function(){
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
         e.preventDefault();
-        $.ajax({
-            url: '/friends',
-            type: 'POST',
-            data: $(this).serialize()
-        })
-            .done(function(data) {
-                renderFriendList(data);
+        if ($friendList.find('option:selected')['length']>0){ //Check selections aren't empty
+            $selectError.addClass('hidden');
+             $.ajax({
+                url: '/friends',
+                type: 'POST',
+                data: $(this).serialize()
+            })
+             .done(function(data) {
+         // Not working           $removeButton.removeClass('active'); /
+                    renderFriendList(data);
             });
-        
+        }
+        else {
+            if ($selectError.hasClass('hidden'))
+                $selectError.removeClass('hidden')
+            $selectError.html("No Option Selected!")
+        }
     });
 
     $('#add-form').on('submit',function(e){
         e.preventDefault();
-        $.ajax({
-            url: '/friends',
-            type: 'POST',
-            data: $(this).serialize()
-        })
-            .done(function(data) {
-                $("#new-friend").val(''); //Reset the form!
-                renderFriendList(data);
-            });
+        if ($friendName.val().match(regexName) != null){
+            $nameError.addClass('hidden');
+            $.ajax({
+                url: '/friends',
+                type: 'POST',
+                data: $(this).serialize()
+            })
+                .done(function(data) {
+                    $friendName.val(''); //Reset the form!
+                    renderFriendList(data);
+                });
+        }
+        else {
+            if ($nameError.hasClass('hidden'))
+                $nameError.removeClass('hidden');
+            $nameError.html('Invalid Name!');
+        }
+  // Not working      $addButton.removeClass('active'); 
     });
 
 });
 
 
-
-
-//var renderRoom = function(data){
-//    
-//}
