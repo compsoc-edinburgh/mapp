@@ -203,12 +203,18 @@ code {
     width: 99%;
 }
 
-@media(max-width: 720px){
+@media(max-width: 767px){
     .shrinklittle {
         font-size: 0.6em;
     }
 
     .spacer {
         width: 0.5em;
+    }
+    .mobile-dropdown h4,h5{
+        color: #fff;
+    }
+    .mobile-dropdown .btn {
+        background-color: rgba(128, 150, 169, 0.53);
     }
 }
