@@ -53,7 +53,7 @@ class Snoop:
                 pass
 
         print_usr = "None"
-        if ret[0] is not "":
+        if ret[0] != "" and len(ret[0] > 15):
             print_usr = ret[0][:15] + "..."
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
