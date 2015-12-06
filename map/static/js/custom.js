@@ -65,6 +65,22 @@ $(function(){
         $mapScroll.scrollLeft(iPosX - (e.pageX - clickX));
     };
 
+    var checkRefreshAvailable = function(){
+        var timeNow = new Date();
+        $.ajax({
+            url: '/update_available',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                timestamp : timeNow.toJSON().replace('Z','')
+            }),
+            dataType:'json'
+        })
+        .done(function(data) {
+            console.log(data);
+        });       
+    };
+
 /* Execute, self */
     $.ajax({
         url: '/friends'
@@ -74,6 +90,7 @@ $(function(){
     
     centreMap();
 
+    window.setInterval(checkRefreshAvailable,300000);
 /*Listeners*/
     
     $zoomIn.on('click',function(){
