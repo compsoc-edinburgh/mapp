@@ -76,7 +76,7 @@ class Snoop:
             "hostname"     : str(hostname),
             "user"         : str(username),
             "active"       : str(active),
-            "timestamp"    : str(datetime.utcnow().isoformat()),
+            "timestamp"    : str(datetime.now().isoformat()),
             "callback-key" : str(config.CALLBACK_KEY)
         }
         
@@ -123,9 +123,25 @@ if __name__ == "__main__":
         except Exception as e:
             sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             Snoop.checkin(serv)
-    
+
+    def heur_sleep():
+        now = datetime.now()
+        if now.hour >= 23 or now.hour < 5:
+            return 3600 # 1 hour delay really late
+        if now.hour >= 19 or now.hour < 9:
+            return 1800 # 30 minute delay overnight
+        if now.minute >= 50 or now.minute <= 10:
+            return 120 # 2 minute refresh on the hour during the day
+        return 900 # default 15 minute
+        
+        
+            
     while True:
         p = Pool(30)
         p.map(mapf,servers)
-        sys.stdout.write("DONE iteration at %s\n" % str(datetime.utcnow().isoformat()))
-        time.sleep(900)
+        delay = heur_sleep()
+        sys.stdout.write("DONE iteration at %s going again in %ss\n" % (
+            str(datetime.now().isoformat()),
+            str(delay)
+        ))
+        time.sleep(delay)
