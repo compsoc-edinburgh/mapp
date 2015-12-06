@@ -178,6 +178,7 @@ $(function(){
     $('#friends-dropdown').on('hide.bs.dropdown',function(){
         $nameError.addClass('hidden');
         $selectError.addClass('hidden');
+        $('.dropdown-toggle').blur(); // Removes the focus from the Manage friends after close
     });
 
     /* Listeners to add a Nice slide transition to dropdowns */
