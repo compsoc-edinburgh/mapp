@@ -102,10 +102,11 @@ $(function(){
     centreMap();
 
    window.setInterval(checkRefreshAvailable,30000);
-/*Listeners*/
+    /*Listeners*/
     
     $zoomIn.on('click',function(){
         mapZoom(1)
+
     });
     $zoomOut.on('click',function(){
         mapZoom(-1)
@@ -113,6 +114,12 @@ $(function(){
     $zoomCenter.on('click',function(){
         mapZoom(0,'15px');
         centreMap();
+    });
+    $addButton.on('click',function(){
+        $(this).blur();
+    });
+    $removeButton.on('click',function(){
+        $(this).blur();
     });
     $mapScroll.on({
         'mousemove': function(e) {
