@@ -172,7 +172,7 @@ def demo():
                 {},{},{}
             ]
         ],
-        reserved=set(),
+        reserved=set(["marvin","vogon","tonyx","jynnan"]),
         num_machines=20,
         num_free=12,
         low_availability=False,
@@ -273,10 +273,8 @@ def rooms_dict():
     out = dict({})
     rooms = list(flask_redis.smembers("forresthill-rooms"))
     rooms.sort()
-    
     for room in rooms:
         out[room] = flask_redis.hget(room, "name")
-
     return out
         
 @app.route("/rooms")
