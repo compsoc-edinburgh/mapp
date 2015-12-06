@@ -24,7 +24,7 @@ class Snoop:
         self.client.connect(username=username,
                             password=password,
                             hostname=hostname,
-                            port=22, timeout=30)
+                            port=22, timeout=60)
         
 
 
@@ -87,7 +87,7 @@ class Snoop:
         headers={'Content-Type':   'application/json'}
 
         try:
-            r = requests.post(url, data=payload, headers=headers, verify=False)
+            r = requests.post(url, data=payload, headers=headers, verify=False, timeout=8)
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
             else:
@@ -164,13 +164,20 @@ if __name__ == "__main__":
         authcheck = Snoop(username, password, servers[0])
         del authcheck
     except Exception as e:
-        sys.stdout.write("AUTH FAIL! Exiting... (%s)\n" % str(e))
-        sys.exit()
+        sys.stdout.write("AUTH FAIL! Reason: (%s)\n" % str(e))
+        #sys.exit()
 
-    sys.stdout.write("INIT & AUTH OK, waiting...\n")
+    sys.stdout.write("AUTH OK, starting initial run...\n")
     
+    p = Pool(30)
+    p.map(mapf, servers)
+    del p
+
+    sys.stdout.write("INIT OK, waiting...\n")
+
     while True:
         if heuristic_run():
             p = Pool(30)
             p.map(mapf,servers)
+            del p
             sys.stdout.write("DONE iteration at %s\n" % str(datetime.now().isoformat()))
