@@ -235,7 +235,7 @@ def update():
 def update_available():
     content = request.json
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    
+    print content['timestamp']
     try:
         client_time = datetime.strptime(content['timestamp'],date_format)
     except Exception as e:
