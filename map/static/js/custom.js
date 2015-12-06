@@ -149,6 +149,11 @@ $(function(){
   // Not working      $addButton.removeClass('active'); 
     });
 
+    $('#friends-dropdown').on('hide.bs.dropdown',function(){
+        $nameError.addClass('hidden');
+        $selectError.addClass('hidden');
+    })
+
 });
 
 
