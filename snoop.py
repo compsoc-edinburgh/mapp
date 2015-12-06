@@ -138,14 +138,17 @@ if __name__ == "__main__":
     def heuristic_run():
         now = datetime.now()
         go = False
-        if now.hour >= 23 or now.hour < 5:
+        if now.hour > 22 or now.hour < 6:
             go = now.minute      == 0        # hourly
             
-        elif now.hour >= 19 or now.hour < 9:
+        elif now.hour > 18 or now.hour < 9:
             go = now.minute % 30 == 0        # half-hourly
             
         elif now.minute >= 50 or now.minute <= 10:
             go = now.minute % 5  == 0        # 5 minute
+
+        else:
+            go = now.minute % 15 == 0        # 15 minute default
             
         go = go and now.second == 0          # Only fire on the 1st second
 
