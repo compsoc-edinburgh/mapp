@@ -134,23 +134,40 @@ if __name__ == "__main__":
             sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             Snoop.checkin(serv)
 
-    def heur_sleep():
+    # Run at different frequencies throughought the day
+    def heuristic_run():
         now = datetime.now()
+        go = False
         if now.hour >= 23 or now.hour < 5:
-            return 3600 # 1 hour delay really late
-        if now.hour >= 19 or now.hour < 9:
-            return 1800 # 30 minute delay overnight
-        if now.minute >= 50 or now.minute <= 10:
-            return 120 # 2 minute refresh on the hour during the day
-        return 900 # default 15 minute
+            go = now.minute      == 0        # hourly
+            
+        elif now.hour >= 19 or now.hour < 9:
+            go = now.minute % 30 == 0        # half-hourly
+            
+        elif now.minute >= 50 or now.minute <= 10:
+            go = now.minute % 5  == 0        # 5 minute
+            
+        go = go and now.second == 0          # Only fire on the 1st second
 
+        if go:
+            time.sleep(1)
+            return True
+        else:
+            return False
+
+    sys.stdout.write("CHECKING authentication...\n")
+
+    try:
+        authcheck = Snoop(username, password, servers[0])
+        del authcheck
+    except Exception as e:
+        sys.stdout.write("AUTH FAIL! Exiting... (%s)\n" % str(e))
+        sys.exit()
+
+    sys.stdout.write("INIT & AUTH OK, waiting...\n")
     
     while True:
-        p = Pool(20)
-        p.map(mapf,servers)
-        delay = heur_sleep()
-        sys.stdout.write("DONE iteration at %s going again in %ss\n" % (
-            str(datetime.now().isoformat()),
-            str(delay)
-        ))
-        time.sleep(delay)
+        if heuristic_run():
+            p = Pool(30)
+            p.map(mapf,servers)
+            sys.stdout.write("DONE iteration at %s\n" % str(datetime.now().isoformat()))
