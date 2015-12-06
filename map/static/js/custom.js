@@ -1,3 +1,11 @@
+var centreMap = function () {
+    var myDiv = $("#mapscroll");
+    var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
+    var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
+    myDiv.scrollTop(scrolltoh);
+    myDiv.scrollLeft(scrolltow);
+};
+
 var checkRefreshAvailable = function(){
         var timeNow = new Date();
         $.ajax({
@@ -10,8 +18,11 @@ var checkRefreshAvailable = function(){
             dataType:'json'
         })
         .done(function(data) {
-            if(data['status']!='False'){
-                console.log('Needs to be refreshed here!');
+            if(data['status'] != 'False') {
+                $.ajax({ url: '/refresh' }).done( function(data){
+                    $('#ajax-map-replace').replaceWith(data);
+                    centreMap();
+                });
             }
         });       
 };
@@ -49,13 +60,6 @@ $(function(){
             $('#del-form').addClass('hidden');
             $('#no-friends').removeClass('hidden');            
         }
-     };
-    var centreMap = function () {
-        var myDiv = $("#mapscroll");
-        var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
-        var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
-        myDiv.scrollTop(scrolltoh);
-        myDiv.scrollLeft(scrolltow);
     };
 
     var smoothCentreMap = function () {
@@ -136,7 +140,6 @@ $(function(){
                 data: $(this).serialize()
             })
              .done(function(data) {
-         // Not working           $removeButton.removeClass('active'); /
                     renderFriendList(data);
             });
         }
@@ -166,7 +169,6 @@ $(function(){
                 $nameError.removeClass('hidden');
             $nameError.html('Invalid Name!');
         }
-  // Not working      $addButton.removeClass('active'); 
     });
 
     $('#friends-dropdown').on('hide.bs.dropdown',function(){
