@@ -24,7 +24,7 @@ class Snoop:
         self.client.connect(username=username,
                             password=password,
                             hostname=hostname,
-                            port=22, timeout=15)
+                            port=22, timeout=30)
         
 
 
@@ -34,34 +34,36 @@ class Snoop:
         users = stdout.readlines()
         
         data_dict = {
-            "user":"",
-            "active":""
+            "user"   : "",
+            "active" : ""
         }
-        ret = []
         
         for user in users:
             try:
                 user = re.split("\s+", user)
-                usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
-                out = re.search("Name: (.*)", usr_o.readline())
-                self.crypto.update(str(out.group(1)) + str(config.MAPP_SECRET))
-                ret = (self.crypto.hexdigest(), user[4])
+                
                 if re.match("tty\d+", user[1]) is not None:
-                    data_dict['user']      = str(ret[0])
-                    data_dict['active']    = str(ret[1])
+                    usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
+                    out = re.search("Name: (.*)", usr_o.readline())
+                    
+                    self.crypto.update(str(out.group(1)) + str(config.MAPP_SECRET))
+
+                    data_dict['user']      = self.crypto.hexdigest()
+                    data_dict['active']    = user[3]
+            
             except AttributeError, IndexError:
                 pass
 
         print_usr = "None"
         try:
-            if ret[0] != "" and len(ret[0] > 15):
-                print_usr = ret[0][:15] + "..."
+            if data_dict['user'] != "":
+                print_usr = data_dict['user'][:15] + "..."
         except Exception:
             pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
-        return ret
+        return data_dict
 
     
     # $ wall the remote host with message:str
@@ -93,7 +95,15 @@ class Snoop:
         except Exception as e:
             sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
         
-        
+
+def mapf(serv):
+    try:
+        s = Snoop(username, password, serv)
+        userl = s.usercheck()
+    except Exception as e:
+        sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
+        Snoop.checkin(serv)
+
 if __name__ == "__main__":
 
     servers = ['localhost']
@@ -133,11 +143,10 @@ if __name__ == "__main__":
         if now.minute >= 50 or now.minute <= 10:
             return 120 # 2 minute refresh on the hour during the day
         return 900 # default 15 minute
-        
-        
-            
+
+    
     while True:
-        p = Pool(30)
+        p = Pool(20)
         p.map(mapf,servers)
         delay = heur_sleep()
         sys.stdout.write("DONE iteration at %s going again in %ss\n" % (
