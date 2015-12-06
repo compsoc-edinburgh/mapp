@@ -9,15 +9,11 @@ import braintree
 app = Flask(__name__)
 app.config.from_object('config')
 
-flask_redis = FlaskRedis(app)
+flask_redis = FlaskRedis(app, 'REDIS')
+
 ldap = LDAPTools(app)
 lm = LoginManager(app)
 lm.login_view = "login"
-
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-                                  merchant_id=app.config['BT_MERCHANT_ID'],
-                                  public_key=app.config['BT_PUBKEY'],
-                                  private_key=app.config['BT_PRIVKEY'])
 
 @lm.user_loader
 def get_user(uid):
