@@ -1,72 +1,104 @@
 {% block content %}
-<div class="subbar">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 shrinklittle">
-        <h2>
-          <span id="maintitle" class="">{{ room.name }}</span>
-          <!--i class="fa fa-caret-down" style="font-size: 0.5em; vertical-align: middle;"></i-->
-        </h2>
-        <h2>
+<div id="ajax-map-replace">
+  <div class="subbar">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 shrinklittle">
+          <h2>
+            <span id="maintitle" class="">{{ room.name }}</span>
+          </h2>
           <span class="spacer"></span>
-          <span class=
-          {% if low_availability %}
-                "text-warning"
-                {% else %}
-                "text-success"
-                {% endif %}>
-            {{ num_free }}</span>
-          <span class="muted">/{{ num_machines }}</span>
-        </h2>
+          <h2>
+            <span class=
+              {% if low_availability %}
+              "text-warning"
+              {% else %}
+              "text-success"
+              {% endif %}>
+              {{ num_free }}</span>
+              <span class="muted">/ {{ num_machines }}</span>
+            </h2>
+            <span class="muted hidden" style="font-size: 1em;"> Available</span>
+            {% if last_update %}
+            <span class="pull-right muted small hidden-xs"
+                  style="line-height: 32px; vertical-align: middle;"
+                  title="Last update performed at {{ last_update }}">
+            <i class="fa fa-clock-o"></i> {{ last_update }}</span>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
-  <div class="tabwrap">
-    <table class="table">
-      {% for row in rows %}
-      <tr>
-        {% for cell in row %}
-        <td>
-          {% if cell.hostname %}
-          {% if cell.user or cell.hostname in reserved %}
-          
-          {% if current_user.has_friend(cell.user) %}
-          
-          <p class="text-info blip">
-            <i class="fa fa-star-o"></i>
-          </p>
-          <p>{{ cell.hostname }}</p>
-          <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}<p>
-            
-            {% else %}{# User doesn't have this person as friend #}
-            
-          <p class="blip muted">
-            <i class="fa fa-television"></i>
-          </p>
-          <p class="muted">{{ cell.hostname }}</p>
-          
-          {% endif %}
-          {% else %}{# These are the free machines #}
-          
-          <p class="text-success blip">
-            <i class="fa fa-television"></i>
-            <!--span class="fa-stack">
-                <i class="fa fa-television fa-stack-2x"></i>
-                <i class="fa fa-check-square fa-stack-2x"></i>
-            </span-->
-          </p>
-          <p>{{ cell.hostname }}</p>
-          
-          {% endif %}{# cell.user or cell.hostname in reserved #}
-          {% endif %}{# if cell.hostname #}
-        </td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
+    <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
+      <div class="tabwrap">
+        <table class="table">
+          {% for row in rows %}
+          <tr>
+            {% for cell in row %}
+            <td>
+              {% if cell.hostname %}
+              {% if cell.user %}
+              
+              {% if not current_user.is_anonymous and current_user.has_friend(cell.user) %}
+              
+              <p class="text-info blip">
+                {% if cell.hostname == 'ceilingcat' %}
+                <i class="fa fa-paw"></i>
+                {% else %}
+                <i class="fa fa-hand-peace-o"></i>
+                {% endif %}
+              </p>
+              <p>{{ cell.hostname }}</p>
+              <p class="userat-name text-info">{{ current_user.get_friend(cell.user) }}</p>
+              
+              {% elif cell.friend %}{# Insecure way to pass a friend over, not reccomended (demo) #}
+              
+              <p class="text-info blip">
+                <i class="fa fa-hand-peace-o"></i>
+              </p>
+              <p>{{ cell.hostname }}</p>
+              <p class="userat-name text-info">{{ cell.friend }}</p>
+
+              {% else %}{# User doesn't have this person as friend #}
+              
+              <p class="blip muted">
+                <i class="fa fa-television"></i>
+              </p>
+              <p class="muted">{{ cell.hostname }}</p>
+              
+              {% endif %}
+              {% else %}{# These are the free machines #}
+
+
+              {% if cell.hostname in reserved %}{# Display reserved machines as available but amber #}
+
+              <div title="This machine is available, but may be reserved or in a booked room">
+                <p class="text-warning blip">
+                  <i class="fa fa-television"></i>
+                </p>
+                <p>{{ cell.hostname }}</p>
+              </div>
+              
+              {% else %}
+              
+              <p class="text-success blip">
+                <i class="fa fa-television"></i>
+              </p>
+              <p>{{ cell.hostname }}</p>
+
+              {% endif %}{# end reserved check #}
+              
+              {% endif %}{# cell.user or cell.hostname in reserved #}
+              {% endif %}{# if cell.hostname #}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    
   </div>
-</div>
-{% endblock %}
+  {% endblock %}
+  
