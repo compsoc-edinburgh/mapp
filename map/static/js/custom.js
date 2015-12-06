@@ -1,7 +1,7 @@
 $(function(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
-        regexName = /^([a-zA-Z]+( )*)+$/, //Fucked up regex, somebody pls fix it
+        regexName = /^([a-zA-Z]+\ [a-zA-Z]+)$/,
         $zoomIn = $('#zoom-in'),
         $zoomOut = $('#zoom-out'),
         $zoomCenter = $('#center-map'),
@@ -133,14 +133,14 @@ $(function(){
                 data: $(this).serialize()
             })
              .done(function(data) {
-         // Not working           $removeButton.removeClass('active'); /
+         // Not working           $removeButton.removeClass('active'); (Active isn't a css class)
                     renderFriendList(data);
             });
         }
         else {
             if ($selectError.hasClass('hidden'))
                 $selectError.removeClass('hidden')
-            $selectError.html("No Option Selected!")
+            $selectError.html("<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> No friends selected")
         }
     });
 
@@ -161,9 +161,9 @@ $(function(){
         else {
             if ($nameError.hasClass('hidden'))
                 $nameError.removeClass('hidden');
-            $nameError.html('Invalid Name!');
+            $nameError.html("<i class=\"fa fa-warning\"></i><span class=\"spacer\"></span> Invalid name - Expect 'Firstname Second'");
         }
-  // Not working      $addButton.removeClass('active'); 
+  // Not working      $addButton.removeClass('active'); (It's a state not class, :active)
     });
 
     $('#friends-dropdown').on('hide.bs.dropdown',function(){
