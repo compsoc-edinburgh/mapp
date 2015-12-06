@@ -178,7 +178,17 @@ $(function(){
     $('#friends-dropdown').on('hide.bs.dropdown',function(){
         $nameError.addClass('hidden');
         $selectError.addClass('hidden');
-    })
+    });
+
+    /* Listeners to add a Nice slide transition to dropdowns */
+
+    $('.dropdown').on('show.bs.dropdown', function(e){
+        $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("slow");
+    });
+
+   $('.dropdown').on('hide.bs.dropdown', function(e){
+        $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("slow");
+    });
 
 });
 
