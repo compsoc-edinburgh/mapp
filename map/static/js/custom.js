@@ -1,7 +1,24 @@
+var checkRefreshAvailable = function(){
+        var timeNow = new Date();
+        $.ajax({
+            url: '/update_available',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                timestamp : timeNow.toJSON().replace('Z','')
+            }),
+            dataType:'json'
+        })
+        .done(function(data) {
+            if(data['status']!='False'){
+                console.log('Needs to be refreshed here!');
+            }
+        });       
+};
 $(function(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
-        regexName = /^([a-zA-Z]+\ [a-zA-Z]+)$/,
+        regexName = /^([a-zA-Z]+( )*)+$/, //Fucked up regex, somebody pls fix it
         $zoomIn = $('#zoom-in'),
         $zoomOut = $('#zoom-out'),
         $zoomCenter = $('#center-map'),
@@ -65,21 +82,7 @@ $(function(){
         $mapScroll.scrollLeft(iPosX - (e.pageX - clickX));
     };
 
-    var checkRefreshAvailable = function(){
-        var timeNow = new Date();
-        $.ajax({
-            url: '/update_available',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                timestamp : timeNow.toJSON().replace('Z','')
-            }),
-            dataType:'json'
-        })
-        .done(function(data) {
-            console.log(data);
-        });       
-    };
+
 
 /* Execute, self */
     $.ajax({
@@ -90,7 +93,7 @@ $(function(){
     
     centreMap();
 
-    window.setInterval(checkRefreshAvailable,300000);
+   window.setInterval(checkRefreshAvailable,30000);
 /*Listeners*/
     
     $zoomIn.on('click',function(){
@@ -133,14 +136,14 @@ $(function(){
                 data: $(this).serialize()
             })
              .done(function(data) {
-         // Not working           $removeButton.removeClass('active'); (Active isn't a css class)
+         // Not working           $removeButton.removeClass('active'); /
                     renderFriendList(data);
             });
         }
         else {
             if ($selectError.hasClass('hidden'))
                 $selectError.removeClass('hidden')
-            $selectError.html("<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> No friends selected")
+            $selectError.html("No Option Selected!")
         }
     });
 
@@ -161,9 +164,9 @@ $(function(){
         else {
             if ($nameError.hasClass('hidden'))
                 $nameError.removeClass('hidden');
-            $nameError.html("<i class=\"fa fa-warning\"></i><span class=\"spacer\"></span> Invalid name - Expect 'Firstname Second'");
+            $nameError.html('Invalid Name!');
         }
-  // Not working      $addButton.removeClass('active'); (It's a state not class, :active)
+  // Not working      $addButton.removeClass('active'); 
     });
 
     $('#friends-dropdown').on('hide.bs.dropdown',function(){
