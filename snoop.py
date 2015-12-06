@@ -144,8 +144,8 @@ if __name__ == "__main__":
         elif now.hour > 18 or now.hour < 9:
             go = now.minute % 30 == 0        # half-hourly
             
-        elif now.minute >= 50 or now.minute <= 10:
-            go = now.minute % 5  == 0        # 5 minute
+        elif (now.minute >= 50 or now.minute <= 10) and now.isoweekday() <= 5:
+            go = now.minute % 5  == 0        # 5 minute during week on the hour
 
         else:
             go = now.minute % 15 == 0        # 15 minute default
