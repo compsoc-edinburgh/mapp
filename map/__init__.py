@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 flask_redis = FlaskRedis(app, 'REDIS')
+
 ldap = LDAPTools(app)
 lm = LoginManager(app)
 lm.login_view = "login"
