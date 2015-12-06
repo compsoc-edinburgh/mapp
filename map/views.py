@@ -1,9 +1,32 @@
 from map import app, flask_redis, ldap
 from datetime import datetime
 import hashlib
-import json
+import json, re
 from flask import render_template, request, jsonify, redirect
 from flask.ext.login import login_user, logout_user, login_required, current_user
+
+
+class APIError(Exception):
+    status_code = 401
+    
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+            
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+
+@app.errorhandler(APIError)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 
 def map_routine(which_room):
@@ -176,29 +199,6 @@ def demo():
         num_free=12,
         low_availability=False,
         last_update="1980-01-01 13:37")
-
-
-class APIError(Exception):
-    status_code = 401
-    
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
-            
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
-
-
-@app.errorhandler(APIError)
-def handle_invalid_usage(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
     
 
 @app.route('/update', methods=['POST'])
@@ -216,7 +216,7 @@ def update():
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
-        print "BAD KEY*******"
+        print "******* CLIENT ATTEMPTED TO USE BAD KEY *******"
         raise APIError("Given key is not an authorised API key")
 
     pipe = flask_redis.pipeline()
@@ -259,11 +259,13 @@ def friends():
            flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('newfriend')
+           if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
+               raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
            flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
 
     friends = flask_redis.smembers(current_user.get_id() + "-friends")
     friends = list(friends)
-    friends.sort()
+    friends = sorted(friends, key=lambda s: s.lower())
 
     return jsonify(friendList=friends) #Set up for ajax responses
 
