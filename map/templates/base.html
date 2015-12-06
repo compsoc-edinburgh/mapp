@@ -41,25 +41,28 @@
                   <div id = "del-form-container">
                     <form method="POST" class="form-horizontal" id="del-form">
                       <input type="hidden" name="type" value="del">
-                      <p id ="select-error-alert" class="hidden"></p>
+                      <p id="select-error-alert" class="text-danger hidden" style="opacity: 0.8;"></p>
                       <div class="form-group">
-                        <select multiple class="form-control" name="delfriends" id ="friend-list">
+                        <select multiple class="form-control" name="delfriends" id="friend-list">
                         </select>
                       </div>
                       <div class="form-group">
-                        <button type="submit" class="btn btn-block btn-primary" id="remove-btn">Remove Friend(s)</button>
+                        <button type="submit" class="btn btn-block btn-primary" id="remove-btn">
+                          Remove Friend(s)</button>
                       </div>
                     </form>
                     <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
                   </div>
                   <form method="POST" class="form-horizontal" id="add-form">
                     <input type="hidden" name="type" value="add">
-                    <p id ="name-error-alert" class="hidden"></p>
+                    <p id="name-error-alert" class="hidden text-danger" style="opacity: 0.8;"></p>
                     <div class="form-group">
-                      <input type="text" name="newfriend" id ="new-friend"class="form-control" placeholder="New Friend">
+                      <input type="text" name="newfriend"
+                             id="new-friend" class="form-control" placeholder="New Friend">
                     </div>
                     <div class="form-group">
-                      <button type="submit" class="btn btn-primary btn-block" id ="add-btn">Add Friend</button>
+                      <button type="submit" class="btn btn-primary btn-block"
+                              id="add-btn">Add Friend</button>
                     </div>
                   </form>
                 </div>
