@@ -1,31 +1,4 @@
-var centreMap = function () {
-    var myDiv = $("#mapscroll");
-    var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
-    var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
-    myDiv.scrollTop(scrolltoh);
-    myDiv.scrollLeft(scrolltow);
-};
 
-var checkRefreshAvailable = function(){
-        var timeNow = new Date();
-        $.ajax({
-            url: '/update_available',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                timestamp : timeNow.toJSON().replace('Z','')
-            }),
-            dataType:'json'
-        })
-        .done(function(data) {
-            if(data['status'] != 'False') {
-                $.ajax({ url: '/refresh' }).done( function(data){
-                    $('#ajax-map-replace').replaceWith(data);
-                    centreMap();
-                });
-            }
-        });       
-};
 $(function(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
@@ -61,6 +34,13 @@ $(function(){
             $('#no-friends').removeClass('hidden');            
         }
     };
+     var centreMap = function () {
+        var myDiv = $("#mapscroll");
+        var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
+        var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
+        myDiv.scrollTop(scrolltoh);
+        myDiv.scrollLeft(scrolltow);
+    };
 
     var smoothCentreMap = function () {
         var myDiv = $mapScroll.get(0);
@@ -85,8 +65,32 @@ $(function(){
         $mapScroll.scrollTop(iPosY - (e.pageY - clickY));
         $mapScroll.scrollLeft(iPosX - (e.pageX - clickX));
     };
-
-
+     var mapUpdate = function(){
+         $.ajax({ 
+            url: '/refresh' 
+        })
+         .done(function(data){
+             $('#ajax-map-replace').replaceWith(data);   
+              centreMap();
+        });
+    };
+    var checkRefreshAvailable = function(){
+            var timeNow = new Date();
+            $.ajax({
+                url: '/update_available',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    timestamp : timeNow.toJSON().replace('Z','')
+                }),
+                dataType:'json'
+            })
+            .done(function(data) {
+                if(data['status'] != 'False') {
+                   mapUpdate();
+                }
+            });       
+    };
 
 /* Execute, self */
     $.ajax({
