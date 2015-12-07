@@ -87,7 +87,7 @@ class Snoop:
         headers={'Content-Type':   'application/json'}
 
         try:
-            r = requests.post(url, data=payload, headers=headers, verify=False, timeout=8)
+            r = requests.post(url, data=payload, headers=headers, verify=False, timeout=20)
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callcack, got %d\n" % r.status_code)
             else:
@@ -131,7 +131,7 @@ if __name__ == "__main__":
             s = Snoop(username, password, serv)
             userl = s.usercheck()
         except Exception as e:
-            sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
+            sys.stdout.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             Snoop.checkin(serv)
 
     # Run at different frequencies throughought the day
@@ -180,4 +180,4 @@ if __name__ == "__main__":
             p = Pool(30)
             p.map(mapf,servers)
             del p
-            sys.stdout.write("DONE iteration at %s\n" % str(datetime.now().isoformat()))
+            sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
