@@ -1,12 +1,10 @@
 
-$(function(){
+$().ready(readyFunction());
+
+function readyFunction(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
-        regexName = /^([a-zA-Z]+( )*)+$/, //Fucked up regex, somebody pls fix it
-        $zoomIn = $('#zoom-in'),
-        $zoomOut = $('#zoom-out'),
-        $zoomCenter = $('#center-map'),
-        $mapScroll = $('#mapscroll'),
+        regexName = /^([a-zA-Z]+\ [A-Za-z]+)$/,
         $friendName = $("#new-friend"),
         $nameError = $('#name-error-alert'),
         $selectError = $('#select-error-alert'),
@@ -27,14 +25,14 @@ $(function(){
             if (friends.length === 1)
                 $removeButton.text("Remove Friend");
             else
-                $removeButton.text("Remove Friend(s)");
+                $removeButton.text("Remove Friends");
         }
         else {
             $('#del-form').addClass('hidden');
             $('#no-friends').removeClass('hidden');            
         }
     };
-     var centreMap = function () {
+    var centreMap = function () {
         var myDiv = $("#mapscroll");
         var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
         var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
@@ -43,77 +41,83 @@ $(function(){
     };
 
     var smoothCentreMap = function () {
-        var myDiv = $mapScroll.get(0);
+        var myDiv = $("#mapscroll");
         var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
         var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
         myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
     };
     var mapZoom = function  (multiplier, start) {
-        if ($mapScroll.css('font-size') == "") {
-            $mapScroll.css({'font-size':'15px'});
+        myDiv = $("#mapscroll");
+        if (myDiv.css('font-size') == "") {
+            myDiv.css({'font-size':'15px'});
         }
 
         if (typeof start === "undefined"){
-            start = $mapScroll.css('font-size');
+            start = myDiv.css('font-size');
         }
         
         var newsize = parseFloat(start) + (multiplier * 1) + "px";
-        $mapScroll.css({'font-size' : newsize});
+        myDiv.css({'font-size' : newsize});
     };
     var updateScrollPos = function(e) {
         $('html').css('cursor', 'move');
-        $mapScroll.scrollTop(iPosY - (e.pageY - clickY));
-        $mapScroll.scrollLeft(iPosX - (e.pageX - clickX));
+        var myDiv = $("#mapscroll");
+        myDiv.scrollTop(iPosY - (e.pageY - clickY));
+        myDiv.scrollLeft(iPosX - (e.pageX - clickX));
     };
-     var mapUpdate = function(){
-         $.ajax({ 
+    var mapUpdate = function(){
+        $.ajax({ 
             url: '/refresh' 
         })
-         .done(function(data){
-             $('#ajax-map-replace').replaceWith(data);   
-              centreMap();
-        });
+            .done(function(data){
+                $('#ajax-map-replace').replaceWith(data);   
+                centreMap();
+                readyFunction();
+            });
     };
     var checkRefreshAvailable = function(){
-            var timeNow = new Date();
-            $.ajax({
-                url: '/update_available',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    timestamp : timeNow.toJSON().replace('Z','')
-                }),
-                dataType:'json'
-            })
+        var timeNow = new Date();
+        $.ajax({
+            url: '/update_available',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                timestamp : timeNow.toJSON().replace('Z','')
+            }),
+            dataType:'json'
+        })
             .done(function(data) {
                 if(data['status'] != 'False') {
-                   mapUpdate();
+                    mapUpdate();
                 }
             });       
     };
 
-/* Execute, self */
+    /* Execute, self */
     $.ajax({
         url: '/friends'
     }).done(function(data) {
-            renderFriendList(data);
+        renderFriendList(data);
     });
     
     centreMap();
 
-   window.setInterval(checkRefreshAvailable,300000);
+    window.setInterval(checkRefreshAvailable,300000);
     /*Listeners*/
     
-    $zoomIn.on('click',function(){
+    $('#zoom-in').on('click',function(){
         mapZoom(1)
 
     });
-    $zoomOut.on('click',function(){
+    $('#zoom-out').on('click',function(){
         mapZoom(-1)
     });
-    $zoomCenter.on('click',function(){
+    $('#center-map').on('click',function(){
         mapZoom(0,'15px');
         centreMap();
+    });
+    $('#manual-refresh').on('click',function(){
+        checkRefreshAvailable();
     });
     $addButton.on('click',function(){
         $(this).blur();
@@ -121,7 +125,7 @@ $(function(){
     $removeButton.on('click',function(){
         $(this).blur();
     });
-    $mapScroll.on({
+    $("#mapscroll").on({
         'mousemove': function(e) {
             clicked && updateScrollPos(e);
         },
@@ -145,19 +149,19 @@ $(function(){
         e.preventDefault();
         if ($friendList.find('option:selected')['length']>0){ //Check selections aren't empty
             $selectError.addClass('hidden');
-             $.ajax({
+            $.ajax({
                 url: '/friends',
                 type: 'POST',
                 data: $(this).serialize()
             })
-             .done(function(data) {
+                .done(function(data) {
                     renderFriendList(data);
-            });
+                });
         }
         else {
             if ($selectError.hasClass('hidden'))
                 $selectError.removeClass('hidden')
-            $selectError.html("No Option Selected!")
+            $selectError.html("<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> No friends selected")
         }
     });
 
@@ -178,7 +182,7 @@ $(function(){
         else {
             if ($nameError.hasClass('hidden'))
                 $nameError.removeClass('hidden');
-            $nameError.html('Invalid Name!');
+            $nameError.html('<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> Invalid name, expect First Second');
         }
     });
 
@@ -189,15 +193,15 @@ $(function(){
     });
 
     /* Listeners to add a Nice slide transition to dropdowns */
-
+    
     $('.dropdown').on('show.bs.dropdown', function(e){
-        $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("slow");
+        $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("fast");
     });
-
-   $('.dropdown').on('hide.bs.dropdown', function(e){
-        $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("slow");
+    
+    $('.dropdown').on('hide.bs.dropdown', function(e){
+        $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("fast");
     });
-
-});
+    
+};
 
 
