@@ -101,7 +101,7 @@ $(function(){
     
     centreMap();
 
-   window.setInterval(checkRefreshAvailable,30000);
+   window.setInterval(checkRefreshAvailable,300000);
     /*Listeners*/
     
     $zoomIn.on('click',function(){
