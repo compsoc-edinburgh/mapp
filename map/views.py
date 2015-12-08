@@ -64,7 +64,7 @@ def map_routine(which_room):
 
     reserved = flask_redis.smembers('reserved-machines')
 
-    low_availability = num_free <= 0.2 * num_machines
+    low_availability = num_free <= 0.3 * num_machines
 
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
