@@ -84,7 +84,7 @@ function readyFunction(){
         window.setTimeout(function(){
             $('#manual-refresh').prop('disabled',false);
             $refreshAlert.find('.alert').alert('close');
-        },2500);
+        },2500); //Change parameter if you want
     };
     var checkRefreshAvailable = function(){
         var timeNow = new Date();
