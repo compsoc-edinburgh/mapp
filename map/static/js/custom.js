@@ -15,6 +15,15 @@ function readyFunction(){
         roomList,
         $refreshAlert =  $('#refresh-alert-holder');
 
+    var assignRoomListeners = function(){
+        $('.room-no').on('click',function(){
+            var roomID = $(this).attr('data-number'),
+                homeUrl = window.location.href;
+            if(homeUrl.indexOf('?') > -1)
+                homeUrl = homeUrl.substr(0,homeUrl.indexOf('?'));
+            window.location.href = homeUrl+'/?site='+roomID;
+        });
+    };
     var renderFriendList = function(data){
         var friends = data['friendList'],
             htmlOptions = '';
@@ -46,6 +55,7 @@ function readyFunction(){
             }
         }
         $roomList.html(roomListHtml);
+        assignRoomListeners();
     };
     var centreMap = function () {
         var myDiv = $("#mapscroll");
@@ -176,7 +186,6 @@ function readyFunction(){
             $('html').css('cursor', 'auto');
         }
     });
-
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
         e.preventDefault();
