@@ -35,7 +35,14 @@
             {% if current_user.is_anonymous %}
             <li><a href="/login">Log In</a></li>
             {% else %}
-            
+            <li class="dropdown" id="rooms-dropdown">
+              <a href="#" class="dropdown-toggle"
+                 data-toggle="dropdown" role="button"
+                 aria-haspopup="true" aria-expanded="false">
+                Change Rooms <span class="caret"></span>
+              </a>
+              <div class="dropdown-menu mobile-dropdown" id ="room-list"> 
+              </div>
             <li class="dropdown" id="friends-dropdown">
               <a href="#" class="dropdown-toggle"
                  data-toggle="dropdown" role="button"

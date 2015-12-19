@@ -11,6 +11,8 @@ function readyFunction(){
         $friendList = $('#friend-list'),
         $addButton = $('#add-btn'),
         $removeButton = $('#remove-btn'),
+        $roomList = $('#room-list'),
+        roomList,
         $refreshAlert =  $('#refresh-alert-holder');
 
     var renderFriendList = function(data){
@@ -32,6 +34,18 @@ function readyFunction(){
             $('#del-form').addClass('hidden');
             $('#no-friends').removeClass('hidden');            
         }
+    };
+    var renderRoomList = function(data){
+        var roomListHtml = '',
+        $currentRoom = $('#maintitle').html();
+        roomList = data;
+        for (var key in roomList){
+            if(roomList.hasOwnProperty(key)){
+                if (roomList[key] != $currentRoom)
+                    roomListHtml += '<li><a class ="room-no" data-number="'+key+'">'+ roomList[key]+'</a></li>';
+            }
+        }
+        $roomList.html(roomListHtml);
     };
     var centreMap = function () {
         var myDiv = $("#mapscroll");
@@ -112,6 +126,12 @@ function readyFunction(){
         renderFriendList(data);
     });
     
+    $.ajax({
+        url: '/rooms'
+    }).done(function(data) {
+        renderRoomList(data);
+    });
+
     centreMap();
 
     window.setInterval(checkRefreshAvailable,300000);
@@ -199,7 +219,7 @@ function readyFunction(){
         }
     });
 
-    $('#friends-dropdown').on('hide.bs.dropdown',function(){
+    $('.dropdown').on('hide.bs.dropdown',function(){
         $nameError.addClass('hidden');
         $selectError.addClass('hidden');
         $('.dropdown-toggle').blur(); // Removes the focus from the Manage friends after close
