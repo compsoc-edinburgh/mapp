@@ -105,6 +105,7 @@ function readyFunction(){
         if (status == 'False')
             statusString = '  <strong>No Update Available!</strong> Closing this...';
         $refreshAlert.html('<div class="alert alert-info fade in custom-alert"> ' + statusString + '</div>');
+        $refreshAlert.css('left',''+ ($(window).width()/2 - $refreshAlert.width()/2) +'px' );
         window.setTimeout(function(){
             $('#manual-refresh').prop('disabled',false);
             $refreshAlert.find('.alert').alert('close');
