@@ -11,7 +11,7 @@ function readyFunction(){
         $friendList = $('#friend-list'),
         $addButton = $('#add-btn'),
         $removeButton = $('#remove-btn'),
-        $refreshAlert =  $('#refresh-alert');
+        $refreshAlert =  $('#refresh-alert-holder');
 
     var renderFriendList = function(data){
         var friends = data['friendList'],
@@ -79,8 +79,8 @@ function readyFunction(){
     var createRefreshAlert = function (status) {
         var statusString = '   <strong>Update Available!</strong> Updating map...';
         if (status == 'False')
-            statusString = '  <strong>No Update Available</strong> Closing this...';
-        $refreshAlert.html('<div class="alert alert-info fade in" role="alert"> ' + statusString + '</div>');
+            statusString = '  <strong>No Update Available!</strong> Closing this...';
+        $refreshAlert.html('<div class="alert alert-info fade in custom-alert"> ' + statusString + '</div>');
         window.setTimeout(function(){
             $('#manual-refresh').prop('disabled',false);
             $refreshAlert.find('.alert').alert('close');

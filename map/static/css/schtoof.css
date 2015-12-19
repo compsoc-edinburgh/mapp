@@ -177,12 +177,17 @@ code {
     }
 }
 
-#refresh-alert{
+#refresh-alert-holder{
     position: fixed;
     bottom: 1em;
     left: 29em;
-}
 
+}
+.custom-alert{
+    background-color: #2C3E50 !important;
+    border-color: #fff !important;
+    font-size: 13px !important;
+}
 #manual-refresh:disabled{
     background: red;
 }
