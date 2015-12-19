@@ -177,6 +177,15 @@ code {
     }
 }
 
+#refresh-alert{
+    position: fixed;
+    bottom: 1em;
+    left: 29em;
+}
+
+#manual-refresh:disabled{
+    background: red;
+}
 
 .table p {
     display: block;
