@@ -10,7 +10,8 @@ function readyFunction(){
         $selectError = $('#select-error-alert'),
         $friendList = $('#friend-list'),
         $addButton = $('#add-btn'),
-        $removeButton = $('#remove-btn');
+        $removeButton = $('#remove-btn'),
+        $refreshAlert =  $('#refresh-alert');
 
     var renderFriendList = function(data){
         var friends = data['friendList'],
@@ -75,6 +76,16 @@ function readyFunction(){
                 readyFunction();
             });
     };
+    var createRefreshAlert = function (status) {
+        var statusString = '   <strong>Update Available!</strong> Updating map...';
+        if (status == 'False')
+            statusString = '  <strong>No Update Available</strong> Closing this...';
+        $refreshAlert.html('<div class="alert alert-info fade in" role="alert"> ' + statusString + '</div>');
+        window.setTimeout(function(){
+            $('#manual-refresh').prop('disabled',false);
+            $refreshAlert.find('.alert').alert('close');
+        },2500);
+    };
     var checkRefreshAvailable = function(){
         var timeNow = new Date();
         $.ajax({
@@ -87,6 +98,7 @@ function readyFunction(){
             dataType:'json'
         })
             .done(function(data) {
+                createRefreshAlert(data['status']);
                 if(data['status'] != 'False') {
                     mapUpdate();
                 }
@@ -117,6 +129,7 @@ function readyFunction(){
         centreMap();
     });
     $('#manual-refresh').on('click',function(){
+        $(this).prop('disabled',true);
         checkRefreshAvailable();
     });
     $addButton.on('click',function(){
