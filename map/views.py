@@ -68,7 +68,7 @@ def map_routine(which_room):
 
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
-    last_update = last_update.strftime("%H:%M:%S")
+    last_update = last_update.strftime("%Y-%m-%d %H:%M:%S")
     
     return {
         "room"             : room,
