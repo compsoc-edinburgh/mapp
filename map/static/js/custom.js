@@ -27,7 +27,8 @@ function readyFunction(){
     var renderFriendList = function(data){
         var friends = data['friendList'],
             htmlOptions = '';
-        if (friends.length > 0){
+
+        if ((friends != null) && (friends.length > 0)){
             $('#del-form').removeClass('hidden');
             $('#no-friends').addClass('hidden');
             friends.forEach(function(value){
