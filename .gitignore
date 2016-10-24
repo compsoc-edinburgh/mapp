@@ -2,7 +2,7 @@
 *.sh
 
 # CSV (Layout import)
-*.csv
+layouts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
