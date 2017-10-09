@@ -280,4 +280,4 @@ def demo():
         num_machines=20,
         num_free=12,
         low_availability=False,
-        last_update="1980-01-01 13:37")
+        last_update="1998-05-02 13:37")
