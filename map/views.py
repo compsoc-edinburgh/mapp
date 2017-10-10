@@ -2,7 +2,7 @@ from map import app, flask_redis, ldap
 from datetime import datetime
 import hashlib
 import json, re
-from flask import render_template, request, jsonify, redirect
+from flask import render_template, request, jsonify, redirect, make_response
 from flask.ext.login import login_user, logout_user, login_required, current_user
 
 
@@ -143,25 +143,31 @@ def login():
     if request.method == "POST":
         if ldap.check_credentials(request.form['username'], request.form['password']):
             user=ldap.getuser(request.form['username'])
-            login_user(user)
+            login_user(user, request.remote_addr)
             return redirect(request.args.get('next', ''))
         else:
             login_status = "Incorrect username or password."
 
     if 'cosign-betterinformatics.com' in request.cookies:
-        login_status = "It's there!"
+        if ldap.check_credentials(request.cookies['cosign-betterinformatics.com'], request.remote_addr):
+            user=ldap.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
+            login_user(user, request.remote_addr)
+            return redirect(request.args.get('next', ''))
+        else:
+            login_status = "Failed to login."
 
     if login_status != "":
         return render_template("login.html", login_status=login_status)
 
 
-    return redirect("https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com/login")
+    return redirect("https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com/")
 
 
 @app.route("/logout")
 def logout():
-    logout_user()
-    return redirect("/login")
+    resp = make_response(redirect("/"))
+    resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
+    return resp
 
 
 @app.route("/about")
@@ -229,14 +235,14 @@ def friends():
        formtype = request.form.get('type')
        if formtype == "del":
            remove_friends = request.form.getlist('delfriends')
-           flask_redis.srem(current_user.get_id() + "-friends", *remove_friends)
+           flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('newfriend')
            if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
                raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
-           flask_redis.sadd(current_user.get_id() + "-friends", add_friend)
+           flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
 
-    friends = flask_redis.smembers(current_user.get_id() + "-friends")
+    friends = flask_redis.smembers(current_user.get_username() + "-friends")
     friends = list(friends)
     friends = sorted(friends, key=lambda s: s.lower())
 
