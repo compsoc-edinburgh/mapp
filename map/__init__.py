@@ -25,12 +25,6 @@ class CustomSessionInterface(SecureCookieSessionInterface):
 
 app.session_interface = CustomSessionInterface()
 
-@lm.user_loader
-def shit_me(uid):
-    print("user_loader: trying to get user from " + uid)
-    return ldap.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
-
-
 @lm.request_loader
 def get_user(request):
     print("request_loader: checking for session cookie...")
