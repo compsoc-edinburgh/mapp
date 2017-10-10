@@ -88,14 +88,16 @@ def rooms_dict():
         out[room] = flask_redis.hget(room, "name")
     return out
 
+@app.route("/")
+def about():
+    return render_template("about.html")
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/site/<which>', methods=['GET', 'POST'])
+def index(which):
     if not current_user.is_authenticated:
-        return redirect('/about')
+        return redirect('/')
     
     default = "drillhall"
-    which = request.args.get('site', '')
     if which == "":
         which = default
 
@@ -170,10 +172,6 @@ def logout():
     return resp
 
 
-@app.route("/about")
-def about():
-    return render_template("about.html")
-        
 @app.route("/rooms")
 @login_required
 def rooms():
