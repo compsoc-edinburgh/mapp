@@ -43,7 +43,7 @@ function readyFunction(){
         for (var key in roomList){
             if(roomList.hasOwnProperty(key)){
                 roomListHtml += (roomList[key] == $currentRoom) ? '<li class="active">' : '<li>';
-                roomListHtml += '<a class="room-no" href="/?site='+key+'">'+ roomList[key]+'</a></li>';
+                roomListHtml += '<a class="room-no" href="/site/'+key+'">'+ roomList[key]+'</a></li>';
             }
         }
         $roomList.html(roomListHtml);
