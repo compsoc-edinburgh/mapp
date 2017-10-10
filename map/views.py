@@ -90,8 +90,10 @@ def rooms_dict():
 
 
 @app.route('/', methods=['GET', 'POST'])
-@login_required
 def index():
+    if not current_user.is_authenticated:
+        return redirect('/about')
+    
     default = "drillhall"
     which = request.args.get('site', '')
     if which == "":
