@@ -136,9 +136,10 @@ def refresh():
                            last_update=this['last_update'])
 
 
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/login", methods=['GET'])
 def login():
     login_status = ""
+
     if request.method == "POST":
         if ldap.check_credentials(request.form['username'], request.form['password']):
             user=ldap.getuser(request.form['username'])
@@ -147,7 +148,14 @@ def login():
         else:
             login_status = "Incorrect username or password."
 
-    return render_template("login.html", login_status=login_status)
+    if 'cosign-betterinformatics.com' in request.cookies:
+        login_status = "It's there!"
+
+    if login_status != "":
+        return render_template("login.html", login_status=login_status)
+
+
+    return redirect("https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com/login")
 
 
 @app.route("/logout")
