@@ -1,4 +1,6 @@
 import ldap
+import requests
+import urllib
 
 from flask.ext.login import UserMixin
 
@@ -7,63 +9,55 @@ class ServerDownException(Exception): pass
 class LDAPTools():
     def __init__(self, app):
         self.config = {
-            "server": app.config['LDAP_SERVER'],
-            "admin": app.config['LDAP_BIND_ADMIN'],
-            "pass": app.config['LDAP_BIND_PASS'],
-            "basedn": app.config['LDAP_BASE_DN'],
-            "memberdn": app.config['LDAP_MEMBERDN'],
-            "groupdn": app.config['LDAP_GROUPDN']
+            "name": app.config["DICE_API_NAME"],
+            "key": app.config["DICE_API_KEY"] 
         }
 
-    def getuser(self, id):
-        l = ldap.initialize(self.config["server"])
-        ldap_filter = "uid=" + id
-        result_id = l.search(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
+    def getuser(self, login_token, ip):
+        #try:
+            payload = {'cookie': login_token, 'ip': ip}
+            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
+            obj = r.json()
+            if obj['status'] == 'success':
+                return User(login_token, obj['message'])
+        #except Exception:
+        #    print("Ran into exception in getuser")
 
-        if result_id:
-            type, data = l.result(result_id, 0)
-        if data:
-            dn, attrs = data[0]
-            return User(attrs)
-
-    def check_credentials(self, username, password):
+    def check_credentials(self, login_token, ip):
+        print("Checking credentials..")
         try:
-            l = ldap.initialize(self.config["server"])
-            l.set_option(ldap.OPT_REFERRALS,0)
-            l.simple_bind_s("uid=%s,%s" % (username, self.config["memberdn"]), password)
-        except ldap.INVALID_DN_SYNTAX:
-            l.unbind()
-            return False
-        except ldap.INVALID_CREDENTIALS:
-            l.unbind()
-            return False
-        except ldap.UNWILLING_TO_PERFORM:
-            l.unbind()
-            return False
-        except ldap.SERVER_DOWN:
-            l.unbind()
-            raise ServerDownException()
-            return False
-        l.unbind()
-        return True
+            payload = {'cookie': login_token, 'ip': ip}
+            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
+            obj = r.json()
+
+            print(login_token)
+            if obj['status'] == 'success':
+                print("Succeeded checking creds...")
+                return True
+        except Exception:
+            print("Encountered error in check_credentials")
+
+        print("Check creds returning false...")
+        return False
 
 
 class User(UserMixin):
-    def __init__(self, attrs):
+    def __init__(self, login_token, attrs):
+        self.login_token = login_token
         self.__dict__.update(attrs)
 
     def get_id(self):
-        return self.uid[0]
+        return self.login_token
 
-    def get_email(self):
-        return self.mail[0]
+    def get_username(self):
+        return self.Principal
 
     def get_friend(self, friend_hash):
         import hashlib
         from config import CRYPTO_SECRET as secret
         from map import flask_redis
         
-        all_friends = flask_redis.smembers(self.get_id()+'-friends')
+        all_friends = flask_redis.smembers(self.get_username()+'-friends')
         
         for friend in all_friends:
             hasher = hashlib.sha512()
