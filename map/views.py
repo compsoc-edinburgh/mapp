@@ -93,10 +93,8 @@ def about():
     return render_template("about.html")
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
+@login_required
 def index(which):
-    if not current_user.is_authenticated:
-        return redirect('/')
-    
     default = "drillhall"
     if which == "":
         which = default
@@ -161,8 +159,8 @@ def login():
     if login_status != "":
         return render_template("login.html", login_status=login_status)
 
-
-    return redirect("https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com/")
+    url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com"
+    return redirect(url + request.args.get('next', '/'))
 
 
 @app.route("/logout")
