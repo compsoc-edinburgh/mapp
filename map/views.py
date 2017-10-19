@@ -138,27 +138,6 @@ def refresh():
 
 @app.route("/login", methods=['GET'])
 def login():
-    login_status = ""
-
-    if request.method == "POST":
-        if ldap.check_credentials(request.form['username'], request.form['password']):
-            user=ldap.getuser(request.form['username'])
-            login_user(user, request.remote_addr)
-            return redirect(request.args.get('next', ''))
-        else:
-            login_status = "Incorrect username or password."
-
-    if 'cosign-betterinformatics.com' in request.cookies:
-        if ldap.check_credentials(request.cookies['cosign-betterinformatics.com'], request.remote_addr):
-            user=ldap.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
-            login_user(user, request.remote_addr)
-            return redirect(request.args.get('next', ''))
-        else:
-            login_status = "Failed to login."
-
-    if login_status != "":
-        return render_template("login.html", login_status=login_status)
-
     url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com"
     return redirect(url + request.args.get('next', '/'))
 
