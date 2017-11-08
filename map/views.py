@@ -144,7 +144,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    resp = make_response(redirect("/"))
+    resp = make_response(redirect(request.args.get('next','/')))
     resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
     return resp
 
