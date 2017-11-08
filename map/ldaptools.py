@@ -19,7 +19,7 @@ class LDAPTools():
             r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
             obj = r.json()
             if obj['status'] == 'success':
-                return User(login_token, obj['message'])
+                return User(login_token, obj['data'])
         #except Exception:
         #    print("Ran into exception in getuser")
 
