@@ -42,7 +42,8 @@ class Snoop:
             try:
                 user = re.split("\s+", user)
                 
-                if re.match("tty\d+", user[1]) is not None:
+                #if re.match("tty\d+", user[1]) is not None:
+                if user[1] == ":0":
                     usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                     out = re.search("Name: (.*)", usr_o.readline())
                     
