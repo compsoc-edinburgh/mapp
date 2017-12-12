@@ -221,8 +221,8 @@ def friends():
            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('newfriend')
-           if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
-               raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
+           #if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
+           #    raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
            flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
 
     friends = flask_redis.smembers(current_user.get_username() + "-friends")
