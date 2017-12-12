@@ -201,23 +201,25 @@ function readyFunction(){
 
     $('#add-form').on('submit',function(e){
         e.preventDefault();
-        if ($friendName.val().match(regexName) != null){
-            $nameError.addClass('hidden');
-            $.ajax({
-                url: '/friends',
-                type: 'POST',
-                data: $(this).serialize()
-            })
-                .done(function(data) {
-                    $friendName.val(''); //Reset the form!
-                    renderFriendList(data);
-                });
-        }
-        else {
-            if ($nameError.hasClass('hidden'))
+        $nameError.addClass('hidden');
+        
+        if ($friendName.val().match(regexName) == null){
+            if ($nameError.hasClass('hidden')) {
                 $nameError.removeClass('hidden');
-            $nameError.html('<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> Invalid name, expect First Second');
+            }
+            $nameError.html('<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> Make sure name is in the correct form!');
         }
+        
+        $.ajax({
+            url: '/friends',
+            type: 'POST',
+            data: $(this).serialize()
+        })
+            .done(function(data) {
+                $friendName.val(''); //Reset the form!
+                renderFriendList(data);
+            });
+
     });
 
     $('.dropdown').on('hide.bs.dropdown',function(){
