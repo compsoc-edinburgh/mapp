@@ -88,6 +88,11 @@ def rooms_dict():
         out[room] = flask_redis.hget(room, "name")
     return out
 
+def room_machines(which):
+    machines = flask_redis.lrange(which + "-machines", 0, -1)
+    print(machines)
+    return machines
+
 @app.route("/")
 def about():
     return render_template("about.html")
@@ -148,11 +153,14 @@ def logout():
     resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
     return resp
 
-
 @app.route("/rooms")
+@app.route("/rooms/<which>")
 @login_required
-def rooms():
-    return jsonify(rooms_dict())
+def rooms(which=""):
+    if not which:
+        return jsonify(rooms_dict())
+    else:
+        return jsonify({"rooms":room_machines(which)})
     
 
 @app.route('/update', methods=['POST'])
