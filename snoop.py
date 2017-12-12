@@ -62,7 +62,7 @@ class Snoop:
             pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
-        Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'])
+        Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'], status="online")
         return data_dict
 
     
@@ -73,13 +73,14 @@ class Snoop:
 
     # Callback to the web service to update
     @staticmethod
-    def checkin(hostname, username="", active=""):
+    def checkin(hostname, username="", active="", status=""):
         data_dict = {
             "hostname"     : str(hostname),
             "user"         : str(username),
             "active"       : str(active),
             "timestamp"    : str(datetime.now().isoformat()),
-            "callback-key" : str(config.CALLBACK_KEY)
+            "callback-key" : str(config.CALLBACK_KEY),
+            "status"       : str(status),
         }
         
         url = "https://localhost:5000/update"
@@ -102,7 +103,7 @@ def mapf(serv):
         userl = s.usercheck()
     except Exception as e:
         sys.stderr.write("NO-GO for host %s : %s\n" % (serv, str(e)))
-        Snoop.checkin(serv)
+        Snoop.checkin(serv, status="offline")
 
 if __name__ == "__main__":
 
@@ -132,7 +133,7 @@ if __name__ == "__main__":
             userl = s.usercheck()
         except Exception as e:
             sys.stdout.write("NO-GO for host %s : %s\n" % (serv, str(e)))
-            Snoop.checkin(serv)
+            Snoop.checkin(serv, status="offline")
 
     # Run at different frequencies throughought the day
     def heuristic_run():
