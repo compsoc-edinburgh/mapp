@@ -178,8 +178,11 @@ if __name__ == "__main__":
     sys.stdout.write("INIT OK, waiting...\n")
 
     while True:
-        if heuristic_run():
-            p = Pool(30)
-            p.map(mapf,servers)
-            del p
-            sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
+        try:
+            if heuristic_run():
+                p = Pool(30)
+                p.map(mapf,servers)
+                del p
+                sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
+        except KeyboardInterrupt:
+            sys.exit()
