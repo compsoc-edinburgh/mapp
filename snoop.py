@@ -83,7 +83,7 @@ class Snoop:
             "status"       : str(status),
         }
         
-        url = "https://localhost:5000/update"
+        url = "https://map.betterinformatics.com/update"
         payload = json.dumps(data_dict)
         headers={'Content-Type':   'application/json'}
 
