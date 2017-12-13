@@ -4,6 +4,14 @@
 {% block content %}
 
 <article class="container prose">
+  <div class="text-center">
+    {% if not current_user.is_authenticated %}
+      <p>You're logged out. You need to log in to use this service.</p>
+    {% else %}
+      <p><a href="#" class="btn btn-primary" data-toggle="dropdown" data-target="#rooms-dropdown">View list of rooms</a></p>
+    {% endif %}
+  </div>
+
   <div class="text-center padder">
     <h2>About The Marauder's App</h2>
   </div>
