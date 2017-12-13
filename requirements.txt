@@ -1,4 +1,12 @@
+cffi==1.11.2
+decorator==4.1.2
 ecdsa==0.13
+enum34==1.1.6
 paramiko==1.16.0
+pyasn1==0.4.2
+pycparser==2.18
 pycrypto==2.6.1
+python-gssapi==0.6.4
 requests==2.8.1
+six==1.11.0
+wsgiref==0.1.2
