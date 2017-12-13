@@ -27,7 +27,7 @@ class Snoop:
             self.client.connect(username=username,
                                 gss_auth=True,
                                 gss_kex=True,
-                                gss_deleg_creds=True,
+                                gss_deleg_creds=False, # turn off afs access
                                 hostname=hostname,
                                 port=22, timeout=60)
         else:
