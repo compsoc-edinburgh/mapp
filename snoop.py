@@ -74,10 +74,6 @@ class Snoop:
         Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'], status="online")
         return data_dict
 
-    # $ wall the remote host with message:str
-    def wall(self,message):
-        stdin, stdout, stderr = self.client.exec_command("echo '%s' | wall" % str(message))
-
     # Callback to the web service to update
     @staticmethod
     def checkin(hostname, username="", active="", status=""):
