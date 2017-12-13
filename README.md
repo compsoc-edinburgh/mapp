@@ -11,11 +11,6 @@ MAPP_SECRET  = "some really long complex random string"
 CALLBACK_KEY = "another different really long string"
 ```
 
-Open a tunnel to the callback host if it isn't publicly accessible 
-(Probably a good idea)
-```
-$ ssh -L 5000:localhost:443 username@callback-host
-```
 
 Run the program:
 ```
