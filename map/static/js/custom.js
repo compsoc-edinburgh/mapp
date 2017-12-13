@@ -83,7 +83,7 @@ function readyFunction(){
     };
     var mapUpdate = function(){
         $.ajax({ 
-            url: '/refresh' 
+            url: '/api/refresh' 
         })
             .done(function(data){
                 $('#ajax-map-replace').replaceWith(data);   
@@ -105,7 +105,7 @@ function readyFunction(){
     var checkRefreshAvailable = function(){
         var timeNow = new Date();
         $.ajax({
-            url: '/update_available',
+            url: '/api/update_available',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -123,13 +123,13 @@ function readyFunction(){
 
     /* Execute, self */
     $.ajax({
-        url: '/friends'
+        url: '/api/friends'
     }).done(function(data) {
         renderFriendList(data);
     });
     
     $.ajax({
-        url: '/rooms'
+        url: '/api/rooms'
     }).done(function(data) {
         renderRoomList(data);
     });
@@ -184,7 +184,7 @@ function readyFunction(){
         if ($friendList.find('option:selected')['length']>0){ //Check selections aren't empty
             $selectError.addClass('hidden');
             $.ajax({
-                url: '/friends',
+                url: '/api/friends',
                 type: 'POST',
                 data: $(this).serialize()
             })
@@ -211,7 +211,7 @@ function readyFunction(){
         }
         
         $.ajax({
-            url: '/friends',
+            url: '/api/friends',
             type: 'POST',
             data: $(this).serialize()
         })

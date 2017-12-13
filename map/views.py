@@ -118,7 +118,7 @@ def index(which):
                            low_availability=this['low_availability'],
                            last_update=this['last_update'])
 
-@app.route('/refresh')
+@app.route('/api/refresh')
 @login_required
 def refresh():
     default = "drillhall"
@@ -153,8 +153,8 @@ def logout():
     resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
     return resp
 
-@app.route("/rooms")
-@app.route("/rooms/<which>")
+@app.route("/api/rooms")
+@app.route("/api/rooms/<which>")
 @login_required
 def rooms(which=""):
     if not which:
@@ -166,7 +166,7 @@ def rooms(which=""):
         return jsonify({"rooms":rooms})
     
 
-@app.route('/update', methods=['POST'])
+@app.route('/api/update', methods=['POST'])
 def update():
     content = request.json
 
@@ -195,7 +195,7 @@ def update():
 
 
 
-@app.route("/update_available", methods=['POST'])
+@app.route("/api/update_available", methods=['POST'])
 @login_required
 def update_available():
     content = request.json
@@ -214,7 +214,7 @@ def update_available():
 
 
 
-@app.route("/friends", methods=['GET', 'POST'])
+@app.route("/api/friends", methods=['GET', 'POST'])
 @login_required
 def friends():
     if request.method == "POST":
