@@ -77,7 +77,7 @@
             {% else %}{# These are the free machines #}
 
 
-            {% if cell.hostname in reserved %}{# Display reserved machines as available but amber #}
+            {% if cell.status == "offline" %}{# Display reserved machines as available but amber #}
 
             <div title="This machine is offline.">
               <p class="text-danger blip">
