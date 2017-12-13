@@ -176,6 +176,7 @@ def update():
         user   = content['user']
         ts     = content['timestamp']
         active = content['active']
+        status = content['status']
     except Exception:
         raise APIError("Malformed JSON POST data", status_code=400)
 
@@ -188,6 +189,7 @@ def update():
     pipe.hset(host, "user", user)
     pipe.hset(host, "timestamp", ts)
     pipe.hset(host, "active", active)
+    pipe.hset(host, "status", status)
     pipe.set("last-update", str(datetime.utcnow().isoformat()))
     pipe.execute()
 
