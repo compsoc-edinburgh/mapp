@@ -19,8 +19,11 @@ $ ssh -L 5000:localhost:443 username@callback-host
 
 Run the program:
 ```
-$ python snoop.py <USERNAME FOR MACHINES TO SCAN> <MACHINE LIST>.json
+$ python snoop.py <MACHINE LIST>.json <USERNAME FOR MACHINES TO SCAN>
 ```
+
+- If you omit the username, it will take your current username.
+- If you omit the machine list, it will just do your current machine.
 
 Expects JSON file to be a list of machines whose names can be resolved 
 from the host running the program.
