@@ -1,4 +1,10 @@
-# Running:
+# Setup
+
+1. Use `virtualenv env` to create a virtual environment. (Don't have `virtualenv`? Use `pip install virtualenv` to install it.)
+2. `. env/bin/activate` to activate it
+3. `pip install -f requirements.txt` to install deps
+4. create and setup `config.py` as below
+
 
 The environment variable MAPP_SECRET should be set to a long random 
 set of characters to make the hashes leaving the bot more secure.
@@ -11,6 +17,7 @@ MAPP_SECRET  = "some really long complex random string"
 CALLBACK_KEY = "another different really long string"
 ```
 
+# Running
 
 Run the program:
 ```
@@ -33,3 +40,11 @@ program is run.
 callback host must be running the counterpart software, that takes the
 JSON object in the header and stores it in Redis. That's in a private
 repo because it contains LDAP authentication and Redis interfaces.
+
+# Example
+
+Given a 5and6.json file, this will create a long running process.
+
+```python
+longjob -nobackground -28day -c "nice python worker.py 5and6.json"
+```
