@@ -137,15 +137,13 @@ if __name__ == "__main__":
     def heuristic_run():
         now = datetime.now()
         go = False
-        if now.hour > 22 or now.hour < 6:
-            go = now.minute == 0        # hourly
-            
-        elif now.hour > 18 or now.hour < 9:
+
+	# between 6pm and 9am
+        if now.hour > 18 or now.hour < 9:
             go = now.minute % 30 == 0        # half-hourly
-            
+        # during the weekday, hh:50, hh:55, hh:60, hh:65, hh:70
         elif (now.minute >= 50 or now.minute <= 10) and now.isoweekday() <= 5:
             go = now.minute % 5 == 0        # 5 minute during week on the hour
-
         else:
             go = now.minute % 15 == 0        # 15 minute default
             
