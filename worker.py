@@ -82,12 +82,11 @@ class Snoop:
             "user": str(username),
             "active": str(active),
             "timestamp": str(datetime.now().isoformat()),
-            "callback-key": str(config.CALLBACK_KEY),
             "status": str(status),
         }
         
         url = "https://mapp.tardis.ed.ac.uk/api/update"
-        payload = json.dumps(data_dict)
+        payload = json.dumps({"machines":[data_dict], "callback-key": str(config.CALLBACK_KEY)})
         headers = {'Content-Type':   'application/json'}
 
         try:
