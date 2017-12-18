@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}{{ room.key }}{% endblock %}
 
 {% block content %}
 <div id="ajax-map-replace">
@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-md-12 shrinklittle">
         <h2>
-          <span id="maintitle" class="">{{ room.name }}</span>
+            <span id="maintitle" class="">{{ room.name }}</span>
         </h2>
         <span class="spacer"></span>
          <h2>
