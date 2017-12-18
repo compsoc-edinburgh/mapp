@@ -97,30 +97,13 @@ class Snoop:
     # Callback to the web service to update
     @staticmethod
     def checkin(hostname, username="", active="", status=""):
-        data_dict = {
+        return {
             "hostname": str(hostname),
             "user": str(username),
             "active": str(active),
             "timestamp": str(datetime.now().isoformat()),
             "status": str(status),
         }
-
-        return data_dict
-        
-        ## this stuff not executed
-
-        url = "https://mapp.tardis.ed.ac.uk/api/update"
-        payload = json.dumps({"machines":[data_dict], "callback-key": str(config.CALLBACK_KEY)})
-        headers = {'Content-Type':   'application/json'}
-
-        try:
-            r = requests.post(url, data=payload, headers=headers, verify=False, timeout=20)
-            if r.status_code != 200:
-                sys.stderr.write("ERROR: couldn't reach callback, got %d\n" % r.status_code)
-            else:
-                sys.stderr.write("CALLBACK ok for %s %s\n" % (hostname, data_dict['timestamp']))
-        except Exception as e:
-            sys.stderr.write("********\nERROR (%s) When opening url : %s\n" % (hostname, str(e)))
 
 if __name__ == "__main__":
 
