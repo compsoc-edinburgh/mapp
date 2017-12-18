@@ -114,6 +114,7 @@ if __name__ == "__main__":
         print("Malformed JSON input list")
 
     username = getpass.getuser()
+    sys.stdout.write("Using username %s" % username)
     password = ""
     if "localhost" in servers:
         servers = [socket.gethostname()]
