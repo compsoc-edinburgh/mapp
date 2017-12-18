@@ -95,7 +95,10 @@ def room_machines(which):
 
 @app.route("/")
 def about():
-    return render_template("about.html")
+    rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
+    rooms.sort(key=lambda x: x['key'])
+    print(rooms)
+    return render_template("about.html", rooms=rooms)
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
 @login_required
