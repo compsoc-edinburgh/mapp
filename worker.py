@@ -71,9 +71,29 @@ class Snoop:
             pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
-        Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'], status="online")
-        return data_dict
+        return Snoop.checkin(self.hostname, username=data_dict['user'], active=data_dict['active'], status="online")
 
+    # Real callback to the web service
+    @staticmethod
+    def update_machines(machines):
+        url = "https://mapp.tardis.ed.ac.uk/api/update"
+        payload = {
+            "machines": machines,
+            "callback-key": str(config.CALLBACK_KEY),
+            "timestamp": str(datetime.now().isoformat())
+        }
+
+        headers = {"Content-Type": "application/json"}
+
+        try:
+            r = requests.post(url, data=json.dumps(payload), headers=headers, verify=False, timeout=20)
+            if r.status_code != 200:
+                sys.stderr.write("ERROR: couldn't reach callback, got %d\n" % r.status_code)
+            else:
+                sys.stderr.write("CALLBACK ok for all machines %s\n" % (payload['timestamp']))
+        except Exception as e:
+            sys.stderr.write("********\nERROR (all) When opening url : %s\n" % (str(e))) 
+        
     # Callback to the web service to update
     @staticmethod
     def checkin(hostname, username="", active="", status=""):
@@ -84,7 +104,11 @@ class Snoop:
             "timestamp": str(datetime.now().isoformat()),
             "status": str(status),
         }
+
+        return data_dict
         
+        ## this stuff not executed
+
         url = "https://mapp.tardis.ed.ac.uk/api/update"
         payload = json.dumps({"machines":[data_dict], "callback-key": str(config.CALLBACK_KEY)})
         headers = {'Content-Type':   'application/json'}
@@ -128,10 +152,10 @@ if __name__ == "__main__":
     def mapf(serv):
         try:
             s = Snoop(username, serv, password=password, kerberos=(password == ""))
-            userl = s.usercheck()
+            return s.usercheck()
         except Exception as e:
             sys.stdout.write("NO-GO for host %s : %s\n" % (serv, str(e)))
-            Snoop.checkin(serv, status="offline")
+            return Snoop.checkin(serv, status="offline")
 
     # Run at different frequencies throughought the day
     def heuristic_run():
@@ -165,19 +189,21 @@ if __name__ == "__main__":
         sys.exit()
 
     sys.stdout.write("AUTH OK, starting initial run...\n")
-    
-    p = Pool(30)
-    p.map(mapf, servers)
-    del p
 
-    sys.stdout.write("INIT OK, waiting...\n")
-
+    first = True
+ 
     while True:
         try:
-            if heuristic_run():
+            if heuristic_run() or first:
                 p = Pool(30)
-                p.map(mapf,servers)
+                results = filter(lambda x: x != None, p.map(mapf,servers))
                 del p
                 sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
+                Snoop.update_machines(results)
+                sys.stdout.write("RESULTS %s\n" % str(results))
+                if first:
+                    first = False
+                    sys.stdout.write("INIT OK, waiting...\n")
+
         except KeyboardInterrupt:
             sys.exit()
