@@ -1,6 +1,5 @@
 # Class to connect to and monitor remote machine
 import paramiko
-import os
 import getpass
 import sys
 import time
@@ -17,24 +16,18 @@ requests.packages.urllib3.disable_warnings()
 
 class Snoop:
     # Init method, creates SSH connection to remote host
-    def __init__(self, username, hostname, password="", kerberos=True):
+    def __init__(self, username, hostname):
         self.hostname = hostname
         self.client = paramiko.SSHClient()
         self.crypto = hashlib.sha512()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        if kerberos:
-            self.client.connect(username=username,
-                                gss_auth=True,
-                                gss_kex=True,
-                                gss_deleg_creds=False, # turn off afs access
-                                hostname=hostname,
-                                port=22, timeout=60)
-        else:
-            self.client.connect(username=username,
-                                password=password,
-                                hostname=hostname,
-                                port=22, timeout=60)
+        self.client.connect(username=username,
+                            gss_auth=True,
+                            gss_kex=True,
+                            gss_deleg_creds=False, # turn off afs access
+                            hostname=hostname,
+                            port=22, timeout=60)
 
     # Runs a user check on the remote host
     def usercheck(self):
@@ -67,7 +60,7 @@ class Snoop:
         try:
             if data_dict['user'] != "":
                 print_usr = data_dict['user'][:15] + "..."
-        except Exception:
+        except Exception as e:
             pass
             
         sys.stdout.write("USER on %s: %s\n" % (self.hostname, print_usr))
@@ -130,11 +123,11 @@ if __name__ == "__main__":
         except IndexError:
             pass
             # raise Exception("Expect command line arguments <hosts.json> <username>")
-        password = getpass.getpass("Remote Password for %s on all machines (just press enter to use Kerberos): " % username)
+        getpass.getpass("Is username %s okay?" % username)
 
     def mapf(serv):
         try:
-            s = Snoop(username, serv, password=password, kerberos=(password == ""))
+            s = Snoop(username, serv)
             return s.usercheck()
         except Exception as e:
             sys.stdout.write("NO-GO for host %s : %s\n" % (serv, str(e)))
@@ -165,7 +158,7 @@ if __name__ == "__main__":
     sys.stdout.write("CHECKING authentication...\n")
 
     try:
-        authcheck = Snoop(username, servers[0], password=password, kerberos=(password == ""))
+        authcheck = Snoop(username, servers[0])
         del authcheck
     except Exception as e:
         sys.stdout.write("AUTH FAIL! Reason: (%s)\n" % str(e))
@@ -179,7 +172,7 @@ if __name__ == "__main__":
         try:
             if heuristic_run() or first:
                 p = Pool(30)
-                results = filter(lambda x: x != None, p.map(mapf,servers))
+                results = filter(lambda x: x is not None, p.map(mapf,servers))
                 del p
                 sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
                 Snoop.update_machines(results)
