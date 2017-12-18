@@ -72,8 +72,7 @@ class Snoop:
         url = "https://mapp.tardis.ed.ac.uk/api/update"
         payload = {
             "machines": machines,
-            "callback-key": str(config.CALLBACK_KEY),
-            "timestamp": str(datetime.now().isoformat())
+            "callback-key": str(config.CALLBACK_KEY)
         }
 
         headers = {"Content-Type": "application/json"}
@@ -83,7 +82,7 @@ class Snoop:
             if r.status_code != 200:
                 sys.stderr.write("ERROR: couldn't reach callback, got %d\n" % r.status_code)
             else:
-                sys.stderr.write("CALLBACK ok for all machines %s\n" % (payload['timestamp']))
+                sys.stderr.write("CALLBACK ok for all machines %s\n" % str(datetime.now().isoformat()))
         except Exception as e:
             sys.stderr.write("********\nERROR (all) When opening url : %s\n" % (str(e))) 
         
