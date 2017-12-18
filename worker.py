@@ -25,7 +25,7 @@ class Snoop:
         self.client.connect(username=username,
                             gss_auth=True,
                             gss_kex=True,
-                            gss_deleg_creds=False, # turn off afs access
+                            gss_deleg_creds=False,  # turn off afs access
                             hostname=hostname,
                             port=22, timeout=60)
 
@@ -42,8 +42,7 @@ class Snoop:
         for user in users:
             try:
                 user = re.split("\s+", user)
-                
-                # if re.match("tty\d+", user[1]) is not None:
+
                 if user[1] == ":0":
                     usr_i, usr_o, usr_e = self.client.exec_command("finger %s -p" % user[0])
                     out = re.search("Name: (.*)", usr_o.readline())
@@ -130,7 +129,7 @@ if __name__ == "__main__":
             sys.stdout.write("NO-GO for host %s : %s\n" % (serv, str(e)))
             return Snoop.checkin(serv, status="offline")
 
-    # Run at different frequencies throughought the day
+    # Run at different frequencies throughout the day
     def heuristic_run():
         now = datetime.now()
         go = False
