@@ -171,25 +171,34 @@ def update():
     content = request.json
 
     try:
-        key    = content['callback-key']
-        host   = content['hostname']
-        user   = content['user']
-        ts     = content['timestamp']
-        active = content['active']
-        status = content['status']
+        key = content['callback-key']
     except Exception:
-        raise APIError("Malformed JSON POST data", status_code=400)
+        key = ""
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
         print "******* CLIENT ATTEMPTED TO USE BAD KEY *******"
-        raise APIError("Given key is not an authorised API key")
+        raise APIError("Given key is not an authorised API key") 
 
     pipe = flask_redis.pipeline()
-    pipe.hset(host, "user", user)
-    pipe.hset(host, "timestamp", ts)
-    pipe.hset(host, "active", active)
-    pipe.hset(host, "status", status)
+    
+    try:
+        for machine in content['machines']:
+            host   = machine['hostname']
+            user   = machine['user']
+            ts     = machine['timestamp']
+            active = machine['active']
+            status = machine['status']
+
+            pipe.hset(host, "user", user)
+            pipe.hset(host, "timestamp", ts)
+            pipe.hset(host, "active", active)
+            pipe.hset(host, "status", status)
+
+    except Exception:
+        print("Malformed JSON content")
+        raise APIError("Malformed JSON content", status_code=400)
+
     pipe.set("last-update", str(datetime.utcnow().isoformat()))
     pipe.execute()
 
@@ -275,7 +284,7 @@ def demo():
                 {},{},{}
             ],[
                 {},{},{},
-                {"hostname":"frankie"},
+                {"hostname":"anangus"},
                 {"hostname":"benjy", "user":" ","friend":"prongs"},
                 {},{},{}
             ]
