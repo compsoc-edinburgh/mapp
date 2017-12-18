@@ -79,12 +79,14 @@ class Snoop:
 
         try:
             r = requests.post(url, data=json.dumps(payload), headers=headers, verify=False, timeout=20)
-            if r.status_code != 200:
-                sys.stderr.write("ERROR: couldn't reach callback, got %d\n" % r.status_code)
-            else:
-                sys.stderr.write("CALLBACK ok for all machines %s\n" % str(datetime.now().isoformat()))
         except Exception as e:
-            sys.stderr.write("********\nERROR (all) When opening url : %s\n" % (str(e))) 
+            sys.stderr.write("********\nERROR (all) When opening url : %s\n" % (str(e)))
+            return
+
+        if r.status_code != 200:
+            sys.stderr.write("ERROR: couldn't reach callback, got %d\n" % r.status_code)
+        else:
+            sys.stderr.write("CALLBACK ok for all machines %s\n" % str(datetime.now().isoformat()))
         
     # Callback to the web service to update
     @staticmethod
