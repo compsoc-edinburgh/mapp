@@ -6,9 +6,13 @@
 <article class="container prose">
   <div class="text-center">
     {% if not current_user.is_authenticated %}
-      <p>You're logged out. You need to log in to use this service.</p>
+    <p><a href="/login" class="btn btn-primary">I solemnly swear I am up to no good... (log in)</a></p>
+    <p><a href="/demo" class="btn btn-primary">Demo</a></p>
     {% else %}
-      <p><a href="#" class="btn btn-primary" data-toggle="dropdown" data-target="#rooms-dropdown">View list of rooms</a></p>
+    <strong>List of rooms</strong>
+    {% for room in rooms %}
+    <p><a class="btn btn-primary" href="/site/{{room.key}}">{{ room.name }}</a></p>
+    {% endfor %}
     {% endif %}
   </div>
 
