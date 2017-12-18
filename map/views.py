@@ -51,7 +51,7 @@ def map_routine(which_room):
                 cell = cell[0]
 
             try:
-                if cell['user'] is not "":
+                if cell['user'] is not "" or cell['status'] == "offline":
                     num_used += 1
             except Exception:
                 pass
