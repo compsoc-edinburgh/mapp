@@ -107,18 +107,20 @@ if __name__ == "__main__":
         servers = json.loads(server_file.read())
         server_file.close()
     except IOError:
-        print("Input server list '"+sys.argv[2]+"' not found.")
+        print("Input server list '" + sys.argv[1] + "' not found.")
+        sys.exit(-1)
     except IndexError:
-        print("No input file")
+        pass
     except ValueError:
         print("Malformed JSON input list")
+        sys.exit(-1)
 
     username = getpass.getuser()
-    sys.stdout.write("Using username %s" % username)
-    password = ""
+    sys.stdout.write("Using username %s\n" % username)
+
     if "localhost" in servers:
         servers = [socket.gethostname()]
-        print("Using name {}", servers[0])
+        sys.stdout.write("No input, so checking hostname %s\n" % servers[0])
 
     def mapf(serv):
         try:
@@ -133,7 +135,7 @@ if __name__ == "__main__":
         now = datetime.now()
         go = False
 
-	# between 6pm and 9am
+        # between 6pm and 9am
         if now.hour > 18 or now.hour < 9:
             go = now.minute % 30 == 0        # half-hourly
         # during the weekday, hh:50, hh:55, hh:60, hh:65, hh:70
@@ -147,8 +149,8 @@ if __name__ == "__main__":
         if go:
             time.sleep(1)
             return True
-        else:
-            return False
+
+        return False
 
     sys.stdout.write("CHECKING authentication...\n")
 
@@ -157,7 +159,7 @@ if __name__ == "__main__":
         del authcheck
     except Exception as e:
         sys.stdout.write("AUTH FAIL! Reason: (%s)\n" % str(e))
-        sys.exit()
+        sys.exit(-1)
 
     sys.stdout.write("AUTH OK, starting initial run...\n")
 
