@@ -118,13 +118,6 @@ if __name__ == "__main__":
     if "localhost" in servers:
         servers = [socket.gethostname()]
         print("Using name {}", servers[0])
-    else:
-        try:
-            username = str(sys.argv[2])
-        except IndexError:
-            pass
-            # raise Exception("Expect command line arguments <hosts.json> <username>")
-        getpass.getpass("Is username %s okay?" % username)
 
     def mapf(serv):
         try:
