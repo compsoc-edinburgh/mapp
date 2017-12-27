@@ -154,7 +154,7 @@ if __name__ == "__main__":
     sys.stdout.write("CHECKING authentication...\n")
 
     try:
-        authcheck = Snoop(username, servers[0])
+        authcheck = Snoop(username, "student.login")
         del authcheck
     except Exception as e:
         sys.stdout.write("AUTH FAIL! Reason: (%s)\n" % str(e))
