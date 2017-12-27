@@ -24,7 +24,7 @@ CALLBACK_KEY = "another different really long string"
 
 Run the program:
 ```
-$ python snoop.py machines.json
+$ python worker.py machines.json
 ```
 
 If you omit the machine list, it will just do your current machine.
