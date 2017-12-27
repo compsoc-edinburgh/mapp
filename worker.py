@@ -103,7 +103,7 @@ if __name__ == "__main__":
     servers = ['localhost']
     try:
         server_file = open(sys.argv[1], 'r')
-        servers = json.loads(server_file.read())
+        servers = json.loads(server_file.read())["machines"]
         server_file.close()
     except IOError:
         print("Input server list '" + sys.argv[1] + "' not found.")
