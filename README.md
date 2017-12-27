@@ -40,7 +40,7 @@ Kerberos credentials on your machine.
 
 You can get a `machines.json` file (can be called anything,
 must be a `json` file though) by visiting
-[this URL](https://map.betterinformatics.com/rooms/6.06,5.05).
+[this URL](https://mapp.betterinformatics.com/rooms/6.06,5.05).
 Note that you can provide multiple rooms to receive machines
 from multiple rooms at once.
 
