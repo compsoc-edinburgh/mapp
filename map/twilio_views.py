@@ -37,8 +37,8 @@ allMachines = ['venosa', 'trento', 'pavia', 'orlofsky', 'mereb', 'radames', 'ver
                'angelotti', 'joly', 'courfeyrac', 'crow', 'giudicelli', 'pipit']
 
 callers = {
-    "***REMOVED***": "James Friel",
-    "***REMOVED***": "Angus Pearson",
+    "+***REMOVED***": "James Friel",
+    "+***REMOVED***": "Angus Pearson",
 }
 
 friends = {
