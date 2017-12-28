@@ -1,4 +1,4 @@
-# Marauders Mapp - worker
+# The Marauders App - worker
 This is the worker that picks up information about every DICE machine.
 
 ## Setup
