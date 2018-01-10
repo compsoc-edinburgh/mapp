@@ -167,7 +167,7 @@ if __name__ == "__main__":
     while True:
         try:
             if heuristic_run() or first:
-                p = Pool(30)
+                p = Pool(100)
                 results = filter(lambda x: x is not None, p.map(mapf, servers))
                 p.close()
                 del p
