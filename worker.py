@@ -168,7 +168,7 @@ if __name__ == "__main__":
         try:
             if heuristic_run() or first:
                 p = Pool(30)
-                results = filter(lambda x: x is not None, p.map(mapf,servers))
+                results = filter(lambda x: x is not None, p.map(mapf, servers))
                 p.close()
                 del p
                 sys.stdout.write("DONE iteration over %d servers at %s\n" % (len(servers), str(datetime.now().isoformat())))
