@@ -1,6 +1,6 @@
 # The Marauders App - worker
 
-This is the worker that picks up information about every DICE machine. It took inspiration from the original [Python implementation](https://github.com/compsoc-edinburgh/mapp-worker-py)
+This is the worker that picks up information about every DICE machine. It takes inspiration from the original [Python implementation](https://github.com/compsoc-edinburgh/mapp-worker-py).
 
 ## How to run
 - Have Go installed
