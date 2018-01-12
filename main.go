@@ -12,7 +12,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"os/user"
 	"regexp"
 	"strings"
 	"syscall"
@@ -81,16 +80,6 @@ X4Po1QYz+3dszkDqMp4fklxBwXRsW10KXzPMTZ+sOPAveyxindmjkW8lGy+QsRlG
 PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
 KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 -----END CERTIFICATE-----`
-
-func getUser() (username string, err error) {
-	u, err := user.Current()
-	if err != nil {
-		return
-	}
-
-	username = u.Username
-	return
-}
 
 func getMachines() (machines []string, err error) {
 	machineListPath := os.Getenv("MACHINE_LIST")
