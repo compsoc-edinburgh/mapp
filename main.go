@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -109,7 +110,7 @@ func checkAuthentication() error {
 		"-o", "GSSAPIAuthentication=yes",
 		"-o", "GSSAPIDelegateCredentials=no",
 		"-o", "PasswordAuthentication=no",
-		"ssh.inf.ed.ac.uk",
+		"student.login.inf.ed.ac.uk",
 		"exit",
 	).Output()
 
@@ -179,23 +180,29 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			result.Status = "online"
 			what := strings.Split(string(out), "\n")
 
-			// stats := what[0]
-			users := what[2:]
-			// fmt.Printf("users (%d): '%+v'\n", len(users), users[0])
-			for _, user := range users {
-				if user == "" {
-					continue
-				}
+			stats := what[0]
+			fmt.Println(stats)
 
-				cols := strings.Fields(user)
-				// fmt.Printf("'%+v'", cols)
-				if cols[2] == ":0" {
-					result.User = getName(cols[0])
-					result.Active = cols[3]
-					break
+			if len(what) <= 2 {
+				log.WithField("host", machine).Warnln("length of what is <= 2")
+				fmt.Println(string(out))
+			} else {
+				users := what[2:]
+				// fmt.Printf("users (%d): '%+v'\n", len(users), users[0])
+				for _, user := range users {
+					if user == "" {
+						continue
+					}
+
+					cols := strings.Fields(user)
+					// fmt.Printf("'%+v'", cols)
+					if cols[2] == ":0" {
+						result.User = getName(cols[0])
+						result.Active = cols[3]
+						break
+					}
 				}
 			}
-
 		}
 
 		results <- result
@@ -351,6 +358,9 @@ func main() {
 	// Always do it on the hour and at the half hour.
 	c.AddFunc("0 0,30 * * * *", cronSearch("every thirty minutes"))
 
+	// Test
+	// c.AddFunc("0 */1 * * * *", cronSearch("every minute"))
+
 	log.Println("CRON LOADED.")
 
 	c.Start()
@@ -364,4 +374,5 @@ func main() {
 	log.Println("Shutting down...")
 
 	c.Stop()
+
 }
