@@ -163,7 +163,9 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "GSSAPIAuthentication=yes",
 			"-o", "GSSAPIDelegateCredentials=no",
 			"-o", "PasswordAuthentication=no",
-			"-o", "ConnectTimeout=10s",
+			"-o", "ServerAliveInterval=5",
+			"-o", "ServerAliveCountMax=3",
+			"-o", "ConnectTimeout=15s",
 			machine+".inf.ed.ac.uk",
 			"w",
 		)
@@ -243,7 +245,7 @@ func performSearch(machines []string, secret, callbackKey string) {
 	jobs := make(chan string, count)
 	resultsChan := make(chan MachineResult, count)
 
-	workers := 200
+	workers := 100
 	if count < workers {
 		workers = count
 	}
