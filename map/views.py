@@ -163,10 +163,10 @@ def rooms(which=""):
     if not which:
         return jsonify(rooms_dict())
     else:
-        rooms = []
+        machines = []
         for room in which.split(","):
-            rooms.extend(room_machines(room))
-        return jsonify({"rooms":rooms})
+            machines.extend(room_machines(room))
+        return jsonify({"machines":machines})
     
 
 @app.route('/api/update', methods=['POST'])

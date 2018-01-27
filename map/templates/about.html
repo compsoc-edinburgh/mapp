@@ -9,9 +9,9 @@
     <p><a href="/login" class="btn btn-primary">I solemnly swear I am up to no good... (log in)</a></p>
     <p><a href="/demo" class="btn btn-primary">Demo</a></p>
     {% else %}
-    <strong>List of rooms</strong>
+    <p><strong>List of rooms</strong></p>
     {% for room in rooms %}
-    <p><a class="btn btn-primary" href="/site/{{room.key}}">{{ room.name }}</a></p>
+    <a class="btn btn-primary" style="margin-bottom: 2px;" href="/site/{{room.key}}">{{ room.name }}</a>
     {% endfor %}
     {% endif %}
   </div>
