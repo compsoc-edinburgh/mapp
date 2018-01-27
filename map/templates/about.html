@@ -16,6 +16,15 @@
     {% endif %}
   </div>
 
+  {% if current_user.is_authenticated %}
+  <div class="text-center">
+      <p><strong>Friends</strong></p>
+          {% for friend in friends %}
+          <p>{{ friend[0] }} is in <a href="/site/{{ friend[1] }}">{{ friend[2] }}</a></p>
+          {% endfor %}
+  </div>
+  {% endif %}
+
   <div class="text-center padder">
     <h2>About The Marauder's App</h2>
   </div>

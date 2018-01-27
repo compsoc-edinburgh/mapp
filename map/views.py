@@ -97,8 +97,18 @@ def room_machines(which):
 def about():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
     rooms.sort(key=lambda x: x['key'])
-    print(rooms)
-    return render_template("about.html", rooms=rooms)
+
+    friends = set()
+    if current_user.is_authenticated:
+        for room in rooms:
+            room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
+            for machineName in room_machines:
+                machine = flask_redis.hgetall(machineName)
+                if current_user.has_friend(machine['user']):
+                    friends.add((current_user.get_friend(machine['user']), room['key'],room['name']))
+        friends = list(friends)
+        friends.sort(key=lambda x: x[0])
+    return render_template("about.html", rooms=rooms, friends=friends)
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
 @login_required
