@@ -68,10 +68,10 @@
 
             {% else %}{# User doesn't have this person as friend #}
             <div title="This machine is in use.">
-            <p class="blip muted">
+            <p class="blip text-danger">
               <i class="fa fa-television"></i>
             </p>
-            <p class="muted">{{ cell.hostname }}</p>
+            <p class="text-danger">{{ cell.hostname }}</p>
             </div>
             
             {% endif %}
@@ -81,10 +81,10 @@
             {% if cell.status == "offline" %}{# Display reserved machines as available but amber #}
 
             <div title="This machine is offline.">
-              <p class="text-danger blip">
+              <p class="blip muted">
                 <i class="fa fa-television"></i>
               </p>
-              <p>{{ cell.hostname }}</p>
+              <p class="muted">{{ cell.hostname }}</p>
             </div>
             
             {% else %}
