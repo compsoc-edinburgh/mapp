@@ -112,6 +112,7 @@ func getMachines() (machines []string, err error) {
 func checkAuthentication() error {
 	_, err := exec.Command(
 		"ssh",
+		"-o", "ForwardX11=no",
 		"-o", "GSSAPIAuthentication=yes",
 		"-o", "GSSAPIDelegateCredentials=no",
 		"-o", "PasswordAuthentication=no",
@@ -165,6 +166,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 
 		cmd := exec.Command(
 			"ssh",
+			"-o", "ForwardX11=no",
 			"-o", "GSSAPIAuthentication=yes",
 			"-o", "GSSAPIDelegateCredentials=no",
 			"-o", "PasswordAuthentication=no",
