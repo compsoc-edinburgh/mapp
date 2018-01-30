@@ -83,10 +83,15 @@ KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 -----END CERTIFICATE-----`
 
 func getMachines() (machines []string, err error) {
+	singleMachine := os.Getenv("MAPP_MACHINE")
+	if singleMachine == "" {
+		singleMachine = "localhost"
+	}
+
 	machineListPath := os.Getenv("MACHINE_LIST")
 	if machineListPath == "" {
 		machines = []string{"localhost"}
-		log.Infoln("Could not find machine list. Using localhost.")
+		log.Infoln("Could not find machine list. Using " + singleMachine)
 		return
 	}
 
