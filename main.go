@@ -90,7 +90,7 @@ func getMachines() (machines []string, err error) {
 
 	machineListPath := os.Getenv("MACHINE_LIST")
 	if machineListPath == "" {
-		machines = []string{"localhost"}
+		machines = []string{singleMachine}
 		log.Infoln("Could not find machine list. Using " + singleMachine)
 		return
 	}
