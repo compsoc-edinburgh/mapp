@@ -154,6 +154,11 @@ def login():
     url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com"
     return redirect(url + request.args.get('next', '/'))
 
+@app.route("/flip_dnd", methods=['POST'])
+@login_required
+def flip_dnd():
+    current_user.set_dnd(not current_user.get_dnd())
+    return redirect(request.form.get('next', '/'), code=307)
 
 @app.route("/logout")
 def logout():
@@ -211,8 +216,6 @@ def update():
     pipe.execute()
 
     return jsonify(status="ok")
-
-
 
 @app.route("/api/update_available", methods=['POST'])
 @login_required
