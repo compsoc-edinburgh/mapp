@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -136,25 +135,6 @@ type MachineResult struct {
 	Error     error  `json:"-"`
 }
 
-func getName(username string) string {
-	cmd := exec.Command(
-		"finger", "-p", username,
-	)
-
-	var errbuf bytes.Buffer
-	cmd.Stderr = &errbuf
-
-	out, err := cmd.Output()
-
-	if err != nil {
-		log.WithField("username", username).Errorln("could not lookup username information")
-		return ""
-	}
-
-	name := regexp.MustCompile("Name: (.*)").Find(out)
-	return strings.TrimLeft(string(name), "Name: ")
-}
-
 func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
 		// fmt.Println("worker", id, "started job", machine)
@@ -206,7 +186,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 					cols := strings.Fields(user)
 					// fmt.Printf("'%+v'", cols)
 					if cols[2] == ":0" {
-						result.User = getName(cols[0])
+						result.User = cols[0]
 						result.Active = cols[3]
 						break
 					}
