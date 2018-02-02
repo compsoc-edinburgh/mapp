@@ -62,8 +62,6 @@ def map_routine(which_room):
 
     num_free = num_machines - num_used
 
-    reserved = flask_redis.smembers('reserved-machines')
-
     low_availability = num_free <= 0.3 * num_machines
 
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
@@ -73,7 +71,6 @@ def map_routine(which_room):
     return {
         "room"             : room,
         "rows"             : rows,
-        "reserved"         : reserved,
         "num_free"         : num_free,
         "num_machines"     : num_machines,
         "low_availability" : low_availability,
@@ -125,7 +122,6 @@ def index(which):
     return render_template('index.html',
                            room=this['room'],
                            rows=this['rows'],
-                           reserved=this['reserved'],
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
                            low_availability=this['low_availability'],
@@ -147,7 +143,6 @@ def refresh():
     return render_template('refresh.xml',
                            room=this['room'],
                            rows=this['rows'],
-                           reserved=this['reserved'],
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
                            low_availability=this['low_availability'],
@@ -302,7 +297,6 @@ def demo():
                 {},{},{}
             ]
         ],
-        reserved=set(["marvin","vogon","tonyx","jynnan"]),
         num_machines=20,
         num_free=12,
         low_availability=False,

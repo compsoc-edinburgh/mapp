@@ -78,7 +78,7 @@
             {% else %}{# These are the free machines #}
 
 
-            {% if cell.status == "offline" %}{# Display reserved machines as available but amber #}
+            {% if cell.status == "offline" %}
 
             <div title="This machine is offline.">
               <p class="blip muted">
@@ -94,9 +94,9 @@
             </p>
             <p>{{ cell.hostname }}</p>
 
-            {% endif %}{# end reserved check #}
+            {% endif %}{# end offline check #}
             
-            {% endif %}{# cell.user or cell.hostname in reserved #}
+            {% endif %}{# cell.user #}
             {% endif %}{# if cell.hostname #}
           </td>
           {% endfor %}
