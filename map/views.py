@@ -1,4 +1,4 @@
-from map import app, flask_redis
+from map import app, flask_redis, get_ldap
 from datetime import datetime
 import hashlib
 import json, re
@@ -102,7 +102,8 @@ def about():
             for machineName in room_machines:
                 machine = flask_redis.hgetall(machineName)
                 if current_user.has_friend(machine['user']):
-                    friends.add((current_user.get_friend(machine['user']), room['key'],room['name']))
+                    username = get_ldap().get_name(current_user.get_friend(machine['user']))
+                    friends.add((username, room['key'], room['name']))
         friends = list(friends)
         friends.sort(key=lambda x: x[0])
     return render_template("about.html", rooms=rooms, friends=friends)
@@ -125,7 +126,8 @@ def index(which):
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
                            low_availability=this['low_availability'],
-                           last_update=this['last_update'])
+                           last_update=this['last_update'],
+                           get_ldap=get_ldap)
 
 @app.route('/api/refresh')
 @login_required
@@ -242,7 +244,8 @@ def friends():
     if request.method == "POST":
        formtype = request.form.get('type')
        if formtype == "del":
-           remove_friends = request.form.getlist('delfriends')
+           remove_friends = request.form.getlist('delfriends[]')
+           print remove_friends
            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('newfriend')
@@ -252,7 +255,18 @@ def friends():
 
     friends = flask_redis.smembers(current_user.get_username() + "-friends")
     friends = list(friends)
-    friends = sorted(friends, key=lambda s: s.lower())
+
+    for i in range(len(friends)):
+        uun = friends[i]
+        friend = uun
+
+        friend_name = get_ldap().get_name(uun)
+        if friend_name:
+            friend = friend_name + " (" + uun + ")"
+
+        friends[i] = (friend, uun)
+
+    friends = sorted(friends, key=lambda s: s[0].lower())
 
     return jsonify(friendList=friends) #Set up for ajax responses
 

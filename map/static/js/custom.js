@@ -16,16 +16,21 @@ function readyFunction(){
         $refreshAlert =  $('#refresh-alert-holder');
 
     var renderFriendList = function(data){
-        var friends = data['friendList'],
-            htmlOptions = '';
+        var friends = data['friendList'];
+
+        $friendList.empty();
 
         if ((friends != null) && (friends.length > 0)){
             $('#del-form').removeClass('hidden');
             $('#no-friends').addClass('hidden');
+
             friends.forEach(function(value){
-                htmlOptions+='<option>'+value+'</option>'
+                $friendList.append($("<option>", {
+                    text: value[0],
+                    'data-uun': value[1]
+                }));
             })
-            $friendList.html(htmlOptions);
+
             if (friends.length === 1)
                 $removeButton.text("Remove Friend");
             else
@@ -183,10 +188,15 @@ function readyFunction(){
         e.preventDefault();
         if ($friendList.find('option:selected')['length']>0){ //Check selections aren't empty
             $selectError.addClass('hidden');
+            const delfriends = $("#friend-list").find(":selected").toArray().map((o) => $(o).data('uun'));
+
             $.ajax({
                 url: '/api/friends',
                 type: 'POST',
-                data: $(this).serialize()
+                data: {
+                    delfriends: delfriends,
+                    type: 'del',
+                },
             })
                 .done(function(data) {
                     renderFriendList(data);
