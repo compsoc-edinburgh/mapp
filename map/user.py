@@ -11,6 +11,19 @@ class User(UserMixin):
     def get_username(self):
         return self.Principal
 
+    def get_dnd(self):
+        from map import flask_redis
+        return flask_redis.sismember("dnd-users", self.get_username())
+
+    def set_dnd(self, state):
+        from map import flask_redis
+
+        uun = self.get_username()
+        if state:
+            flask_redis.sadd("dnd-users", uun)
+        else:
+            flask_redis.srem("dnd-users", uun)
+
     def get_friend(self, friend_hash):
         import hashlib
         from config import CRYPTO_SECRET as secret

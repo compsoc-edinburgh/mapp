@@ -39,6 +39,25 @@
               <a href="/login">Log in with DICE</a>
             </li>
           {% else %}
+            <li>
+              <form method="POST" action="/flip_dnd" class="navbar-form">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <button type="submit" title="Incendio"
+                  {% if current_user.get_dnd() %}
+                    class="btn btn-danger"
+                  {% else %}
+                    class="btn btn-success"
+                  {% endif %}
+                >
+                {% if current_user.get_dnd() %}
+                  Do Not Disturb is ON
+                {% else %}
+                  Do Not Disturb is OFF
+                {% endif %}
+                </button>
+              </form>
+            </li>
+
             <li class="dropdown" id="rooms-dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 Change Rooms
