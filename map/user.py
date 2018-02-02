@@ -12,8 +12,8 @@ class User(UserMixin):
         return self.Principal
 
     def get_name(self):
-        from map import ldap
-        return ldap.get_name(self.get_username())
+        from map import get_ldap
+        return get_ldap().get_name(self.get_username())
 
     def get_dnd(self):
         from map import flask_redis
