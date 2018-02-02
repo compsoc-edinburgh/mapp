@@ -245,7 +245,6 @@ def friends():
        formtype = request.form.get('type')
        if formtype == "del":
            remove_friends = request.form.getlist('delfriends[]')
-           print remove_friends
            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('newfriend')
@@ -256,15 +255,16 @@ def friends():
     friends = flask_redis.smembers(current_user.get_username() + "-friends")
     friends = list(friends)
 
-    for i in range(len(friends)):
-        uun = friends[i]
-        friend = uun
+    with ldap.conn() as ldap_conn:
+        for i in range(len(friends)):
+            uun = friends[i]
+            friend = uun
 
-        friend_name = ldap.get_name(uun)
-        if friend_name:
-            friend = friend_name + " (" + uun + ")"
+            friend_name = ldap.get_name_bare(uun, ldap_conn)
+            if friend_name:
+                friend = friend_name + " (" + uun + ")"
 
-        friends[i] = (friend, uun)
+            friends[i] = (friend, uun)
 
     friends = sorted(friends, key=lambda s: s[0].lower())
 
