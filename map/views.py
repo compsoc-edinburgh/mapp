@@ -1,4 +1,4 @@
-from map import app, flask_redis, ldap
+from map import app, flask_redis
 from datetime import datetime
 import hashlib
 import json, re

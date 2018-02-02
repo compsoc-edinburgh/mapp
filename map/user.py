@@ -1,31 +1,4 @@
-import ldap
-import requests
-import urllib
-
 from flask.ext.login import UserMixin
-
-class ServerDownException(Exception): pass
-
-class LDAPTools():
-    def __init__(self, app):
-        self.config = {
-            "name": app.config["DICE_API_NAME"],
-            "key": app.config["DICE_API_KEY"] 
-        }
-
-    def getuser(self, login_token, ip):
-        #try:
-            payload = {'cookie': login_token, 'ip': ip}
-            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
-            obj = r.json()
-            print(obj)
-            if obj['status'] == 'success' and obj['data']['Realm'] == 'INF.ED.AC.UK':
-                return User(login_token, obj['data'])
-            elif obj['status'] == 'success':
-                return BannedUser(login_token, obj['data'])
-
-        #except Exception:
-        #    print("Ran into exception in getuser")
 
 class User(UserMixin):
     def __init__(self, login_token, attrs):
@@ -63,4 +36,3 @@ class BannedUser(User):
 
     def has_friend(self, hash):
         return False
-
