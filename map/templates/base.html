@@ -1,58 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}The Marauder's App{% endblock %} :: The Marauder's App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#2C3E50">
 
-    <link rel="icon" type="image/png" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
-    <link rel="apple-touch-icon icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
-    <link rel="shortcut icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
-    <link rel="apple-touch-icon icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{  url_for('static', filename='css/marauders-app.css') }}" rel="stylesheet">
-    <link href="{{  url_for('static', filename='css/schtoof.css') }}" rel="stylesheet">
-  </head>
-  <body>
-    <nav class="nav navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mapp-nav">
-            <span class="sr-only">Toggle Navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a href="/" class="navbar-brand">Better Informatics :: The Marauder's App</a>
-        </div>
-        <div class="collapse navbar-collapse" id="mapp-nav">
-          <ul class="nav navbar-nav">
-          </ul>
-          <ul class="nav navbar-nav navbar-right ">
-            {% if current_user.is_anonymous %}
-            <li><a href="/login">Log in with DICE</a></li>
-            {% else %}
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}The Marauder's App{% endblock %} :: The Marauder's App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2C3E50">
+
+  <link rel="icon" type="image/png" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
+  <link rel="apple-touch-icon icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
+  <link rel="shortcut icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
+  <link rel="apple-touch-icon icon" href="{{  url_for('static', filename='img/mapp-icon.png') }}">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{  url_for('static', filename='css/marauders-app.css') }}" rel="stylesheet">
+  <link href="{{  url_for('static', filename='css/schtoof.css') }}" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="nav navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mapp-nav">
+          <span class="sr-only">Toggle Navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="/" class="navbar-brand">Better Informatics :: The Marauder's App</a>
+      </div>
+      <div class="collapse navbar-collapse" id="mapp-nav">
+        <ul class="nav navbar-nav">
+        </ul>
+        <ul class="nav navbar-nav navbar-right ">
+          {% if current_user.is_anonymous %}
+            <li>
+              <a href="/login">Log in with DICE</a>
+            </li>
+          {% else %}
             <li class="dropdown" id="rooms-dropdown">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true" aria-expanded="false">
-                Change Rooms <span class="caret"></span>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Change Rooms
+                <span class="caret"></span>
               </a>
-              <div class="dropdown-menu mobile-dropdown" id ="room-list"> 
+              <div class="dropdown-menu mobile-dropdown" id="room-list">
               </div>
+            </li>
+
             <li class="dropdown" id="friends-dropdown">
-              <a href="#" class="dropdown-toggle"
-                 data-toggle="dropdown" role="button"
-                 aria-haspopup="true" aria-expanded="false">
-                Manage Friends <span class="caret"></span>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Manage Friends
+                <span class="caret"></span>
               </a>
               <div class="dropdown-menu mobile-dropdown">
                 <div class="container-fluid">
                   <h4>Friends</h4>
-                  <div id = "del-form-container">
+                  <div id="del-form-container">
                     <form method="POST" class="form-horizontal" id="del-form">
                       <input type="hidden" name="type" value="del">
                       <p id="select-error-alert" class="text-danger hidden" style="opacity: 0.8;"></p>
@@ -72,38 +76,39 @@
                     <p id="name-error-alert" class="hidden text-danger" style="opacity: 0.8;"></p>
                     <p>Enter names in the form of "John Smith"</p>
                     <div class="form-group">
-                      <input type="text" name="newfriend"
-                             id="new-friend" class="form-control" placeholder="New Friend" >
+                      <input type="text" name="newfriend" id="new-friend" class="form-control" placeholder="New Friend">
                     </div>
-                    <div class="form-group"> 
-                      <button type="submit" class="btn btn-primary btn-block"
-                              id="add-btn">Add Friend</button>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-primary btn-block" id="add-btn">Add Friend</button>
                     </div>
                   </form>
                 </div>
               </div>
             </li>
-            <li><a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_username() }})</a></li>
-            {% endif %}
-            <li><a href="/" title="About &amp; privacy.">
-                <span class="hidden-xs">
-                  <i class="fa fa-question-circle"></i>
-                </span>
-                <span class="visible-xs">
-                  About
-                </span>
-            </a></li>
-          </ul>
-        </div>
+
+            <li>
+              <a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_username() }})</a>
+            </li>
+          {% endif %}
+
+          <li>
+            <a href="/" title="About &amp; privacy.">
+              <span class="hidden-xs">
+                <i class="fa fa-question-circle"></i>
+              </span>
+              <span class="visible-xs">
+                About
+              </span>
+            </a>
+          </li>
+        </ul>
       </div>
-    </nav>
-    {% block content %}
-    {% endblock %}
-    
-    {% block scripts %}
-    <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
-    <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script>
-    {% endblock %}
-  </body>
+    </div>
+  </nav>
+  {% block content %} {% endblock %} {% block scripts %}
+  <script type="text/javascript" src="{{  url_for('static', filename='js/jquery-1.11.3.min.js') }}"></script>
+  <script type="text/javascript" src="{{  url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script> {% endblock %}
+</body>
+
 </html>
