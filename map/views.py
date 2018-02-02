@@ -1,4 +1,4 @@
-from map import app, flask_redis, get_ldap
+from map import app, flask_redis, ldap
 from datetime import datetime
 import hashlib
 import json, re
@@ -102,7 +102,7 @@ def about():
             for machineName in room_machines:
                 machine = flask_redis.hgetall(machineName)
                 if current_user.has_friend(machine['user']):
-                    username = get_ldap().get_name(current_user.get_friend(machine['user']))
+                    username = ldap.get_name(current_user.get_friend(machine['user']))
                     friends.add((username, room['key'], room['name']))
         friends = list(friends)
         friends.sort(key=lambda x: x[0])
@@ -127,7 +127,7 @@ def index(which):
                            num_free=this['num_free'],
                            low_availability=this['low_availability'],
                            last_update=this['last_update'],
-                           get_ldap=get_ldap)
+                           ldap=ldap)
 
 @app.route('/api/refresh')
 @login_required
@@ -260,7 +260,7 @@ def friends():
         uun = friends[i]
         friend = uun
 
-        friend_name = get_ldap().get_name(uun)
+        friend_name = ldap.get_name(uun)
         if friend_name:
             friend = friend_name + " (" + uun + ")"
 

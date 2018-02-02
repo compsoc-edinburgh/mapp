@@ -2,7 +2,7 @@ from flask import Flask, g
 from flask.ext.redis import FlaskRedis
 from flask.ext.login import LoginManager
 from flask.sessions import SecureCookieSessionInterface
-
+from ldappool import ConnectionManager
 
 from cosign import CoSign
 from ldaptools import LDAPTools
@@ -11,18 +11,11 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 flask_redis = FlaskRedis(app, 'REDIS')
+ldap = LDAPTools(
+    ConnectionManager(app.config["LDAP_SERVER"])
+)
 
 cosign = CoSign(app)
-
-def get_ldap():
-    if not hasattr(g, 'ldap'):
-        g.ldap = LDAPTools(app)
-    return g.ldap
-
-@app.teardown_appcontext
-def close_ldap(error):
-    if hasattr(g, 'ldap'):
-        g.ldap.close()
 
 lm = LoginManager(app)
 lm.login_view = "login"
