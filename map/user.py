@@ -11,6 +11,10 @@ class User(UserMixin):
     def get_username(self):
         return self.Principal
 
+    def get_name(self):
+        from map import ldap
+        return ldap.get_name(self.get_username())
+
     def get_dnd(self):
         from map import flask_redis
         return flask_redis.sismember("dnd-users", self.get_username())

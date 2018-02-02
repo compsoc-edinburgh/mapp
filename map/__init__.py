@@ -5,6 +5,7 @@ from flask.sessions import SecureCookieSessionInterface
 
 
 from cosign import CoSign
+from ldaptools import LDAPTools
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -12,6 +13,8 @@ app.config.from_object('config')
 flask_redis = FlaskRedis(app, 'REDIS')
 
 cosign = CoSign(app)
+ldap = LDAPTools(app)
+
 lm = LoginManager(app)
 lm.login_view = "login"
 

@@ -106,7 +106,7 @@
             </li>
 
             <li>
-              <a href="/logout" title="Mischeif Managed">Log Out ({{ current_user.get_username() }})</a>
+              <a href="/logout" title="Mischief Managed">Log Out ({{ current_user.get_name() }}, {{ current_user.get_username() }})</a>
             </li>
           {% endif %}
 
