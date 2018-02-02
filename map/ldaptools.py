@@ -17,10 +17,8 @@ class LDAPTools():
 
     def get_name_bare(self, uun, l):
         ldap_filter = "uid=" + uun
-        result_id = l.search(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
+        data = l.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
 
-        if result_id:
-            type, data = l.result(result_id, 0)
-            if data:
-                dn, attrs = data[0]
-                return attrs['gecos'][0]
+        if data:
+            dn, attrs = data[0]
+            return attrs['gecos'][0]
