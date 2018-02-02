@@ -28,7 +28,7 @@ class User(UserMixin):
         else:
             flask_redis.srem("dnd-users", uun)
 
-    def get_friend(self, friend_hash):
+    def get_friend(self, friend_hash, ignore_dnd=False):
         import hashlib
         from config import CRYPTO_SECRET as secret
         from map import flask_redis
@@ -39,11 +39,16 @@ class User(UserMixin):
             hasher = hashlib.sha512()
             hasher.update(friend + str(secret))
             if hasher.hexdigest() == friend_hash:
-                return friend
+                from map import flask_redis
+                is_dnd = flask_redis.sismember("dnd-users", friend)
+                if is_dnd and not ignore_dnd:
+                    return ""
+                else:
+                    return friend
         return ""
 
-    def has_friend(self, friend_hash):
-        if self.get_friend(friend_hash) != "":
+    def has_friend(self, friend_hash, ignore_dnd=False):
+        if self.get_friend(friend_hash, ignore_dnd) != "":
             return True
         return False
 
