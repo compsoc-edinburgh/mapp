@@ -1,25 +1,24 @@
 import ldap
 
 class LDAPTools():
-    def __init__(self, app):
+    def __init__(self, cm):
         self.config = {
-            "server": app.config['LDAP_SERVER'],
             "memberdn": "ou=People,dc=inf,dc=ed,dc=ac,dc=uk"
         }
 
-        self.l = ldap.initialize(self.config["server"])
-        print("LDAP connection created")
+        self.cm = cm
 
-    def close(self):
-        self.l.unbind()
-        print("LDAP connection closed")
+    def conn(self):
+        return self.cm.connection()
 
     def get_name(self, uun):
         ldap_filter = "uid=" + uun
-        result_id = self.l.search(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
 
-        if result_id:
-            type, data = self.l.result(result_id, 0)
-            if data:
-                dn, attrs = data[0]
-                return attrs['gecos'][0]
+        with self.conn() as l:
+            result_id = l.search(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
+
+            if result_id:
+                type, data = l.result(result_id, 0)
+                if data:
+                    dn, attrs = data[0]
+                    return attrs['gecos'][0]
