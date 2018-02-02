@@ -158,7 +158,7 @@ def login():
 @login_required
 def flip_dnd():
     current_user.set_dnd(not current_user.get_dnd())
-    return redirect(request.form.get('next', '/'), code=307)
+    return redirect(request.form.get('next', '/'))
 
 @app.route("/logout")
 def logout():
