@@ -6,7 +6,6 @@ function readyFunction(){
     var clicked = false, clickY, clickX,
         regexName = /^([a-zA-Z]+\ [A-Za-z]+)$/,
         $friendName = $("#new-friend"),
-        $nameError = $('#name-error-alert'),
         $selectError = $('#select-error-alert'),
         $friendList = $('#friend-list'),
         $addButton = $('#add-btn'),
@@ -211,15 +210,7 @@ function readyFunction(){
 
     $('#add-form').on('submit',function(e){
         e.preventDefault();
-        $nameError.addClass('hidden');
-        
-        if ($friendName.val().match(regexName) == null){
-            if ($nameError.hasClass('hidden')) {
-                $nameError.removeClass('hidden');
-            }
-            $nameError.html('<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> Make sure name is in the correct form!');
-        }
-        
+
         $.ajax({
             url: '/api/friends',
             type: 'POST',
@@ -233,7 +224,6 @@ function readyFunction(){
     });
 
     $('.dropdown').on('hide.bs.dropdown',function(){
-        $nameError.addClass('hidden');
         $selectError.addClass('hidden');
         $('.dropdown-toggle').blur(); // Removes the focus from the Manage friends after close
     });
