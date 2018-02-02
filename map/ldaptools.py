@@ -27,24 +27,6 @@ class LDAPTools():
         #except Exception:
         #    print("Ran into exception in getuser")
 
-    def check_credentials(self, login_token, ip):
-        print("Checking credentials..")
-        try:
-            payload = {'cookie': login_token, 'ip': ip}
-            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
-            obj = r.json()
-
-            print(login_token)
-            if obj['status'] == 'success':
-                print("Succeeded checking creds...")
-                return True
-        except Exception:
-            print("Encountered error in check_credentials")
-
-        print("Check creds returning false...")
-        return False
-
-
 class User(UserMixin):
     def __init__(self, login_token, attrs):
         self.login_token = login_token
