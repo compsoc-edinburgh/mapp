@@ -4,14 +4,14 @@ from flask.ext.login import LoginManager
 from flask.sessions import SecureCookieSessionInterface
 
 
-from ldaptools import LDAPTools
+from cosign import CoSign
 
 app = Flask(__name__)
 app.config.from_object('config')
 
 flask_redis = FlaskRedis(app, 'REDIS')
 
-ldap = LDAPTools(app)
+cosign = CoSign(app)
 lm = LoginManager(app)
 lm.login_view = "login"
 
@@ -28,6 +28,6 @@ def get_user(request):
     print("request_loader: checking for session cookie...")
     if 'cosign-betterinformatics.com' in request.cookies:
         print("request_loader: getting user via request_loader")
-        return ldap.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
+        return cosign.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
 
 from . import views
