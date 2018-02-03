@@ -202,12 +202,10 @@ def update():
             host   = machine['hostname']
             user   = machine['user']
             ts     = machine['timestamp']
-            active = machine['active']
             status = machine['status']
 
             pipe.hset(host, "user", user)
             pipe.hset(host, "timestamp", ts)
-            pipe.hset(host, "active", active)
             pipe.hset(host, "status", status)
 
     except Exception:
