@@ -1,4 +1,5 @@
 import ldap
+from ldap.filter import filter_format
 
 class LDAPTools():
     def __init__(self, cm):
@@ -22,3 +23,15 @@ class LDAPTools():
         if data:
             dn, attrs = data[0]
             return attrs['gecos'][0]
+
+    def get_names_bare(self, uuns, l):
+        """Takes a list of uuns and returns a dict of uun->name"""
+        query = filter_format("(|" + ("(uid=%s)" * len(uuns)) + ")", uuns)
+        data = l.search_s(self.config["memberdn"], ldap.SCOPE_SUBTREE, query, ["gecos", "uid"])
+
+        names = {}
+        for _, row in data:
+            names[row['uid'][0]] = row['gecos'][0]
+
+        return names
+
