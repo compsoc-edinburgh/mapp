@@ -254,13 +254,14 @@ def friends():
     friends = list(friends)
 
     with ldap.conn() as ldap_conn:
+        friend_names = ldap.get_names_bare(friends, ldap_conn)
+
         for i in range(len(friends)):
             uun = friends[i]
             friend = uun
 
-            friend_name = ldap.get_name_bare(uun, ldap_conn)
-            if friend_name:
-                friend = friend_name + " (" + uun + ")"
+            if uun in friend_names:
+                friend = friend_names[uun] + " (" + uun + ")"
 
             friends[i] = (friend, uun)
 
