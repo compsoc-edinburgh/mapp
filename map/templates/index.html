@@ -38,19 +38,7 @@
           <td>
             {% if cell.hostname %}
               {% if cell.user %}
-                {% if not current_user.is_anonymous and current_user.has_friend(cell.user) %}
-                  <div title="This machine is in use by your friend!">
-                    <p class="text-info blip">
-                      {% if cell.hostname == 'ceilingcat' %}
-                      <i class="fa fa-paw"></i>
-                      {% else %}
-                      <i class="fa fa-hand-peace-o"></i>
-                      {% endif %}
-                    </p>
-                    <p>{{ cell.hostname }}</p>
-                    <p class="userat-name text-info">{{ ldap.get_name(current_user.get_friend(cell.user)) }}</p>
-                  </div>
-                {% elif cell.friend %}{# Insecure way to pass a friend over, not reccomended (demo) #}
+                {% if cell.friend %}
                   <div title="This machine is in use by your friend!">
                     <p class="text-info blip">
                       <i class="fa fa-hand-peace-o"></i>

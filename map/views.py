@@ -40,6 +40,7 @@ def map_routine(which_room):
     num_used = 0
     
     rows = []
+    uuns = []
     for r in xrange(0, num_rows+1):
         unsorted_cells = []
         for c in xrange(0, num_cols+1):
@@ -55,10 +56,27 @@ def map_routine(which_room):
                     num_used += 1
             except Exception:
                 pass
+
+            if 'user' in cell:
+                uun = current_user.get_friend(cell['user'])
+                if uun:
+                    uuns.append(uun)
+                    cell["user"] = uun
+
             unsorted_cells.append(cell)
 
         cells = unsorted_cells
         rows.append(cells)
+
+    uun_names = ldap.get_names(uuns)
+
+    for y in xrange(len(rows)):
+        for x in xrange(len(rows[y])):
+            cell = rows[y][x]
+            if "user" in cell:
+                uun = cell["user"]
+                if uun in uun_names:
+                    rows[y][x]["friend"] = uun_names[uun]
 
     num_free = num_machines - num_used
 
