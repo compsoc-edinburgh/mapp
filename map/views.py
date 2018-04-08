@@ -102,9 +102,17 @@ def about():
             for machineName in room_machines:
                 machine = flask_redis.hgetall(machineName)
                 if current_user.has_friend(machine['user']):
-                    username = ldap.get_name(current_user.get_friend(machine['user']))
-                    friends.add((username, room['key'], room['name']))
+                    uun = current_user.get_friend(machine['user'])
+                    friends.add((uun, room['key'], room['name']))
         friends = list(friends)
+
+        # uun -> name
+        names = ldap.get_names([f[0] for f in friends])
+        for i in range(len(friends)):
+            uun, b, c = friends[i]
+            if uun in names:
+                friends[i] = (names[uun], b, c)
+
         friends.sort(key=lambda x: x[0])
     return render_template("about.html", rooms=rooms, friends=friends)
 

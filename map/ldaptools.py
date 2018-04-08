@@ -16,6 +16,10 @@ class LDAPTools():
         with self.conn() as l:
             return self.get_name_bare(uun, l)
 
+    def get_names(self, uuns):
+        with self.conn() as l:
+            return self.get_names_bare(uuns, l)
+
     def get_name_bare(self, uun, l):
         ldap_filter = filter_format("uid=%s", [uun])
         data = l.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, None)
