@@ -58,10 +58,15 @@ def map_routine(which_room):
                 pass
 
             if 'user' in cell:
-                uun = current_user.get_friend(cell['user'])
-                if uun:
-                    uuns.append(uun)
-                    cell["user"] = uun
+                if cell['user'] == "":
+                    del cell['user']
+                else:
+                    uun = current_user.get_friend(cell['user'])
+                    if uun:
+                        uuns.append(uun)
+                        cell["user"] = uun
+                    else:
+                        cell["user"] = "-"
 
             unsorted_cells.append(cell)
 
@@ -173,6 +178,23 @@ def refresh():
                            last_update=this['last_update'],
                            ldap=ldap)
 
+@app.route('/api/refresh_data')
+@login_required
+def refresh_data():
+    """
+    Returns a new update
+    """
+    default = "drillhall"
+    which = request.args.get('site', '')
+    if which == "":
+        return get_demo_content()
+
+    try:
+        this = map_routine(which)
+    except KeyError:
+        return get_demo_content()
+
+    return jsonify(this)
 
 @app.route("/login", methods=['GET'])
 def login():
