@@ -100,13 +100,14 @@ def map_routine(which_room):
         "last_update"      : last_update
     }
 
-def rooms_dict():
-    out = dict({})
+def rooms_list():
     rooms = list(flask_redis.smembers("forresthill-rooms"))
     rooms.sort()
-    for room in rooms:
-        out[room] = flask_redis.hget(room, "name")
-    return out
+    for i in range(len(rooms)):
+        room = rooms[i]
+        rooms[i] = (room, flask_redis.hget(room, "name"))
+    print "wtf ok"
+    return rooms
 
 def room_machines(which):
     machines = flask_redis.lrange(which + "-machines", 0, -1)
@@ -218,7 +219,7 @@ def logout():
 @login_required
 def rooms(which=""):
     if not which:
-        return jsonify(rooms_dict())
+        return jsonify({'rooms':rooms_list()})
     else:
         rooms = []
         for room in which.split(","):

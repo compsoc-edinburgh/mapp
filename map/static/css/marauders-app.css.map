@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,IAAK;EACH,WAAW,EAAE,IAAI;;AAGnB,UAAW;EACT,KAAK,EAAE,GAAG",
-"sources": ["../scss/marauders-app.scss"],
-"names": [],
-"file": "marauders-app.css"
-}
