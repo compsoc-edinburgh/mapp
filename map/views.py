@@ -141,23 +141,19 @@ def index(which):
     if which == "":
         which = default
 
-    try:
-        this = map_routine(which)
-    except KeyError:
-        this = map_routine(default)
+    room = flask_redis.hgetall(str(which))
+    if room == {}:
+        return '404'
         
     return render_template('index.html',
-                           room=this['room'],
-                           rows=this['rows'],
-                           num_machines=this['num_machines'],
-                           num_free=this['num_free'],
-                           low_availability=this['low_availability'],
-                           last_update=this['last_update'],
-                           ldap=ldap)
+                           room_key=room['key'])
 
 @app.route('/api/refresh')
 @login_required
 def refresh():
+    """
+    Returns a new update
+    """
     default = "drillhall"
     which = request.args.get('site', '')
     if which == "":
@@ -167,14 +163,15 @@ def refresh():
         this = map_routine(which)
     except KeyError:
         this = map_routine(default)
-        
+
     return render_template('refresh.xml',
                            room=this['room'],
                            rows=this['rows'],
                            num_machines=this['num_machines'],
                            num_free=this['num_free'],
                            low_availability=this['low_availability'],
-                           last_update=this['last_update'])
+                           last_update=this['last_update'],
+                           ldap=ldap)
 
 
 @app.route("/login", methods=['GET'])
@@ -257,7 +254,7 @@ def update_available():
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
 
     user_behind = client_time < last_update
-    
+
     return jsonify(status=str(user_behind))
 
 
