@@ -1,5 +1,5 @@
 import requests
-from user import User, BannedUser
+from user import User, DisabledUser
 
 class ServerDownException(Exception): pass
 
@@ -19,7 +19,7 @@ class CoSign():
             if obj['status'] == 'success' and obj['data']['Realm'] == 'INF.ED.AC.UK':
                 return User(login_token, obj['data'])
             elif obj['status'] == 'success':
-                return BannedUser(login_token, obj['data'])
+                return DisabledUser(login_token, obj['data'])
 
         #except Exception:
         #    print("Ran into exception in getuser")

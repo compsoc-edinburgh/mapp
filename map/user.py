@@ -60,7 +60,7 @@ class User(UserMixin):
     def has_friend(self, friend_hash, ignore_dnd=False):
         return self.get_friend(friend_hash, ignore_dnd) != ""
 
-class BannedUser(User):
+class DisabledUser(User):
     def get_friend(self, hash):
         return ""
 
