@@ -20,8 +20,8 @@ function readyFunction(){
         $friendList.empty();
 
         if ((friends != null) && (friends.length > 0)){
-            $('#del-form').removeClass('hidden');
-            $('#no-friends').addClass('hidden');
+            $('#del-form').removeClass('d-none');
+            $('#no-friends').addClass('d-none');
 
             friends.forEach(function(value){
                 $friendList.append($("<option>", {
@@ -36,21 +36,9 @@ function readyFunction(){
                 $removeButton.text("Remove Friends");
         }
         else {
-            $('#del-form').addClass('hidden');
-            $('#no-friends').removeClass('hidden');            
+            $('#del-form').addClass('d-none');
+            $('#no-friends').removeClass('d-none');            
         }
-    };
-    var renderRoomList = function(data){
-        var roomListHtml = '',
-        $currentRoom = $('#maintitle').html();
-        roomList = data;
-        for (var key in roomList){
-            if(roomList.hasOwnProperty(key)){
-                roomListHtml += (roomList[key] == $currentRoom) ? '<li class="active">' : '<li>';
-                roomListHtml += '<a class="room-no" href="/site/'+key+'">'+ roomList[key]+'</a></li>';
-            }
-        }
-        $roomList.html(roomListHtml);
     };
     var centreMap = function () {
         var myDiv = $("#mapscroll");
@@ -103,15 +91,15 @@ function readyFunction(){
             });
     };
     var createRefreshAlert = function (status) {
-        var statusString = '   <strong>Update Available!</strong> Updating map...';
+        var statusString = '   <strong>Update available!</strong> Updating map...';
         if (status == 'False')
-            statusString = '  <strong>No Update Available!</strong> Closing this...';
-        $refreshAlert.html('<div class="alert alert-info fade in custom-alert"> ' + statusString + '</div>');
-        $refreshAlert.css('left',''+ ($(window).width()/2 - $refreshAlert.width()/2) +'px' );
+            statusString = '  <strong>No update available!</strong>';
+        $refreshAlert.html('<div class="alert alert-info fade show" role=alert> ' + statusString + '</div>');
+
         window.setTimeout(function(){
             $('#manual-refresh').prop('disabled',false);
             $refreshAlert.find('.alert').alert('close');
-        }, 2000);
+        }, 3000);
     };
     var checkRefreshAvailable = function(){
         $.ajax({
@@ -158,12 +146,6 @@ function readyFunction(){
         }).done(function(data) {
             renderFriendList(data);
         });
-        
-        $.ajax({
-            url: '/api/rooms'
-        }).done(function(data) {
-            renderRoomList(data);
-        });
     }
 
     centreMap();
@@ -199,7 +181,7 @@ function readyFunction(){
     $('#del-form').on('submit',function(e){
         e.preventDefault();
         if ($friendList.find('option:selected')['length']>0){ //Check selections aren't empty
-            $selectError.addClass('hidden');
+            $selectError.addClass('d-none');
             const delfriends = $("#friend-list").find(":selected").toArray().map((o) => $(o).data('uun'));
 
             $.ajax({
@@ -215,8 +197,8 @@ function readyFunction(){
                 });
         }
         else {
-            if ($selectError.hasClass('hidden'))
-                $selectError.removeClass('hidden')
+            if ($selectError.hasClass('d-none'))
+                $selectError.removeClass('d-none')
             $selectError.html("<i class=\"fa fa-warning\"></i></i><span class=\"spacer\"></span> No friends selected")
         }
     });
@@ -237,7 +219,7 @@ function readyFunction(){
     });
 
     $('.dropdown').on('hide.bs.dropdown',function(){
-        $selectError.addClass('hidden');
+        $selectError.addClass('d-none');
         $('.dropdown-toggle').blur(); // Removes the focus from the Manage friends after close
     });
 

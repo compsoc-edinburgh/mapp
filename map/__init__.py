@@ -36,3 +36,5 @@ def get_user(request):
         return cosign.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
 
 from . import views
+
+app.jinja_env.globals.update(rooms_list=views.rooms_list)
