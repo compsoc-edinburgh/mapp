@@ -157,12 +157,12 @@ def refresh():
     default = "drillhall"
     which = request.args.get('site', '')
     if which == "":
-        which = default
+        return get_demo_content()
 
     try:
         this = map_routine(which)
     except KeyError:
-        this = map_routine(default)
+        return get_demo_content()
 
     return render_template('refresh.xml',
                            room=this['room'],
@@ -295,10 +295,16 @@ def friends():
     
 @app.route("/demo")
 def demo():
+    return render_template(
+        "site.html",
+        room={"name":"Demo"}
+    )
+
+def get_demo_content():
     # Manual render, for demo purpoises.
     # DOES NOT REQUIRE AUTH
     return render_template(
-        "index.html",
+        "refresh.xml",
         room={"name":"Mapp Demo"},
         rows=[
             [
