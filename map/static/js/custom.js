@@ -1,5 +1,5 @@
 
-$().ready(readyFunction());
+$(readyFunction);
 
 function readyFunction(){
     //Move function expressions to top because hoisting doesn't work for them
