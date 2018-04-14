@@ -111,7 +111,7 @@ function readyFunction(){
         window.setTimeout(function(){
             $('#manual-refresh').prop('disabled',false);
             $refreshAlert.find('.alert').alert('close');
-        },2500); //Change parameter if you want
+        }, 2000);
     };
     var checkRefreshAvailable = function(){
         $.ajax({
@@ -168,7 +168,8 @@ function readyFunction(){
 
     centreMap();
 
-    window.setInterval(checkRefreshAvailable,300000);
+    // Check for a refresh every five minutes
+    window.setInterval(checkRefreshAvailable, 5 * 60 * 1000);
     /*Listeners*/
     
     $('#zoom-in').on('click',function(){
