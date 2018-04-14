@@ -154,15 +154,19 @@ def index(which):
     return render_template('site.html',
                            room_key=room['key'])
 
+# WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
 @app.route('/api/refresh')
-@login_required
 def refresh():
     """
     Returns a new update
     """
     default = "drillhall"
     which = request.args.get('site', '')
-    if which == "":
+
+    # SENSITIVE CODE!!!!
+    # THIS IS_ANONYMOUS CHECK IS WHAT GUARDS
+    # AGAINST NON-LOGGED IN ACCESS
+    if current_user.is_anonymous or (which == ""):
         this = get_demo_json()
     else:
         try:
@@ -179,15 +183,19 @@ def refresh():
                            last_update=this['last_update'],
                            ldap=ldap)
 
+# WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
 @app.route('/api/refresh_data')
-@login_required
 def refresh_data():
     """
     Returns a new update
     """
     default = "drillhall"
     which = request.args.get('site', '')
-    if which == "":
+
+    # SENSITIVE CODE!!!!
+    # THIS IS_ANONYMOUS CHECK IS WHAT GUARDS
+    # AGAINST NON-LOGGED IN ACCESS
+    if current_user.is_anonymous or which == "":
         this = get_demo_json()
     else:
         try:
