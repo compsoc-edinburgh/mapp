@@ -274,7 +274,6 @@ def update_available():
         raise APIError("Malformed JSON POST data", status_code=400)
 
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
-
     user_behind = client_time < last_update
 
     return jsonify(status=str(user_behind))

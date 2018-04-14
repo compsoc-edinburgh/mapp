@@ -85,7 +85,10 @@ function readyFunction(){
         myDiv.scrollTop(iPosY - (e.pageY - clickY));
         myDiv.scrollLeft(iPosX - (e.pageX - clickX));
     };
+
+    var timeNow
     var mapUpdate = function(){
+        timeNow = new Date();
         var parts = location.pathname.split('/');
         var site = parts.pop() || parts.pop();  // handle potential trailing slash
 
@@ -111,7 +114,6 @@ function readyFunction(){
         },2500); //Change parameter if you want
     };
     var checkRefreshAvailable = function(){
-        var timeNow = new Date();
         $.ajax({
             url: '/api/update_available',
             type: 'POST',
