@@ -12,7 +12,9 @@
                 <li class="nav-item {% if active_page == 'about' %} active {% endif %}">
                     <a class="nav-link" href="/">About {% if active_page == "about" %}<span class="sr-only">(current)</span>{% endif %}</a>
                 </li>
-                {% if not current_user.is_anonymous %}
+                {% if current_user.is_anonymous %}
+                    <a class="nav-link {% if room_key == 'Demo' %} active {% endif %}" href="/demo">Demo</a>
+                {% else %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle {% if active_page == 'site' %} active {% endif %}" href="#" id="roomsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Rooms {% if active_page == "site" %}<span class="sr-only">(current)</span>{% endif %}
@@ -45,9 +47,9 @@
                             
                             my-2 my-sm-0" type="submit">
                             {% if current_user.get_dnd() %}
-                            Do Not Disturb is ON
+                            Do not Disturb is ON
                             {% else %}
-                            Do Not Disturb is OFF
+                            Do not Disturb is OFF
                             {% endif %}
                         </button>
                     </form>

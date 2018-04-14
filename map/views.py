@@ -327,7 +327,7 @@ def friends():
 def demo():
     return render_template(
         "site.html",
-        room={"name":"Demo"}
+        room_key="Demo"
     )
 
 def get_demo_json():
