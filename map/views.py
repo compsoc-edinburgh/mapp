@@ -145,7 +145,7 @@ def index(which):
     if room == {}:
         return '404'
         
-    return render_template('index.html',
+    return render_template('site.html',
                            room_key=room['key'])
 
 @app.route('/api/refresh')
