@@ -92,7 +92,6 @@ function readyFunction(){
             .done(function(data){
                 $('#ajax-map-replace').replaceWith(data);   
                 centreMap();
-                readyFunction();
             });
     };
     var createRefreshAlert = function (status) {
