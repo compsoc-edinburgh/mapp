@@ -162,12 +162,12 @@ def refresh():
     default = "drillhall"
     which = request.args.get('site', '')
     if which == "":
-        return get_demo_content()
-
-    try:
-        this = map_routine(which)
-    except KeyError:
-        return get_demo_content()
+        this = get_demo_json()
+    else:
+        try:
+            this = map_routine(which)
+        except KeyError:
+            this = get_demo_json()
 
     return render_template('refresh.xml',
                            room=this['room'],
@@ -187,12 +187,12 @@ def refresh_data():
     default = "drillhall"
     which = request.args.get('site', '')
     if which == "":
-        return get_demo_content()
-
-    try:
-        this = map_routine(which)
-    except KeyError:
-        return get_demo_content()
+        this = get_demo_json()
+    else:
+        try:
+            this = map_routine(which)
+        except KeyError:
+            this = get_demo_json()
 
     return jsonify(this)
 
@@ -321,13 +321,10 @@ def demo():
         room={"name":"Demo"}
     )
 
-def get_demo_content():
-    # Manual render, for demo purpoises.
-    # DOES NOT REQUIRE AUTH
-    return render_template(
-        "refresh.xml",
-        room={"name":"Mapp Demo"},
-        rows=[
+def get_demo_json():
+    return {
+        'room':{"name":"Mapp Demo"},
+        'rows':[
             [
                 {},
                 {"hostname":"dish"},
@@ -363,7 +360,8 @@ def get_demo_content():
                 {},{},{}
             ]
         ],
-        num_machines=20,
-        num_free=12,
-        low_availability=False,
-        last_update="1998-05-02 13:37")
+        'num_machines':20,
+        'num_free':12,
+        'low_availability':False,
+        'last_update':"1998-05-02 13:37"
+    }
