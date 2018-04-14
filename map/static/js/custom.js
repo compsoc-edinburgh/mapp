@@ -86,12 +86,17 @@ function readyFunction(){
         myDiv.scrollLeft(iPosX - (e.pageX - clickX));
     };
     var mapUpdate = function(){
+        var parts = location.pathname.split('/');
+        var site = parts.pop() || parts.pop();  // handle potential trailing slash
+
         $.ajax({ 
-            url: '/api/refresh' 
+            url: `/api/refresh?site=${site}`
         })
             .done(function(data){
                 $('#ajax-map-replace').replaceWith(data);   
                 centreMap();
+                loadMapScroll();
+                refreshData();
             });
     };
     var createRefreshAlert = function (status) {
@@ -123,19 +128,41 @@ function readyFunction(){
                 }
             });       
     };
+    var loadMapScroll = function() {
+        $("#mapscroll").on({
+            'mousemove': function(e) {
+                clicked && updateScrollPos(e);
+            },
+            'mousedown': function(e) {
+                if(e.which == 1){
+                    clicked = true;
+                    clickY = e.pageY;
+                    clickX = e.pageX;
+                    iPosY = $("#mapscroll").scrollTop();
+                    iPosX = $("#mapscroll").scrollLeft();
+                }
+            },
+            'mouseup': function() {
+                clicked = false;
+                $('html').css('cursor', 'auto');
+            }
+        });
+    }
 
-    /* Execute, self */
-    $.ajax({
-        url: '/api/friends'
-    }).done(function(data) {
-        renderFriendList(data);
-    });
-    
-    $.ajax({
-        url: '/api/rooms'
-    }).done(function(data) {
-        renderRoomList(data);
-    });
+    var refreshData = function() {
+        /* Execute, self */
+        $.ajax({
+            url: '/api/friends'
+        }).done(function(data) {
+            renderFriendList(data);
+        });
+        
+        $.ajax({
+            url: '/api/rooms'
+        }).done(function(data) {
+            renderRoomList(data);
+        });
+    }
 
     centreMap();
 
@@ -163,24 +190,9 @@ function readyFunction(){
     $removeButton.on('click',function(){
         $(this).blur();
     });
-    $("#mapscroll").on({
-        'mousemove': function(e) {
-            clicked && updateScrollPos(e);
-        },
-        'mousedown': function(e) {
-            if(e.which == 1){
-                clicked = true;
-                clickY = e.pageY;
-                clickX = e.pageX;
-                iPosY = $("#mapscroll").scrollTop();
-                iPosX = $("#mapscroll").scrollLeft();
-            }
-        },
-        'mouseup': function() {
-            clicked = false;
-            $('html').css('cursor', 'auto');
-        }
-    });
+    loadMapScroll();
+    refreshData();
+
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
         e.preventDefault();
