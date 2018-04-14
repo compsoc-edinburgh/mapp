@@ -191,7 +191,6 @@ function readyFunction(){
         $(this).blur();
     });
     loadMapScroll();
-    refreshData();
 
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
@@ -249,6 +248,7 @@ function readyFunction(){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("fast");
     });
     
+    mapUpdate();
 };
 
 

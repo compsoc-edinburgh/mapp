@@ -1,84 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}{{ room.key }}{% endblock %}
+{% block title %}{{ room_key }}{% endblock %}
 
 {% block content %}
 
-<div id="ajax-map-replace">
-  <div class="subbar">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 shrinklittle">
-          <h2>
-            <span id="maintitle" class="">{{ room.name }}</span>
-          </h2>
-          <span class="spacer"></span>
-          <h2>
-            <span class={% if low_availability %} "text-warning" {% else %} "text-success" {% endif %}>
-              {{ num_free }}</span>
-            <span class="muted">/ {{ num_machines }}</span>
-          </h2>
-          <span class="muted hidden" style="font-size: 1em;"> Available</span>
-          <a style="margin-left: 10px; font-size: 1em;" href="/#help">What do the icons mean?</a>
-          {% if last_update %}
-          <span class="pull-right muted small hidden-xs" style="line-height: 32px; vertical-align: middle;" title="Last update performed at {{ last_update }}">
-            <i class="fa fa-clock-o"></i> {{ last_update }}</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
-    <div class="tabwrap">
-      <table class="table">
-        {% for row in rows %}
-        <tr>
-          {% for cell in row %}
-          <td>
-            {% if cell.hostname %}
-              {% if cell.user %}
-                {% if cell.friend %}
-                  <div title="This machine is in use by your friend!">
-                    <p class="text-info blip">
-                      <i class="fa fa-hand-peace-o"></i>
-                    </p>
-                    <p>{{ cell.hostname }}</p>
-                    <p class="userat-name text-info">{{ cell.friend }}</p>
-                  </div>
-                {% else %}{# User doesn't have this person as friend #}
-                  <div title="This machine is in use.">
-                    <p class="blip text-danger">
-                      <i class="fa fa-television"></i>
-                    </p>
-                    <p class="text-danger">{{ cell.hostname }}</p>
-                  </div>
-                {% endif %}
-              {% else %}{# These are the machines without a user #}
-                {% if cell.status == "offline" %}
-                  <div title="This machine is offline.">
-                    <p class="blip muted">
-                      <i class="fa fa-television"></i>
-                    </p>
-                    <p class="muted">{{ cell.hostname }}</p>
-                  </div>
-                {% else %}
-                  <p class="text-success blip">
-                    <i class="fa fa-television"></i>
-                  </p>
-                  <p>{{ cell.hostname }}</p>
-                {% endif %}{# end offline check #}
-              {% endif %}{# cell.user #}
-            {% endif %}{# if cell.hostname #}
-          </td>
-        {% endfor %}
-        </tr>
-      {% endfor %}
-      </table>
-    </div>
-  </div>
-  <!-- #ajax-map-replace -->
-</div>
+<div id="ajax-map-replace"></div>
 
 <div class="harrys-fussy-buttons">
   <div class="btn-group" role="group" aria-label="Filter and map controls">
