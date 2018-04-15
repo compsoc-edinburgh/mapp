@@ -15,7 +15,7 @@
                 {% if current_user.is_anonymous %}
                     <a class="nav-link {% if room_key == 'Demo' %} active {% endif %}" href="/demo">Demo</a>
                 {% else %}
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown mr-1">
                     <a class="nav-link dropdown-toggle {% if active_page == 'site' %} active {% endif %}" href="#" id="roomsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Rooms {% if active_page == "site" %}<span class="sr-only">(current)</span>{% endif %}
                     </a>
@@ -25,18 +25,9 @@
                         {% endfor %}
                     </div>
                 </li>
-                {% endif %}
-            </ul>
-            <div>
-                <ul class="navbar-nav mr-auto">
-                    {% if current_user.is_anonymous %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Log in with DICE</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">    
-                        <form class="form-inline my-2 my-lg-0" method="POST" action="/flip_dnd">
-                            <input type="hidden" name="next" value="{{ request.url }}">
+                <li class="nav-item">    
+                    <form class="form-inline my-2 my-lg-0" method="POST" action="/flip_dnd">
+                        <input type="hidden" name="next" value="{{ request.url }}">
                             <button class="btn
                             
                             {% if current_user.get_dnd() %}
@@ -54,14 +45,23 @@
                         </button>
                     </form>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout" title="Mischeif Managed">
-                        Logout ({{ current_user.get_name() }}, {{ current_user.get_username() }})
-                    </a>
-                </li>
                 {% endif %}
             </ul>
+            <div>
+                <ul class="navbar-nav mr-auto">
+                    {% if current_user.is_anonymous %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Log in with DICE</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" title="Mischeif Managed">
+                            Logout ({{ current_user.get_name() }}, {{ current_user.get_username() }})
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
 </nav>
