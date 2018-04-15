@@ -72,6 +72,14 @@ body {
 .mapp-pane-friends {
     flex: 0 1 auto;
     overflow: scroll;
+
+    max-height: 20vh;
+}
+
+@media (min-width: 992px) {
+    .mapp-pane-friends {
+        max-height: initial;
+    }
 }
 
 .mapp-pane-inner {
