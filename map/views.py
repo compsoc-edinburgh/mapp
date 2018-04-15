@@ -188,7 +188,10 @@ def refresh():
         except KeyError:
             this = get_demo_json()
 
-    friends = get_friends()
+    if current_user.is_anonymous:
+        friends = get_demo_friends()
+    else:
+        friends = get_friends()
 
     # Annotate friends with "here" if they are here
     room_key = this['room']['key']
@@ -352,6 +355,35 @@ def demo():
         "site.html",
         room_key="Demo"
     )
+
+def get_demo_friends():
+    return [
+        {
+            'name': 'moony',
+            'room_key': 'demo',
+            'room_name': 'Common Room',
+        },
+        {
+            'name': 'wormtail',
+            'room_key': 'demo',
+            'room_name': 'Common Room',
+        },
+        {
+            'name': 'padfoot',
+            'room_key': 'demo',
+            'room_name': 'Common Room',
+        },
+        {
+            'name': 'prongs',
+            'room_key': 'demo',
+            'room_name': 'Common Room',
+        },
+        {
+            'name': 'gryffindor',
+            'room_key': '..',
+            'room_name': 'Godric\'s Hollow',
+        }
+    ]
 
 def get_demo_json():
     return {
