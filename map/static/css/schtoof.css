@@ -55,6 +55,12 @@ body {
     border-color: #89a6be;
 }
 
+.mapp-rooms-dropdown {
+    max-height: 85vh;
+    overflow-x: hidden;
+    display: block;
+}
+
 .mapp-pane-header {
     border-bottom: 1px solid #99b2c7;
     flex: 0 1 auto;
