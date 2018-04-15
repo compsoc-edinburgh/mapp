@@ -58,7 +58,6 @@ body {
 .mapp-rooms-dropdown {
     max-height: 85vh;
     overflow-x: hidden;
-    display: block;
 }
 
 .mapp-pane-header {
