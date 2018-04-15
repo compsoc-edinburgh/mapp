@@ -174,7 +174,7 @@ def refresh():
         except KeyError:
             this = get_demo_json()
 
-    return render_template('refresh.xml',
+    return render_template('mapp-pane.html',
                            room=this['room'],
                            rows=this['rows'],
                            num_machines=this['num_machines'],
