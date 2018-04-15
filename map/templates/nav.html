@@ -19,7 +19,7 @@
                     <a class="nav-link dropdown-toggle {% if active_page == 'site' %} active {% endif %}" href="#" id="roomsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Rooms {% if active_page == "site" %}<span class="sr-only">(current)</span>{% endif %}
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="roomsDropdown">
+                    <div class="dropdown-menu mapp-rooms-dropdown" aria-labelledby="roomsDropdown">
                         {% for key, name in rooms_list() %}
                         <a class="dropdown-item {% if room_key == key %} active {% endif %}" href="/site/{{ key }}">{{ name }}</a>
                         {% endfor %}
