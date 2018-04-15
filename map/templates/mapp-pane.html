@@ -24,7 +24,12 @@
 
 <div class="row mapp-pane-body flex-column flex-lg-row">
   <div class="col-lg-3 col-xl-2 mapp-pane-friends">
-    <p class="ml-1 my-3"><strong>Friends</strong></p>
+    <p class="ml-1 my-3 d-flex justify-content-between">
+      <strong>Friends</strong>
+      {% if current_user.is_authenticated %}
+      <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#friendsModal">Manage</a>
+      {% endif %}
+    </p>
     <table class="table table-sm">
       <thead>
         <tr>
