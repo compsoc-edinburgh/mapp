@@ -22,8 +22,54 @@
   </div>
 </div>
 
-<div class="row mapp-pane-inner">
-  <div class="col-md-12">
+<div class="row mapp-pane-body flex-column flex-lg-row">
+  <div class="col-lg-3 mapp-pane-friends">
+    <p class="ml-1 my-3"><strong>Friends</strong></p>
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th class="border-top-0">
+            <small class="text-secondary text-uppercase"><strong>in this room</strong></small>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for friend in friends %}
+          {% if friend.here %}
+          <tr>
+              <td>{{ friend.name }}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th class="border-top-0">
+            <small class="text-secondary text-uppercase"><strong>everywhere</strong></small>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for friend in friends %}
+          <tr>
+            <td>
+              {% if friend.here %}
+                <strong>{{ friend.name }}</strong>
+              {% else %}
+                <a href="/site/{{ friend.room_key }}">{{ friend.name }}</a>
+              {% endif %}
+              <small>{{ friend.room_name }}</small>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+  <div class="col-lg-9 mapp-pane-inner">
     <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
       <div class="tabwrap">
         {% include "mapp-pane-inner-table.html" %}
