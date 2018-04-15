@@ -29,8 +29,8 @@
         <strong>Friends</strong>
       </p>
       {% for friend in friends %}
-        <p>{{ friend[0] }} is in
-          <a href="/site/{{ friend[1] }}">{{ friend[2] }}</a>
+        <p>{{ friend.name }} is in
+          <a href="/site/{{ friend.room_key }}">{{ friend.room_name }}</a>
         </p>
       {% endfor %}
     </div>

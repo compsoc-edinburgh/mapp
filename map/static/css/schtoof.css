@@ -60,6 +60,15 @@ body {
     flex: 0 1 auto;
 }
 
+.mapp-pane-body {
+    flex: 1 1 auto;
+}
+
+.mapp-pane-friends {
+    flex: 0 1 auto;
+    overflow: scroll;
+}
+
 .mapp-pane-inner {
     flex: 1 1 auto;
 
@@ -92,22 +101,22 @@ body {
     user-select: none;
 }
 
-.tabwrapwrap .table {
+.tabwrapwrap .mapp-table {
     width: auto;
     display: block;
     border-top: 1px solid #ecf0f1;
 }
 
-table.table {
+table.mapp-table {
     table-layout: fixed;
     text-align: center;
 }
 
-table.table tr {
+table.mapp-table tr {
     border-bottom: 1px solid #ecf0f1;
 }
 
-table.table>tbody>tr>td {
+table.mapp-table>tbody>tr>td {
     width: 10em;
     height: 5em;
     padding: 1.2em 1em;
@@ -118,13 +127,13 @@ table.table>tbody>tr>td {
     font-size: 0.8em;
 }
 
-.table .blip {
+.mapp-table .blip {
     display: block;
     font-size: 0.9em;
     line-height: 0;
 }
 
-.table .blip .fa-stack {
+.mapp-table .blip .fa-stack {
     font-size: 0.5em;
 }
 
@@ -173,7 +182,7 @@ code {
     background: red;
 }
 
-.table p {
+.mapp-table p {
     display: block;
     margin: 0;
 }

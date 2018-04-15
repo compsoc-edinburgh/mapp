@@ -114,8 +114,7 @@ def room_machines(which):
     print(machines)
     return machines
 
-@app.route("/")
-def about():
+def get_friends():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
     rooms.sort(key=lambda x: x['key'])
 
@@ -135,9 +134,24 @@ def about():
         for i in range(len(friends)):
             uun, b, c = friends[i]
             if uun in names:
-                friends[i] = (names[uun], b, c)
+                friends[i] = {
+                    'uun': uun,
+                    'name': names[uun],
+                    'room_key': b,
+                    'room_name': c
+                }
 
-        friends.sort(key=lambda x: x[0])
+        friends.sort(key=lambda x: x['name'])
+
+    return friends
+
+@app.route("/")
+def about():
+    rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
+    rooms.sort(key=lambda x: x['key'])
+
+    friends = get_friends()
+
     return render_template("about.html", rooms=rooms, friends=friends)
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
@@ -174,7 +188,16 @@ def refresh():
         except KeyError:
             this = get_demo_json()
 
+    friends = get_friends()
+
+    # Annotate friends with "here" if they are here
+    room_key = this['room']['key']
+    for i in range(len(friends)):
+        if friends[i]['room_key'] == room_key:
+            friends[i]['here'] = True
+
     return render_template('mapp-pane.html',
+                           friends=friends,
                            room=this['room'],
                            rows=this['rows'],
                            num_machines=this['num_machines'],
