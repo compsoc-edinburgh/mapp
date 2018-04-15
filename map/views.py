@@ -359,12 +359,12 @@ def demo():
 def get_demo_friends():
     return [
         {
-            'name': 'moony',
-            'room_key': 'demo',
-            'room_name': 'Common Room',
+            'name': 'gryffindor',
+            'room_key': '..',
+            'room_name': 'Godric\'s Hollow',
         },
         {
-            'name': 'wormtail',
+            'name': 'moony',
             'room_key': 'demo',
             'room_name': 'Common Room',
         },
@@ -379,10 +379,10 @@ def get_demo_friends():
             'room_name': 'Common Room',
         },
         {
-            'name': 'gryffindor',
-            'room_key': '..',
-            'room_name': 'Godric\'s Hollow',
-        }
+            'name': 'wormtail',
+            'room_key': 'demo',
+            'room_name': 'Common Room',
+        },
     ]
 
 def get_demo_json():
