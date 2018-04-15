@@ -84,7 +84,7 @@ function readyFunction(){
             url: `/api/refresh?site=${site}`
         })
             .done(function(data){
-                $('#ajax-map-replace').replaceWith(data);   
+                $('#ajax-map-replace').html(data);   
                 centreMap();
                 loadMapScroll();
                 refreshData();
