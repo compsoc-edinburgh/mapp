@@ -355,7 +355,7 @@ def demo():
 
 def get_demo_json():
     return {
-        'room':{"name":"Mapp Demo"},
+        'room':{"name":"Mapp Demo", "key":"demo"},
         'rows':[
             [
                 {},
