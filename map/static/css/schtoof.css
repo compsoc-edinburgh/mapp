@@ -29,18 +29,18 @@
 
 body, html {
     height: 100%;
-    min-width: 320px;
+    /* min-width: 320px; */
 }
-.navbar-fixed-top .subbar { min-width: 380px; }
+/* .navbar-fixed-top .mapp-pane-header { min-width: 380px; } */
 
 body {
-    padding-top: 60px;
+    padding-top: 56px;
 }
-
+/*
 .btn:focus,
 .btn:active {
     outline: none;
-}
+} */
 
 .btn-default {
     background: #99b2c7;
@@ -55,33 +55,13 @@ body {
     border-color: #89a6be;
 }
 
-.navbar-brand {
-    padding-left: 0px;
-}
-
-.subbar {
-    padding: 30px 0;
-    height: 95px;
-    width: 100%;
-    overflow: hidden;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
+.mapp-pane-header {
     border-bottom: 1px solid #99b2c7;
-    line-height: 2em;
-    z-index: 100;
+    flex: 0 1 auto;
 }
 
-.subbar h2 {
-    margin: 0;
-    display: inline;
-    line-height: 1;
-}
-
-.tabwrap {
-    padding: 50rem;
-    display: inline-block;
+.mapp-pane-inner {
+    flex: 1 1 auto;
 
     /*
         This pattern is downloaded from www.subtlepatterns.com
@@ -90,11 +70,16 @@ body {
     background-image: url('/static/img/ecailles.png');
 }
 
+.tabwrap {
+    padding: 50rem;
+    display: inline-block;
+}
+
 .tabwrapwrap {
     width: 100%;
     overflow: scroll;
-    position: fixed;
-    top: 155px;
+    position: absolute;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -146,38 +131,39 @@ table.table>tbody>tr>td {
 .muted {
     color: #C3D6E6 !important;
 }
-.spacer {
-    display: inline-block;
-    width: 1em;
-}
+
+/* This is used on the about page */
 .padder {
     padding: 1em;
 }
 
+/* About page */
 .container.prose {
     width: 80%;
     padding: 2em 0;
 }
 
+/* About page */
 .prose p {
     font-size: 1.2em;
     padding: 0.5em 0;
 }
 
+/* More for the about page */
 code {
     color: #0EA084;
     background-color: #EDF7F5;
 }
 
 @media(max-width: 992px){
-    .container {
+    /* .container {
         width: 90%;
-    }
+    } */
 }
 @media(min-width: 992px){
-    .container {
+    /* .container {
         width: 85%;
-    }
+    } */
     .container.prose {
         width: 880px;
     }
@@ -215,8 +201,9 @@ code {
     }
 }
 
+/* Otherwise dropdown menus aren't large enough */
 .dropdown-menu{
-    width: 27em;
+    width: 27rem;
 }
 
 .form-horizontal{
@@ -234,19 +221,10 @@ code {
     .shrinklittle {
         font-size: 0.6em;
     }
-
-    .spacer {
-        width: 0.5em;
-    }
     .mobile-dropdown h4,h5{
         color: #fff;
     }
     .mobile-dropdown .btn {
         background-color: rgba(128, 150, 169, 0.53);
     }
-}
-
-#ajax-map-replace {
-    width: 100%;
-    height: 100%;
 }

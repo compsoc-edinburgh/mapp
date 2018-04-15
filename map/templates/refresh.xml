@@ -1,78 +1,37 @@
 {% block content %}
-<div id="ajax-map-replace">
-  <div class="subbar">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 shrinklittle">
-          <h2>
-            <span id="maintitle" class="">{{ room.name }}</span>
-          </h2>
-          <span class="spacer"></span>
-          <h2>
-            <span class={% if low_availability %} "text-warning" {% else %} "text-success" {% endif %}>
-              {{ num_free }}</span>
-            <span class="muted">/ {{ num_machines }}</span>
-          </h2>
-          <span class="muted hidden" style="font-size: 1em;"> Available</span>
 
-          {% if last_update %}
-          <span class="pull-right muted small hidden-xs" style="line-height: 32px; vertical-align: middle;" title="Last update performed at {{ last_update }}">
-            <i class="fa fa-clock-o"></i> {{ last_update }}</span>
-          {% endif %}
-        </div>
+<div class="row justify-content-center mapp-pane-header pt-4 pb-3 pb-sm-4">
+  <div class="col-md-8 d-flex flex-column flex-sm-row justify-content-between align-items-center">
+    <div class="d-flex flex-column flex-sm-row align-items-center">
+      <!-- Name of the room -->
+      <h2 class="mr-2 d-sm-inline text-center">{{ room.name }}</h2>
+
+      <!-- Availability counter -->
+      <h2 class="d-sm-inline">
+        <span class={% if low_availability %} "text-warning" {% else %} "text-success" {% endif %}>
+          {{ num_free }}
+        </span>
+        <span class="muted">/ {{ num_machines }}</span>
+      </h2>
+    </div>
+
+    {% if last_update %}
+    <span class="pull-right muted small hidden-xs pt-2 pt-sm-0" title="Last update performed at {{ last_update }}">
+      <i class="fa fa-clock-o"></i> {{ last_update }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row mapp-pane-inner">
+  <div class="col-md-12">
+    <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
+      <div class="tabwrap">
+        {% include "mapp-pane-inner-table.html" %}
       </div>
     </div>
   </div>
-
-  <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
-    <div class="tabwrap">
-      <table class="table">
-        {% for row in rows %}
-        <tr>
-          {% for cell in row %}
-          <td>
-            {% if cell.hostname %}
-              {% if cell.user %}
-                {% if cell.friend %}
-                  <div title="This machine is in use by your friend!">
-                    <p class="text-info blip">
-                      <i class="fa fa-hand-peace-o"></i>
-                    </p>
-                    <p>{{ cell.hostname }}</p>
-                    <p class="userat-name text-info">{{ cell.friend }}</p>
-                  </div>
-                {% else %}{# User doesn't have this person as friend #}
-                  <div title="This machine is in use.">
-                    <p class="blip text-danger">
-                      <i class="fa fa-television"></i>
-                    </p>
-                    <p class="text-danger">{{ cell.hostname }}</p>
-                  </div>
-                {% endif %}
-              {% else %}{# These are the machines without a user #}
-                {% if cell.status == "offline" %}
-                  <div title="This machine is offline.">
-                    <p class="blip muted">
-                      <i class="fa fa-television"></i>
-                    </p>
-                    <p class="muted">{{ cell.hostname }}</p>
-                  </div>
-                {% else %}
-                  <p class="text-success blip">
-                    <i class="fa fa-television"></i>
-                  </p>
-                  <p>{{ cell.hostname }}</p>
-                {% endif %}{# end offline check #}
-              {% endif %}{# cell.user #}
-            {% endif %}{# if cell.hostname #}
-          </td>
-        {% endfor %}
-        </tr>
-      {% endfor %}
-      </table>
-    </div>
-  </div>
-  <!-- #ajax-map-replace -->
 </div>
+<!-- #ajax-map-replace -->
+
 {% endblock %}
   
