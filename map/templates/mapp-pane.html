@@ -62,7 +62,7 @@
           <tr>
             <td>
               {% if friend.here %}
-                <strong>{{ friend.name }}</strong>
+                <em>{{ friend.name }}</em>
               {% else %}
                 <a href="/site/{{ friend.room_key }}">{{ friend.name }}</a>
               {% endif %}
