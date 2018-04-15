@@ -64,10 +64,12 @@
               {% if friend.here %}
                 <em>{{ friend.name }}</em>
               {% else %}
-                <a href="/site/{{ friend.room_key }}">{{ friend.name }}</a>
+                {{ friend.name }}
               {% endif %}
-              <br>
-              <small>{{ friend.room_name }}</small>
+
+              <small>
+                (<a href="/site/{{ friend.room_key }}">{{ friend.room_key }}</a>)
+              </small>
             </td>
           </tr>
         {% endfor %}
