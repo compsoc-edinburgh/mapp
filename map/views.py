@@ -378,28 +378,32 @@ def get_demo_friends():
     return [
         {
             'name': 'gryffindor',
-            'room_key': '..',
+            'room_key': 'godric\'s-hollow',
             'room_name': 'Godric\'s Hollow',
         },
         {
             'name': 'moony',
-            'room_key': 'demo',
+            'room_key': 'common-room',
             'room_name': 'Common Room',
+            'here': True,
         },
         {
             'name': 'padfoot',
-            'room_key': 'demo',
+            'room_key': 'common-room',
             'room_name': 'Common Room',
+            'here': True,
         },
         {
             'name': 'prongs',
-            'room_key': 'demo',
+            'room_key': 'common-room',
             'room_name': 'Common Room',
+            'here': True,
         },
         {
             'name': 'wormtail',
-            'room_key': 'demo',
+            'room_key': 'common-room',
             'room_name': 'Common Room',
+            'here': True,
         },
     ]
 
