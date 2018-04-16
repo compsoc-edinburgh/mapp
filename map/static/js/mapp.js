@@ -82,11 +82,6 @@ function readyFunction(){
 
     $("#rotate-map").on("click", () => {
         mapRotation += 180;
-
-        if (mapRotation === 360) {
-            mapRotation = 0;
-        };
-
         updateRotation();
     });
 
