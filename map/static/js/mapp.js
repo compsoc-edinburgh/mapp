@@ -274,7 +274,9 @@ function readyFunction(){
 
         $.when($(fadeClasses).animate({ opacity: 0 })).then(() => {
             if (pushState) {
-                history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
+                const title = `${room_key} :: Marauder's Mapp`;
+                history.pushState({ room_key: room_key }, title, `/site/${room_key}`)
+                document.title = title;
             }
 
             useCache = true;
