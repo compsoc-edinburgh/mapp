@@ -84,17 +84,17 @@ body {
 
 .mapp-pane-inner {
     flex: 1 1 auto;
+}
+
+.tabwrap {
+    padding: 50rem;
+    display: inline-block;
 
     /*
         This pattern is downloaded from www.subtlepatterns.com
         If you need more, that's where to get'em.
     */
     background-image: url('/static/img/ecailles.png');
-}
-
-.tabwrap {
-    padding: 50rem;
-    display: inline-block;
 }
 
 .tabwrapwrap {
