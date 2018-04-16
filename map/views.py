@@ -177,17 +177,24 @@ def get_friend_rooms():
     return friends
 
 @app.route("/")
-def about():
-    rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
-    rooms.sort(key=lambda x: x['key'])
+def index():
+    if current_user.is_anonymous:
+        return redirect("/about")
 
-    friends = get_friend_rooms()
+    return redirect("/site/6.06")
+
+@app.route("/about")
+def about():
+    if current_user.is_authenticated:
+        rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
+        rooms.sort(key=lambda x: x['key'])
+        friends = get_friend_rooms()
 
     return render_template("about.html", rooms=rooms, friends=friends)
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
 @login_required
-def index(which):
+def site(which):
     default = "drillhall"
     if which == "":
         which = default
