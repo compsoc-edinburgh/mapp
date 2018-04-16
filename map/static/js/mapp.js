@@ -39,19 +39,20 @@ function readyFunction(){
             $('#no-friends').removeClass('d-none');            
         }
     };
-    var centreMap = function () {
+    var centreMap = function (smooth) {
         var myDiv = $("#mapscroll");
         var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
         var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
-        myDiv.scrollTop(scrolltoh);
-        myDiv.scrollLeft(scrolltow);
-    };
 
-    var smoothCentreMap = function () {
-        var myDiv = $("#mapscroll");
-        var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
-        var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
-        myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
+        if (smooth) {
+            var myDiv = $("#mapscroll");
+            var scrolltoh = (myDiv.prop('scrollHeight') - myDiv.height()) /2;
+            var scrolltow = (myDiv.prop('scrollWidth') - myDiv.width()) /2;
+            myDiv.animate({scrollTop: scrolltoh, scrollLeft: scrolltow});
+        } else {
+            myDiv.scrollTop(scrolltoh);
+            myDiv.scrollLeft(scrolltow);
+        }
     };
     var mapZoom = function  (multiplier, start) {
         myDiv = $("#mapscroll");
@@ -338,8 +339,6 @@ function readyFunction(){
         });
     }
 
-    centreMap();
-
     // Check for a refresh every five minutes
     window.setInterval(checkRefreshAvailable, 5 * 60 * 1000);
     /*Listeners*/
@@ -353,7 +352,7 @@ function readyFunction(){
     });
     $('#center-map').on('click',function(){
         mapZoom(0,'15px');
-        centreMap();
+        centreMap(true);
     });
     $('#manual-refresh').on('click',function(){
         $(this).prop('disabled',true);
