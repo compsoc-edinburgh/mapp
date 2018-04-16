@@ -177,6 +177,23 @@ function readyFunction(){
     });
     loadMapScroll();
 
+    let rotation = 0;
+    $("#rotate-map").on("click", () => {
+        rotation += 90;
+
+        if (rotation === 360) {
+            rotation = 0;
+        };
+
+        $("#rotation-indicator").text(
+            (rotation === 0) ? "" :
+            `${rotation} deg`
+        );
+
+        $(".mapp-table").css("transform", `rotate(${rotation}deg)`);
+        $(".mapp-table td").css("transform", `rotate(-${rotation}deg)`);
+    });
+
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
         e.preventDefault();

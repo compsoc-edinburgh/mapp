@@ -9,11 +9,17 @@
   <div id="ajax-map-replace" class="d-flex flex-column h-100"></div>
 
   <div class="harrys-fussy-buttons">
+    <small class="text-muted mr-2" id="rotation-indicator"></small>
     <div class="btn-group" role="group" aria-label="Filter and map controls">
       <button type="button" class="btn btn-primary btn-sm" title="Refresh" id="manual-refresh">
         <i class="fa fa-refresh"></i>
         <span class="hidden-xs spacer" style="width: 0.5em;"></span>
         <span class="hidden-xs">Refresh</span>
+        <span class="hidden-xs spacer" style="width: 0.5em;"></span>
+      </button>
+      <button type="button" class="btn btn-info btn-sm" title="Rotate" id="rotate-map">
+        <span class="hidden-xs spacer" style="width: 0.5em;"></span>
+        <span class="hidden-xs">Rotate</span>
         <span class="hidden-xs spacer" style="width: 0.5em;"></span>
       </button>
       <button type="button" class="btn btn-default btn-sm" title="Reset the map" id="center-map">
