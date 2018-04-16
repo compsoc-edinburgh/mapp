@@ -115,6 +115,23 @@ def room_machines(which):
     return machines
 
 def get_friends():
+    friends = flask_redis.smembers(current_user.get_username() + "-friends")
+    friends = list(friends)
+
+    with ldap.conn() as ldap_conn:
+        friend_names = ldap.get_names_bare(friends, ldap_conn)
+
+        for i in range(len(friends)):
+            uun = friends[i]
+            friend = uun
+
+            if uun in friend_names:
+                friend = friend_names[uun]
+
+            friends[i] = (friend, uun)
+    return friends
+
+def get_friend_rooms():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
     rooms.sort(key=lambda x: x['key'])
 
@@ -150,7 +167,7 @@ def about():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
     rooms.sort(key=lambda x: x['key'])
 
-    friends = get_friends()
+    friends = get_friend_rooms()
 
     return render_template("about.html", rooms=rooms, friends=friends)
 
@@ -191,7 +208,7 @@ def refresh():
     if current_user.is_anonymous:
         friends = get_demo_friends()
     else:
-        friends = get_friends()
+        friends = get_friend_rooms()
 
     # Annotate friends with "here" if they are here
     room_key = this['room']['key']
@@ -324,29 +341,35 @@ def friends():
            remove_friends = request.form.getlist('delfriends[]')
            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
-           add_friend = request.form.get('newfriend')
+           add_friend = request.form.get('uun')
+           print add_friend
            #if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
            #    raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
            flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
 
-    friends = flask_redis.smembers(current_user.get_username() + "-friends")
-    friends = list(friends)
-
-    with ldap.conn() as ldap_conn:
-        friend_names = ldap.get_names_bare(friends, ldap_conn)
-
-        for i in range(len(friends)):
-            uun = friends[i]
-            friend = uun
-
-            if uun in friend_names:
-                friend = friend_names[uun] + " (" + uun + ")"
-
-            friends[i] = (friend, uun)
+    friends = get_friends()
+    friends = map(lambda p: ("%s (%s)" % (p[0], p[1]), p[1]), friends)
 
     friends = sorted(friends, key=lambda s: s[0].lower())
 
     return jsonify(friendList=friends) #Set up for ajax responses
+
+
+@app.route("/api/search", methods=['GET'])
+@login_required
+def search_friends():
+    name = request.args.get('name', '')
+    if name == '':
+        return jsonify(people=[])
+
+    people = sorted(ldap.search_name(name), key=lambda p: p['name'].lower())
+    friends = get_friends()
+
+    for person in people:
+        if (person['name'], person['uun']) in friends:
+            person['friend'] = True
+
+    return jsonify(people=people) #Set up for ajax responses
 
     
 @app.route("/demo")
