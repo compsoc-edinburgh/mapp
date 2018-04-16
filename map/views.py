@@ -330,8 +330,6 @@ def update_available():
 
     return jsonify(status=str(user_behind))
 
-
-
 @app.route("/api/friends", methods=['GET', 'POST'])
 @login_required
 def friends():
@@ -342,7 +340,7 @@ def friends():
            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
        elif formtype == "add":
            add_friend = request.form.get('uun')
-           print add_friend
+
            #if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
            #    raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
            flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
@@ -359,7 +357,7 @@ def friends():
 @login_required
 def search_friends():
     name = request.args.get('name', '')
-    if name == '':
+    if len(name) < 2:
         return jsonify(people=[])
 
     people = sorted(ldap.search_name(name), key=lambda p: p['name'].lower())
