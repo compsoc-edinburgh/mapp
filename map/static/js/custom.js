@@ -92,7 +92,10 @@ function readyFunction(){
 
     var timeNow
     var useCache = true;
+
+    // Needs to be updated in css as well, find `fadeClasses`
     const fadeClasses = ".tabwrap, .mapp-pane-header > div, .mapp-pane-friends > table";
+
     var mapUpdate = function(){
         timeNow = new Date();
         var parts = location.pathname.split('/');
