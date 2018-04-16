@@ -7,7 +7,7 @@
 
 <div class="container-fluid h-100">
   <div id="ajax-map-replace" class="d-flex flex-column h-100"></div>
-
+  
   <div class="harrys-fussy-buttons">
     <small class="text-muted mr-2" id="rotation-indicator"></small>
     <div class="btn-group" role="group" aria-label="Filter and map controls">
@@ -33,62 +33,8 @@
       </button>
     </div>
   </div>
-  <div id="refresh-alert-holder"></div>
 
-  <!-- Friends Modal -->
-  <div class="modal fade" id="friendsModal" tabindex="-1" role="dialog" aria-labelledby="friendsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="friendsModalLabel">Manage friends</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <div>
-                <div id="del-form-container">
-                    <form method="POST" class="w-100" id="del-form">
-                        <input type="hidden" name="type" value="del">
-                        <p id="select-error-alert" class="text-danger hidden" style="opacity: 0.8;"></p>
-                        <div class="form-group">
-                            <select multiple class="form-control" name="delfriends" id="friend-list">
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-block btn-primary" id="remove-btn">
-                                Remove Friend(s)</button>
-                            </div>
-                    </form>
-                    <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <form method="POST" class="w-100" id="add-form">
-            <input type="hidden" name="type" value="add">
-            <div class="form-group form-row">
-                <div class="col-auto" style="flex: 1 1 auto;">
-                  <input type="text" name="newfriend" id="search-friend-input" class="form-control" placeholder="Search (uun or name)">
-                </div>
-                <div class="col-auto" style="flex: 0 1 auto;">
-                  <button type="submit" class="btn btn-block btn-primary" id="search-btn">
-                    Search
-                  </button>
-                </div>
-            </div>
-            <div class="form-group">
-                <select size=4 class="form-control" id="search-friend-list">
-                </select>
-            </div>
-            <div class="form-group">
-                <button type="button" class="btn btn-primary btn-block" id="add-btn">Add Friend</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="refresh-alert-holder"></div>
 </div>
 
 {% endblock %}

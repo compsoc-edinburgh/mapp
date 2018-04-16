@@ -22,31 +22,84 @@
   <!--
     For some reason, the execution of the following tag: {{ active_page }}
     causes the active_page to be kept in "cache" and sent down to the nav.html.
-  
+    
     Without the inclusion of active_page above the below nav.html will not receive it.
   -->
   {% include 'nav.html' %}
 
   {% block content %} {% endblock %} {% block scripts %}
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popper.min.js') }}" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script> {% endblock %}
+  <!-- Friends Modal -->
+  <div class="modal fade" id="friendsModal" tabindex="-1" role="dialog" aria-labelledby="friendsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="friendsModalLabel">Manage friends</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div id="del-form-container">
+              <form method="POST" class="w-100" id="del-form">
+                <input type="hidden" name="type" value="del">
+                <p id="select-error-alert" class="text-danger hidden" style="opacity: 0.8;"></p>
+                <div class="form-group">
+                  <select multiple class="form-control" name="delfriends" id="friend-list">
+                  </select>
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-block btn-primary" id="remove-btn">
+                    Remove Friend(s)</button>
+                  </div>
+                </form>
+                <h5 id="no-friends" class="hidden">Looks like you don't have any friends!</h5>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <form method="POST" class="w-100" id="add-form">
+              <input type="hidden" name="type" value="add">
+              <div class="form-group form-row">
+                <div class="col-auto" style="flex: 1 1 auto;">
+                  <input type="text" name="newfriend" id="search-friend-input" class="form-control" placeholder="Search (uun or name)">
+                </div>
+                <div class="col-auto" style="flex: 0 1 auto;">
+                  <button type="submit" class="btn btn-block btn-primary" id="search-btn">
+                    Search
+                  </button>
+                </div>
+              </div>
+              <div class="form-group">
+                <select size=4 class="form-control" id="search-friend-list">
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="button" class="btn btn-primary btn-block" id="add-btn">Add Friend</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110956746-2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{  url_for('static', filename='js/custom.js') }}"></script> {% endblock %}
 
-    gtag('config', 'UA-110956746-2');
-  </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-110956746-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-  
-</body>
+      gtag('config', 'UA-110956746-2');
+    </script>
+  </body>
 
 </html>
