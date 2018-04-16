@@ -1,23 +1,21 @@
 {% block content %}
-
+<!-- <div style="position: fixed; top: 0; left: 0; height: 56px; background-color: aqua; display:block; z-index: 1000000000; line-height: 56px; padding: 0 20px;">Beta</div> -->
 <div class="row justify-content-center mapp-pane-header pt-4 pb-3 pb-sm-4">
   <div class="col-md-8 d-flex flex-column flex-sm-row justify-content-between align-items-center">
     <div class="d-flex flex-column flex-sm-row align-items-center">
       <!-- Name of the room -->
-      <h2 class="mr-2 d-sm-inline text-center">{{ room.name }}</h2>
+      <h2 class="mr-2 mb-0 d-sm-inline text-center" id="mapp-room-name"></h2>
 
       <!-- Availability counter -->
-      <h2 class="d-sm-inline">
-        <span class={% if low_availability %} "text-warning" {% else %} "text-success" {% endif %}>
-          {{ num_free }}
-        </span>
-        <span class="muted">/ {{ num_machines }}</span>
+      <h2 class="d-sm-inline mb-0">
+        <span id="mapp-num-free"></span>
+        <span class="muted">/ <span id="mapp-num-machines"></span></span>
       </h2>
     </div>
 
     {% if last_update %}
-    <span class="pull-right muted small hidden-xs pt-2 pt-sm-0" title="Last update performed at {{ last_update }}">
-      <i class="fa fa-clock-o"></i> {{ last_update }}</span>
+    <span class="pull-right muted small hidden-xs pt-2 pt-sm-0" id="mapp-last-update-parent">
+      <i class="fa fa-clock-o"></i> <span id="mapp-last-update"></span></span>
     {% endif %}
   </div>
 </div>
@@ -38,49 +36,26 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        {% for friend in friends %}
-          {% if friend.here %}
-          <tr>
-              <td>{{ friend.name }}</td>
-          </tr>
-          {% endif %}
-        {% endfor %}
-      </tbody>
+      <tbody id="mapp-buddybar-here"></tbody>
     </table>
 
     <table class="table table-sm">
       <thead>
         <tr>
           <th class="border-top-0">
-            <small class="text-secondary text-uppercase"><strong>everywhere</strong></small>
+            <small class="text-secondary text-uppercase"><strong>elsewhere</strong></small>
           </th>
         </tr>
       </thead>
-      <tbody>
-        {% for friend in friends %}
-          <tr>
-            <td>
-              {% if friend.here %}
-                <em>{{ friend.name }}</em>
-              {% else %}
-                {{ friend.name }}
-              {% endif %}
-
-              <small>
-                (<a href="/site/{{ friend.room_key }}">{{ friend.room_key }}</a>)
-              </small>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
+      <tbody id="mapp-buddybar-elsewhere"></tbody>
     </table>
 
   </div>
   <div class="col-lg-9 col-xl-10 mapp-pane-inner">
     <div class="tabwrapwrap" style="font-size: 1em" id="mapscroll">
       <div class="tabwrap">
-        {% include "mapp-pane-inner-table.html" %}
+        <table class="table mapp-table new-mapp-table"><tbody></tbody></table>
+        {# {% include "mapp-pane-inner-table.html" %} #}
       </div>
     </div>
   </div>
