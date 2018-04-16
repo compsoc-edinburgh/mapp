@@ -369,6 +369,7 @@ function readyFunction(){
             switchRoom(room_key, true);
             $(".mapp-rooms-dropdown > a.active").removeClass('active');
             $(`.mapp-rooms-dropdown > a[data-room-key="${ room_key }"]`).addClass("active");
+            $(".mapp-rooms-dropdown").dropdown('toggle');
             return false;
         })
     }
