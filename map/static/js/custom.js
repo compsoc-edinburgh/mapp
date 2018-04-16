@@ -74,13 +74,15 @@ function readyFunction(){
     };
 
     var timeNow
+    var useCache = true;
     var mapUpdate = function(){
         timeNow = new Date();
         var parts = location.pathname.split('/');
         var site = parts.pop() || parts.pop();  // handle potential trailing slash
 
         $.ajax({
-            url: `/api/refresh_data?site=${site}`
+            url: `/api/refresh_data?site=${site}`,
+            cache: useCache,
         })
         .done(function(data){
             console.log(data);
@@ -118,7 +120,11 @@ function readyFunction(){
                     listID = "#mapp-buddybar-elsewhere";
 
                     const sm = $("<small> (<a/>)</small>");
-                    sm.find("a").text(f.room_key).attr("href", `/site/${ f.room_key }`)
+                    sm.find("a").text(f.room_key).attr("href", `/site/$( f.room_key }`);
+                    sm.on('click', () => {
+                        switchRoom(f.room_key, true);
+                        return false;
+                    })
                     td.append(sm);
                 }
 
@@ -208,6 +214,7 @@ function readyFunction(){
             .done(function(data) {
                 createRefreshAlert(data['status']);
                 if(data['status'] != 'False') {
+                    useCache = false;
                     mapUpdate();
                 }
             });       
@@ -241,6 +248,23 @@ function readyFunction(){
             renderFriendList(data);
         });
     }
+
+    var switchRoom = function(room_key, pushState) {
+        if (pushState) {
+            history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
+        }
+        useCache = true;
+        mapUpdate();
+    }
+
+    $(window).on("popstate", e => {
+        const state = e.originalEvent.state;
+        if (typeof state == "object") {
+            if (state.room_key) {
+                switchRoom(state.room_key);
+            }
+        }
+    })
 
     var performSearch = () => {
         $.ajax({

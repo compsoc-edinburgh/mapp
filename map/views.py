@@ -120,7 +120,7 @@ def rooms_list():
     for i in range(len(rooms)):
         room = rooms[i]
         rooms[i] = (room, flask_redis.hget(room, "name"))
-    print "wtf ok"
+
     return rooms
 
 def room_machines(which):
@@ -241,15 +241,21 @@ def refresh_data():
     # SENSITIVE CODE!!!!
     # THIS IS_ANONYMOUS CHECK IS WHAT GUARDS
     # AGAINST NON-LOGGED IN ACCESS
+    is_demo = True
     if current_user.is_anonymous or which == "":
         this = get_demo_json()
     else:
         try:
             this = map_routine(which)
+            is_demo = False
         except KeyError:
             this = get_demo_json()
 
-    return jsonify(this)
+    resp = make_response(jsonify(this))
+    if not is_demo:
+        resp.cache_control.max_age = 60
+
+    return resp
 
 @app.route("/login", methods=['GET'])
 def login():
