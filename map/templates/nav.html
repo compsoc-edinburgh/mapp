@@ -21,7 +21,7 @@
                     </a>
                     <div class="dropdown-menu mapp-rooms-dropdown" aria-labelledby="roomsDropdown">
                         {% for key, name in rooms_list() %}
-                        <a class="dropdown-item {% if room_key == key %} active {% endif %}" href="/site/{{ key }}">{{ name }}</a>
+                        <a class="dropdown-item {% if room_key == key %} active {% endif %}" data-room-key="{{ key }}" href="/site/{{ key }}">{{ name }}</a>
                         {% endfor %}
                     </div>
                 </li>
