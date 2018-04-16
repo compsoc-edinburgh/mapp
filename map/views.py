@@ -200,7 +200,7 @@ def index(which):
                            room_key=room['key'])
 
 # WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
-@app.route('/api/refresh_data')
+@app.route('/api/refresh')
 def refresh_data():
     """
     Returns a new update

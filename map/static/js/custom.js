@@ -81,7 +81,7 @@ function readyFunction(){
         var site = parts.pop() || parts.pop();  // handle potential trailing slash
 
         $.ajax({
-            url: `/api/refresh_data?site=${site}`,
+            url: `/api/refresh?site=${site}`,
             cache: useCache,
         })
         .done(function(data){
