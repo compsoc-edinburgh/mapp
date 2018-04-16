@@ -79,15 +79,102 @@ function readyFunction(){
         var parts = location.pathname.split('/');
         var site = parts.pop() || parts.pop();  // handle potential trailing slash
 
-        $.ajax({ 
-            url: `/api/refresh?site=${site}`
+        $.ajax({
+            url: `/api/refresh_data?site=${site}`
         })
-            .done(function(data){
-                $('#ajax-map-replace').html(data);   
-                centreMap();
-                loadMapScroll();
-                refreshData();
-            });
+        .done(function(data){
+            console.log(data)
+            $("#mapp-room-name").text(data.room.name);
+            $("#mapp-num-free")
+                .text(data.num_free)
+                .removeClass("text-warning").removeClass('text-success')
+                .addClass(data.low_availability ? "text-warning" : "text-success");
+            $("#mapp-num-machines").text(data.num_machines);
+            $("#mapp-last-update-parent").attr("title", `Last update performed at ${data.last_update}`);
+            $("#mapp-last-update").text(data.last_update);
+
+            if (data.friends.length === 0) {
+                $("#mapp-buddybar-here").append("<tr><td><small>Nobody is online.</small></td></tr>");
+                $("#mapp-buddybar-elsewhere").append("<tr><td><small>Nobody is online.</small></td></tr>");
+                return;
+            }
+
+            for (let i in data.friends) {
+                const f = data.friends[i];
+
+                const tr = $("<tr><td/></tr>");
+                const td = $(tr.children()[0])
+                let listID = "#mapp-buddybar-here";
+                td.text(f.name);
+                if (!f.here) {
+                    listID = "#mapp-buddybar-elsewhere";
+
+                    const sm = $("<small> (<a/>)</small>");
+                    sm.find("a").text(f.room_key).attr("href", `/site/${ f.room_key }`)
+                    td.append(sm);
+                }
+
+                $(listID).append(tr);
+            }
+
+            const tab = $(".new-mapp-table > tbody");
+            for (let i in data.rows) {
+                const row = data.rows[i];
+
+                const tr = $("<tr/>");
+
+                for (let j in row) {
+                    const cell = row[j];
+                    const td = $("<td/>");
+
+                    if (!cell.hostname) {
+                        tr.append(td);
+                        continue;
+                    }
+
+                    const icon = $("<p class=blip><i class=fa></i></p>")
+                    const text = $("<p></p>");
+
+                    text.text(cell.hostname);
+
+                    let iconClass = "fa-television";
+                    let tdClass = "";
+                    let userAt = "";
+
+                    if (cell.status === "offline") {
+                        tdClass = "muted";
+                    } else if (cell.friend) {
+                        iconClass = "fa-hand-peace-o text-info"
+                        userAt = cell.friend;
+                    } else if (cell.user) {
+                        tdClass = "text-danger";
+                    } else {
+                        icon.addClass("text-success");
+                    }
+
+                    icon.find("i").addClass(iconClass);
+                    td.addClass(tdClass);
+
+                    td.append(icon);
+                    td.append(text);
+
+                    if (userAt) {
+
+                        const f = $("<p class='text-info userat-name'></p>")
+                        f.text(cell.friend);
+                        td.append(f);
+                    }
+
+                    tr.append(td);
+                }
+
+                tab.append(tr);
+            }
+
+            centreMap();
+            loadMapScroll();
+            refreshData();
+        });
     };
     var createRefreshAlert = function (status) {
         var statusString = '   <strong>Update available!</strong> Updating map...';

@@ -4,38 +4,40 @@
         {% for cell in row %}
         <td>
             {% if cell.hostname %}
-            {% if cell.user %}
-            {% if cell.friend %}
-            <div title="This machine is in use by your friend!">
-                <p class="text-info blip">
-                    <i class="fa fa-hand-peace-o"></i>
-                </p>
-                <p>{{ cell.hostname }}</p>
-                <p class="userat-name text-info">{{ cell.friend }}</p>
-            </div>
-            {% else %}{# User doesn't have this person as friend #}
-            <div title="This machine is in use.">
-                <p class="blip text-danger">
-                    <i class="fa fa-television"></i>
-                </p>
-                <p class="text-danger">{{ cell.hostname }}</p>
-            </div>
-            {% endif %}
-            {% else %}{# These are the machines without a user #}
-            {% if cell.status == "offline" %}
-            <div title="This machine is offline.">
-                <p class="blip muted">
-                    <i class="fa fa-television"></i>
-                </p>
-                <p class="muted">{{ cell.hostname }}</p>
-            </div>
-            {% else %}
-            <p class="text-success blip">
-                <i class="fa fa-television"></i>
-            </p>
-            <p>{{ cell.hostname }}</p>
-            {% endif %}{# end offline check #}
-            {% endif %}{# cell.user #}
+                {% if cell.user %}
+                    {% if cell.friend %}
+                        <div title="This machine is in use by your friend!">
+                            <p class="blip text-info">
+                                <i class="fa fa-hand-peace-o"></i>
+                            </p>
+                            <p>{{ cell.hostname }}</p>
+                            <p class="userat-name text-info">{{ cell.friend }}</p>
+                        </div>
+                    {% else %}{# User doesn't have this person as friend #}
+                        <div title="This machine is in use.">
+                            <p class="blip text-danger">
+                                <i class="fa fa-television"></i>
+                            </p>
+                            <p class="text-danger">{{ cell.hostname }}</p>
+                        </div>
+                    {% endif %}
+                {% else %}{# These are the machines without a user #}
+                    {% if cell.status == "offline" %}
+                        <div title="This machine is offline.">
+                            <p class="blip muted">
+                                <i class="fa fa-television"></i>
+                            </p>
+                            <p class="muted">{{ cell.hostname }}</p>
+                        </div>
+                    {% else %}
+                        <div>
+                            <p class="text-success blip">
+                                <i class="fa fa-television"></i>
+                            </p>
+                            <p>{{ cell.hostname }}</p>
+                        </div>
+                    {% endif %}{# end offline check #}
+                {% endif %}{# cell.user #}
             {% endif %}{# if cell.hostname #}
         </td>
         {% endfor %}

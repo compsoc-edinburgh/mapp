@@ -6,7 +6,9 @@
 {% block content %}
 
 <div class="container-fluid h-100">
-  <div id="ajax-map-replace" class="d-flex flex-column h-100"></div>
+  <div id="mapp-pane" class="d-flex flex-column h-100">
+    {% include "mapp-pane.html" %}
+  </div>
   
   <div class="harrys-fussy-buttons">
     <small class="text-muted mr-2" id="rotation-indicator"></small>

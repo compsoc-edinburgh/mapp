@@ -324,7 +324,7 @@ def update_available():
 
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
     user_behind = client_time < last_update
-
+    user_behind = True
     return jsonify(status=str(user_behind))
 
 @app.route("/api/friends", methods=['GET', 'POST'])
