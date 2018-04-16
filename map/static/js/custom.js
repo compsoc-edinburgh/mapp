@@ -274,10 +274,11 @@ function readyFunction(){
         mapRotation = 0;
         updateRotation();
 
-        $(fadeClasses).animate({ opacity: 0 }, () => {
+        $.when($(fadeClasses).animate({ opacity: 0 })).then(() => {
             if (pushState) {
                 history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
             }
+
             useCache = true;
             mapUpdate();
         })
