@@ -78,6 +78,11 @@ body {
     border-right: 1px solid #99b2c7;
 }
 
+/* Needs to be updated in JS as well, find `fadeClasses` */
+.tabwrap, .mapp-pane-header > div, .mapp-pane-friends > table {
+    opacity: 0;
+}
+
 @media (min-width: 992px) {
     .mapp-pane-friends {
         max-height: initial;
