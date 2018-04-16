@@ -200,36 +200,6 @@ def index(which):
                            room_key=room['key'])
 
 # WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
-@app.route('/api/refresh')
-def refresh():
-    """
-    Returns a new update
-    """
-    default = "drillhall"
-    which = request.args.get('site', '')
-
-    # SENSITIVE CODE!!!!
-    # THIS IS_ANONYMOUS CHECK IS WHAT GUARDS
-    # AGAINST NON-LOGGED IN ACCESS
-    if current_user.is_anonymous or (which == ""):
-        this = get_demo_json()
-    else:
-        try:
-            this = map_routine(which)
-        except KeyError:
-            this = get_demo_json()
-
-    return render_template('mapp-pane.html',
-                           friends=this['friends'],
-                           room=this['room'],
-                           rows=this['rows'],
-                           num_machines=this['num_machines'],
-                           num_free=this['num_free'],
-                           low_availability=this['low_availability'],
-                           last_update=this['last_update'],
-                           ldap=ldap)
-
-# WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
 @app.route('/api/refresh_data')
 def refresh_data():
     """
