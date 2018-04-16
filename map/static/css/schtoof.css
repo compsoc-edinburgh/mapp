@@ -74,6 +74,8 @@ body {
     overflow: scroll;
 
     max-height: 20vh;
+
+    border-right: 1px solid #99b2c7;
 }
 
 @media (min-width: 992px) {

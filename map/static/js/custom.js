@@ -105,9 +105,6 @@ function readyFunction(){
         .done(function(data){
             console.log(data);
 
-            mapRotation = 0;
-            updateRotation();
-
             $("#mapp-room-name").text(data.room.name);
             $("#mapp-num-free")
                 .text(data.num_free)
@@ -274,6 +271,9 @@ function readyFunction(){
     }
 
     var switchRoom = function(room_key, pushState) {
+        mapRotation = 0;
+        updateRotation();
+
         $(fadeClasses).animate({ opacity: 0 }, () => {
             if (pushState) {
                 history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
