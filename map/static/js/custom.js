@@ -97,10 +97,14 @@ function readyFunction(){
             $("#mapp-buddybar-here").html("");
             $("#mapp-buddybar-elsewhere").html("");
 
-            if (data.friends.length === 0) {
-                $("#mapp-buddybar-here").append("<tr><td><small>Nobody is online.</small></td></tr>");
-                $("#mapp-buddybar-elsewhere").append("<tr><td><small>Nobody is online.</small></td></tr>");
-                return;
+            const here_count = data.friends_here_count;
+            const else_count = data.friends_elsewhere_count;
+            if (here_count === 0) {
+                $("#mapp-buddybar-here").append("<tr><td><small>No friends are in this room.</small></td></tr>");
+            }
+
+            if (else_count === 0) {
+                $("#mapp-buddybar-elsewhere").append("<tr><td><small>No friends elsewhere.</small></td></tr>");
             }
 
             for (let i in data.friends) {
