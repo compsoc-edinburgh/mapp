@@ -94,12 +94,18 @@ def map_routine(which_room):
     # Annotate friends with "here" if they are here
     room_key = room['key']
     friends = get_friend_rooms()
+    friends_here, friends_elsewhere = (0, 0)
     for i in range(len(friends)):
         if friends[i]['room_key'] == room_key:
             friends[i]['here'] = True
+            friends_here += 1
+        else:
+            friends_elsewhere += 1
     
     return {
         "friends"          : friends,
+        "friends_here_count": friends_here,
+        "friends_elsewhere_count": friends_elsewhere,
         "room"             : room,
         "rows"             : rows,
         "num_free"         : num_free,
@@ -410,6 +416,8 @@ def get_demo_friends():
 def get_demo_json():
     return {
         'friends': get_demo_friends(),
+        'friends_here_count': 4,
+        'friends_elsewhere_count': 1,
         'room':{"name":"Mapp Demo", "key":"demo"},
         'rows':[
             [
