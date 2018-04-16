@@ -332,6 +332,17 @@ function readyFunction(){
         $(this).prop('disabled',true);
         checkRefreshAvailable();
     });
+
+    if (location.pathname.startsWith("/site/") || location.pathname === "/demo") {
+        $(".mapp-rooms-dropdown > a").on('click', function() {
+            const room_key = $(this).data('room-key');
+            switchRoom(room_key, true);
+            $(".mapp-rooms-dropdown > a.active").removeClass('active');
+            $(`.mapp-rooms-dropdown > a[data-room-key="${ room_key }"]`).addClass("active");
+            return false;
+        })
+    }
+
     $addButton.on('click',function(){
         $(this).blur();
     });
