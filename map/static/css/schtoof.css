@@ -140,6 +140,10 @@ table.mapp-table>tbody>tr>td {
     font-size: 0.8em;
 }
 
+.mapp-table, .mapp-table td, #rotation-indicator {
+    transition: 0.7s ease-in-out;
+}
+
 .mapp-table .blip {
     display: block;
     font-size: 0.9em;

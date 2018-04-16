@@ -73,6 +73,23 @@ function readyFunction(){
         myDiv.scrollLeft(iPosX - (e.pageX - clickX));
     };
 
+    let mapRotation = 0;
+    var updateRotation = function() {
+        $(".mapp-table").css("transform", `rotate(${mapRotation}deg)`);
+        $(".mapp-table td").css("transform", `rotate(-${mapRotation}deg)`);
+        $("#rotation-indicator").css("transform", `rotate(${mapRotation}deg)`);
+    }
+
+    $("#rotate-map").on("click", () => {
+        mapRotation += 180;
+
+        if (mapRotation === 360) {
+            mapRotation = 0;
+        };
+
+        updateRotation();
+    });
+
     var timeNow
     var useCache = true;
     var mapUpdate = function(){
@@ -86,6 +103,9 @@ function readyFunction(){
         })
         .done(function(data){
             console.log(data);
+
+            mapRotation = 0;
+            updateRotation();
 
             $("#mapp-room-name").text(data.room.name);
             $("#mapp-num-free")
@@ -351,23 +371,6 @@ function readyFunction(){
         $(this).blur();
     });
     loadMapScroll();
-
-    let rotation = 0;
-    $("#rotate-map").on("click", () => {
-        rotation += 90;
-
-        if (rotation === 360) {
-            rotation = 0;
-        };
-
-        $("#rotation-indicator").text(
-            (rotation === 0) ? "" :
-            `${rotation} deg`
-        );
-
-        $(".mapp-table").css("transform", `rotate(${rotation}deg)`);
-        $(".mapp-table td").css("transform", `rotate(-${rotation}deg)`);
-    });
 
     /* form handling ajaxes */
     $('#del-form').on('submit',function(e){
