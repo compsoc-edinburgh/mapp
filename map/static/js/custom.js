@@ -5,7 +5,6 @@ function readyFunction(){
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
         regexName = /^([a-zA-Z]+\ [A-Za-z]+)$/,
-        $friendName = $("#new-friend"),
         $selectError = $('#select-error-alert'),
         $friendList = $('#friend-list'),
         $addButton = $('#add-btn'),
@@ -148,6 +147,51 @@ function readyFunction(){
         });
     }
 
+    var performSearch = () => {
+        $.ajax({
+            url: '/api/search',
+            type: 'GET',
+            data: {
+                'name': $searchFriendInput.val(),
+            }
+        }).done(data => {
+            $searchFriendList.find('option').remove();
+            for (let i in data.people) {
+                const name = data.people[i].name;
+                const uun = data.people[i].uun;
+                const friend = data.people[i].friend === true;
+
+                const opt = $("<option></option>").text(`${name} (${uun})`).data("uun", uun);
+                opt.dblclick(addSearchedFriend);
+                if (friend) {
+                    opt.attr("disabled", true)
+                }
+
+                $searchFriendList.append(opt);
+            }
+        })
+    }
+
+    var addSearchedFriend = () => {
+        const selected = $searchFriendList.find("option:selected");
+        if (selected[0] === undefined) {
+            return;
+        }
+
+        $.ajax({
+            url: '/api/friends',
+            type: 'POST',
+            data: {
+                'type': 'add',
+                'uun': $(selected[0]).data('uun'),
+            }
+        })
+        .done(function(data) {
+            renderFriendList(data);
+            performSearch();
+        });
+    }
+
     centreMap();
 
     // Check for a refresh every five minutes
@@ -211,6 +255,7 @@ function readyFunction(){
             })
                 .done(function(data) {
                     renderFriendList(data);
+                    performSearch();
                 });
         }
         else {
@@ -220,20 +265,17 @@ function readyFunction(){
         }
     });
 
+
+    $searchFriendInput = $("#search-friend-input");
+    $searchFriendList = $("#search-friend-list");
     $('#add-form').on('submit',function(e){
         e.preventDefault();
 
-        $.ajax({
-            url: '/api/friends',
-            type: 'POST',
-            data: $(this).serialize()
-        })
-            .done(function(data) {
-                $friendName.val(''); //Reset the form!
-                renderFriendList(data);
-            });
-
+        performSearch();
     });
+
+    $("#add-btn").on('click', addSearchedFriend);
+    $("#search-btn").on('click', performSearch);
 
     $('.dropdown').on('hide.bs.dropdown',function(){
         $selectError.addClass('d-none');

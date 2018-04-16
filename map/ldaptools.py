@@ -38,4 +38,19 @@ class LDAPTools():
             names[row['uid'][0]] = row['gecos'][0]
 
         return names
+    
+    def search_name(self, name):
+        with self.conn() as l:
+            return self.search_name_bare(name, l)
+
+    def search_name_bare(self, name, l):
+        ldap_filter = filter_format("(|(name=*%s*)(uid=%s))", [name, name])
+        data = l.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, ["gecos", "uid"])
+
+        return map(lambda p: {
+            'uun': p[1]['uid'][0],
+            'name': p[1]['gecos'][0],
+        }, data)
+
+
 

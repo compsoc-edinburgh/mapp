@@ -67,12 +67,22 @@
         <div class="modal-footer">
           <form method="POST" class="w-100" id="add-form">
             <input type="hidden" name="type" value="add">
-            <p>Enter UUNs here only!</p>
-            <div class="form-group">
-                <input type="text" name="newfriend" id="new-friend" class="form-control" placeholder="New Friend">
+            <div class="form-group form-row">
+                <div class="col-auto" style="flex: 1 1 auto;">
+                  <input type="text" name="newfriend" id="search-friend-input" class="form-control" placeholder="Search (uun or name)">
+                </div>
+                <div class="col-auto" style="flex: 0 1 auto;">
+                  <button type="submit" class="btn btn-block btn-primary" id="search-btn">
+                    Search
+                  </button>
+                </div>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block" id="add-btn">Add Friend</button>
+                <select size=4 class="form-control" id="search-friend-list">
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary btn-block" id="add-btn">Add Friend</button>
             </div>
           </form>
         </div>
