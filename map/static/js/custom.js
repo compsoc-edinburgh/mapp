@@ -120,7 +120,7 @@ function readyFunction(){
                     listID = "#mapp-buddybar-elsewhere";
 
                     const sm = $("<small> (<a/>)</small>");
-                    sm.find("a").text(f.room_key).attr("href", `/site/$( f.room_key }`);
+                    sm.find("a").text(f.room_key).attr("href", `/site/${ f.room_key }`);
                     sm.on('click', () => {
                         switchRoom(f.room_key, true);
                         return false;
