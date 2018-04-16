@@ -83,7 +83,8 @@ function readyFunction(){
             url: `/api/refresh_data?site=${site}`
         })
         .done(function(data){
-            console.log(data)
+            console.log(data);
+
             $("#mapp-room-name").text(data.room.name);
             $("#mapp-num-free")
                 .text(data.num_free)
@@ -92,6 +93,9 @@ function readyFunction(){
             $("#mapp-num-machines").text(data.num_machines);
             $("#mapp-last-update-parent").attr("title", `Last update performed at ${data.last_update}`);
             $("#mapp-last-update").text(data.last_update);
+
+            $("#mapp-buddybar-here").html("");
+            $("#mapp-buddybar-elsewhere").html("");
 
             if (data.friends.length === 0) {
                 $("#mapp-buddybar-here").append("<tr><td><small>Nobody is online.</small></td></tr>");
