@@ -92,6 +92,7 @@ function readyFunction(){
 
     var timeNow
     var useCache = true;
+    const fadeClasses = ".tabwrap, .mapp-pane-header > div, .mapp-pane-friends > table";
     var mapUpdate = function(){
         timeNow = new Date();
         var parts = location.pathname.split('/');
@@ -209,6 +210,8 @@ function readyFunction(){
             centreMap();
             loadMapScroll();
             refreshData();
+
+            setTimeout(() => $(fadeClasses).animate({ opacity: 1 }));
         });
     };
     var createRefreshAlert = function (status) {
@@ -271,11 +274,13 @@ function readyFunction(){
     }
 
     var switchRoom = function(room_key, pushState) {
-        if (pushState) {
-            history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
-        }
-        useCache = true;
-        mapUpdate();
+        $(fadeClasses).animate({ opacity: 0 }, () => {
+            if (pushState) {
+                history.pushState({ room_key: room_key }, `${room_key} :: Marauder's Mapp`, `/site/${room_key}`)
+            }
+            useCache = true;
+            mapUpdate();
+        })
     }
 
     $(window).on("popstate", e => {
