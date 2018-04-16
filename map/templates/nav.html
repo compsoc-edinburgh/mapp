@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/">The Marauder's App</a>
+        <a class="navbar-brand" href="/about">The Marauder's App</a>
         
         <!-- Button for smaller screens -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item {% if active_page == 'about' %} active {% endif %}">
-                    <a class="nav-link" href="/">About {% if active_page == "about" %}<span class="sr-only">(current)</span>{% endif %}</a>
+                    <a class="nav-link" href="/about">About {% if active_page == "about" %}<span class="sr-only">(current)</span>{% endif %}</a>
                 </li>
                 {% if current_user.is_anonymous %}
                     <a class="nav-link {% if room_key == 'Demo' %} active {% endif %}" href="/demo">Demo</a>
