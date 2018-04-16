@@ -5,24 +5,6 @@
 {% block content %}
 
 <article class="container prose">
-  <div class="text-center">
-    {% if not current_user.is_authenticated %}
-      <p>
-        <a href="/login" class="btn btn-primary">I solemnly swear I am up to no good... (log in)</a>
-      </p>
-      <p>
-        <a href="/demo" class="btn btn-primary">Demo</a>
-      </p>
-    {% else %}
-      <p>
-        <strong>List of rooms</strong>
-      </p>
-      {% for room in rooms %}
-      <a class="btn btn-primary" style="margin-bottom: 2px;" href="/site/{{room.key}}">{{ room.name }}</a>
-      {% endfor %}
-    {% endif %}
-  </div>
-
   <div class="text-center padder">
     <h2>About The Marauder's App</h2>
   </div>

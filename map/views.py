@@ -185,12 +185,7 @@ def index():
 
 @app.route("/about")
 def about():
-    rooms = None
-    if current_user.is_authenticated:
-        rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
-        rooms.sort(key=lambda x: x['key'])
-
-    return render_template("about.html", rooms=rooms)
+    return render_template("about.html")
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
 @login_required
