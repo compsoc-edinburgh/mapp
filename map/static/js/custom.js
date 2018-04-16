@@ -131,7 +131,8 @@ function readyFunction(){
                 $(listID).append(tr);
             }
 
-            const tab = $(".new-mapp-table > tbody");
+            const tab = $(".mapp-table > tbody");
+            tab.html(""); // reset inner html
             for (let i in data.rows) {
                 const row = data.rows[i];
 
