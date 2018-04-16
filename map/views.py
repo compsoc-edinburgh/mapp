@@ -90,8 +90,16 @@ def map_routine(which_room):
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
     last_update = last_update.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Annotate friends with "here" if they are here
+    room_key = room['key']
+    friends = get_friend_rooms()
+    for i in range(len(friends)):
+        if friends[i]['room_key'] == room_key:
+            friends[i]['here'] = True
     
     return {
+        "friends"          : friends,
         "room"             : room,
         "rows"             : rows,
         "num_free"         : num_free,
@@ -205,19 +213,8 @@ def refresh():
         except KeyError:
             this = get_demo_json()
 
-    if current_user.is_anonymous:
-        friends = get_demo_friends()
-    else:
-        friends = get_friend_rooms()
-
-    # Annotate friends with "here" if they are here
-    room_key = this['room']['key']
-    for i in range(len(friends)):
-        if friends[i]['room_key'] == room_key:
-            friends[i]['here'] = True
-
     return render_template('mapp-pane.html',
-                           friends=friends,
+                           friends=this['friends'],
                            room=this['room'],
                            rows=this['rows'],
                            num_machines=this['num_machines'],
@@ -408,6 +405,7 @@ def get_demo_friends():
 
 def get_demo_json():
     return {
+        'friends': get_demo_friends(),
         'room':{"name":"Mapp Demo", "key":"demo"},
         'rows':[
             [
