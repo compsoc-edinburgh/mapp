@@ -148,7 +148,7 @@ table.mapp-table>tbody>tr>td {
 }
 
 .mapp-table, .mapp-table td, #rotation-indicator {
-    transition: 0.7s ease-in-out;
+    transition: transform 0.7s ease-in-out;
 }
 
 .mapp-table .blip {
