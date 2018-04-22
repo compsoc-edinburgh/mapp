@@ -118,6 +118,10 @@ function readyFunction(){
 
             const here_count = data.friends_here_count;
             const else_count = data.friends_elsewhere_count;
+
+            $("#mapp-here-count").text(here_count);
+            $("#mapp-elsewhere-count").text(else_count);
+
             if (here_count === 0) {
                 $("#mapp-buddybar-here").append("<tr><td><small>No friends are in this room.</small></td></tr>");
             }
