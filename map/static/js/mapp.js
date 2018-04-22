@@ -274,6 +274,10 @@ function readyFunction(){
     }
 
     var switchRoom = function(room_key, pushState) {
+        console.log(`Changing room to ${room_key}...`);
+        gtag('set', 'page', location.pathname);
+        gtag('send', 'pageview');
+
         mapRotation = 0;
         updateRotation();
 
