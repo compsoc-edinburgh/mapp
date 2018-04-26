@@ -7,12 +7,12 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -129,11 +129,12 @@ func checkAuthentication() error {
 type MachineResult struct {
 	Hostname  string `json:"hostname"`
 	User      string `json:"user"`
-	Active    string `json:"active"`
 	Timestamp string `json:"timestamp"`
 	Status    string `json:"status"`
 	Error     error  `json:"-"`
 }
+
+var reo = regexp.MustCompile(`^\s+\w+\s+\d+\s+(\w+)\s+seat0\s+$`)
 
 func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
@@ -154,7 +155,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ServerAliveCountMax=3",
 			"-o", "ConnectTimeout=15s",
 			machine+".inf.ed.ac.uk",
-			"w",
+			"/usr/bin/loginctl --no-legend --no-pager list-sessions",
 		)
 
 		var errbuf bytes.Buffer
@@ -167,29 +168,13 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			result.Error = errors.Wrap(err, errbuf.String())
 		} else {
 			result.Status = "online"
-			what := strings.Split(string(out), "\n")
 
-			stats := what[0]
-			fmt.Println(stats)
-
-			if len(what) <= 2 {
-				log.WithField("host", machine).Warnln("length of what is <= 2")
-				fmt.Println(string(out))
-			} else {
-				users := what[2:]
-				// fmt.Printf("users (%d): '%+v'\n", len(users), users[0])
-				for _, user := range users {
-					if user == "" {
-						continue
-					}
-
-					cols := strings.Fields(user)
-					// fmt.Printf("'%+v'", cols)
-					if cols[2] == ":0" {
-						result.User = cols[0]
-						result.Active = cols[3]
-						break
-					}
+			lines := strings.Split(string(out), "\n")
+			for _, line := range lines {
+				uun := reo.FindStringSubmatch(line)
+				if len(uun) > 0 {
+					result.User = uun[1]
+					break
 				}
 			}
 		}
