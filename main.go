@@ -139,10 +139,12 @@ var reo = regexp.MustCompile(`^\s+\w+\s+\d+\s+(\w+)\s+seat0\s+$`)
 func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
 		// fmt.Println("worker", id, "started job", machine)
+		
+		location, _ := time.LoadLocation("Europe/London")
 
 		result := MachineResult{
 			Hostname:  machine,
-			Timestamp: time.Now().Format(time.RFC3339),
+			Timestamp: time.Now().In(location).Format(time.RFC3339),
 		}
 
 		cmd := exec.Command(
