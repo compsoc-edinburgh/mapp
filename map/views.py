@@ -253,10 +253,12 @@ def rooms(which=""):
     if not which:
         return jsonify({'rooms':rooms_list()})
     else:
-        rooms = []
+        if which == "all":
+            which = ",".join([r[0] for r in rooms_list()])
+        machines = []
         for room in which.split(","):
-            rooms.extend(room_machines(room))
-        return jsonify({"rooms":rooms})
+            machines.extend(room_machines(room))
+        return jsonify({"machines":machines})
     
 
 @app.route('/api/update', methods=['POST'])
