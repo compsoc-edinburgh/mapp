@@ -1,24 +1,26 @@
 // original source: https://gist.github.com/mderazon/9655893#file-export-to-csv-gs
-// https://www.drzon.net/posts/export-all-google-sheets-to-csv/
-
-/*
- * script to export data in all sheets in the current spreadsheet as individual csv files
- * files will be named according to the name of the sheet
- * author: Michael Derazon
-*/
+// original post: https://www.drzon.net/posts/export-all-google-sheets-to-csv/
+// original author: author: Michael Derazon
 
 function onOpen() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var csvMenuEntries = [{ name: "Mapp: deploy schema", functionName: "saveAsCSV" }];
+  var csvMenuEntries = [{ name: "Mapp: deploy schema (all)", functionName: "deployAll" }, {name: "Mapp: deploy schema (this sheet)", functionName: "deployThis"}];
   ss.addMenu("Better Informatics", csvMenuEntries);
 };
 
-function saveAsCSV() {
+function deployThis() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var s = ss.getActiveSheet();
+  deploySheets([s], false);
+}
+
+function deployAll() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheets = ss.getSheets();
-  // create a folder from the name of the spreadsheet
-  //var folder = DriveApp.createFolder(ss.getName().toLowerCase().replace(/ /g,'_') + '_csv_' + new Date().getTime());
-  //var blobs = [];
+  deploySheets(sheets, true);
+}
+
+function deploySheets(sheets, resetAll) {
   var machines = []
   for (var i = 0; i < sheets.length; i++) {
     var sheet = sheets[i];
@@ -27,15 +29,10 @@ function saveAsCSV() {
       continue;
     }
     Logger.log("sheet happening: " + sheet.getName())
-    // append ".csv" extension to the sheet name
-    fileName = sheet.getName() + ".csv";
-    // convert all available sheet data to csv format
-    var csvFile = convertRangeToCsvFile_(fileName, sheet);
-    // create a file in the Docs List with the given name and the csv data
-    //folder.createFile(fileName, csvFile);
-    //blobs.push(Utilities.newBlob(csvFile, "application/zip", fileName))
 
-    machines.push({ name: sheet.getName(), csv: csvFile })
+    // convert all available sheet data to csv format
+    var csvFile = convertRangeToCsvFile_(sheet);
+    machines.push({name: sheet.getName(), csv: csvFile})
   }
 
   var options = {
@@ -44,24 +41,17 @@ function saveAsCSV() {
     payload: JSON.stringify({
       'callback-key': PropertiesService.getScriptProperties().getProperty("authorised-key"),
       machines: machines,
+      resetAll: resetAll,
     }),
     muteHttpExceptions: true
   };
-  
+
   var r = UrlFetchApp.fetch('https://mapp.betterinformatics.com/api/update_schema', options)
   Logger.log(r)
   Browser.msgBox(r)
-
-  //var f = DriveApp.createFile(Utilities.zip(blobs, 'mapp_dice_rooms.zip'))
-  //f.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW)
-
-
-  //Browser.msgBox("Download is ready", "", null)
-  //Browser.msgBox('Files are waiting in a folder named ' + folder.getName());
-
 }
 
-function convertRangeToCsvFile_(csvFileName, sheet) {
+function convertRangeToCsvFile_(sheet) {
   // get available data range in the spreadsheet
   var activeRange = sheet.getDataRange();
   try {
