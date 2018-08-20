@@ -253,6 +253,8 @@ def rooms(which=""):
     if not which:
         return jsonify({'rooms':rooms_list()})
     else:
+        if which == "all":
+            which = ",".join([r[0] for r in rooms_list()])
         machines = []
         for room in which.split(","):
             machines.extend(room_machines(room))
