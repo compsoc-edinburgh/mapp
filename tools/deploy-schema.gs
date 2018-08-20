@@ -45,14 +45,12 @@ function saveAsCSV() {
       'callback-key': PropertiesService.getScriptProperties().getProperty("authorised-key"),
       machines: machines,
     }),
-    muteHttpExceptions: false
+    muteHttpExceptions: true
   };
   
   var r = UrlFetchApp.fetch('https://mapp.betterinformatics.com/api/update_schema', options)
   Logger.log(r)
-  if (!JSON.parse(r).success) {
-    Browser.msgBox(r)
-  }
+  Browser.msgBox(r)
 
   //var f = DriveApp.createFile(Utilities.zip(blobs, 'mapp_dice_rooms.zip'))
   //f.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW)
