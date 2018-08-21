@@ -4,7 +4,8 @@ import hashlib
 import json, re
 from flask import render_template, request, jsonify, redirect, make_response
 from flask.ext.login import login_user, logout_user, login_required, current_user
-
+import csv
+from collections import defaultdict
 
 class APIError(Exception):
     status_code = 401
@@ -125,7 +126,6 @@ def rooms_list():
 
 def room_machines(which):
     machines = flask_redis.lrange(which + "-machines", 0, -1)
-    print(machines)
     return machines
 
 def get_friends():
@@ -260,6 +260,144 @@ def rooms(which=""):
             machines.extend(room_machines(room))
         return jsonify({"machines":machines})
     
+
+@app.route('/api/update_schema', methods=['POST'])
+def update_schema():
+    content = request.json
+
+    try:
+        key = content['callback-key']
+    except Exception:
+        key = ""
+
+    if key not in flask_redis.lrange("authorised-key", 0, -1):
+        # HTTP 401 Not Authorised
+        print "******* CLIENT ATTEMPTED TO USE BAD KEY *******"
+        raise APIError("Given key is not an authorised API key")
+
+    try:
+        sheetInput = content['machines']
+    except Exception:
+        raise APIError("no machines?")
+
+    try:
+        resetAll = content['resetAll'] == True
+    except Exception:
+        raise APIError("Expected resetAll key")
+
+    try:
+        dropOnly = content['dropOnly'] == True
+    except Exception:
+        raise APIError("Expected dropOnly key")
+
+    roomKeys = ['site', 'key', 'name']
+
+    pipe = flask_redis.pipeline()
+    sites = defaultdict(list)
+
+    for sheet in sheetInput:
+        preader = csv.reader(sheet['csv'].split('\r\n'), delimiter=',')
+
+        room = {}
+        machines = []
+
+        for rownumber, row in enumerate(preader):
+            for colnumber, cell_value in enumerate(row):
+                # handle header rows first
+                if rownumber == 0:
+                    if colnumber < len(roomKeys):
+                        expected = roomKeys[colnumber]
+                        if expected != cell_value:
+                            raise APIError("[Sheet %s] Invalid header '%s' in cols[%s], expected '%s" % (sheet['name'], cell_value, colnumber, expected))
+                    continue
+                elif rownumber == 1:
+                    if colnumber >= len(roomKeys):
+                        continue
+                    if cell_value == "":
+                        raise APIError("[Sheet %s] Invalid value in col[%s] row[%s], expected non-empty string" % (sheet['name'], colnumber, rownumber))
+                    colName = roomKeys[colnumber]
+                    room[colName] = cell_value
+                    continue
+                elif rownumber == 2:
+                    if cell_value != "":
+                        raise APIError("[Sheet %s] Invalid value '%s' in rows[%s], expected empty row" % (sheet['name'], cell_value, rownumber))
+                    continue
+
+                hostname = cell_value
+
+                if not dropOnly:
+                    machines.append({
+                        'hostname': hostname,
+                        'col': colnumber,
+                        'row': rownumber-3, # -3 required because first 3 rows are headers
+                        'user': '',
+                        'timestamp': '',
+                        'status': 'offline',
+                        'site': room['site'],
+                        'room': room['key'],
+                    })
+
+        # if we aren't resetting the entire schema, reset just this room first
+        if not resetAll:
+            schema_reset_room(pipe, room['site'], room['key'], dropFromSite=True)
+
+        # if dropping only, continue
+        if dropOnly:
+            continue
+
+        # add site to list of sites
+        pipe.sadd('mapp.sites', room['site'])
+        # add room to site
+        pipe.sadd(room['site']+'-rooms', room['key'])
+        # add room dict
+        pipe.hmset(room['key'], room)
+        # add room machine listing
+        pipe.lpush(room['key'] + '-machines', *map(lambda m: m['hostname'], machines))
+        # add each machine
+        for m in machines:
+            pipe.hmset(m['hostname'], m)
+
+        sites[room['site']].append(room)
+
+    if resetAll:
+        schema_reset(site="forresthill")
+
+    pipe.execute()
+
+    return jsonify({'success': True})
+
+"""
+    schema_reset completely resets the schema for a site.
+
+    - list site rooms
+        - list room machines
+            - remove machine entries
+        - remove room entry
+    - remove site entry
+
+"""
+def schema_reset(site):
+    siteKey = site + "-rooms"
+    pipe = flask_redis.pipeline()
+
+    for room in flask_redis.smembers(siteKey):
+        schema_reset_room(pipe, site, room)
+
+    pipe.delete(site)
+    pipe.srem("mapp.sites", site)
+
+    pipe.execute()
+
+def schema_reset_room(pipe, site, room, dropFromSite=False):
+    roomKey = room+"-machines"
+    machines = flask_redis.lrange(roomKey, 0, -1)
+    pipe.delete(*machines)
+    pipe.delete(roomKey)
+    pipe.delete(room)
+
+    if dropFromSite:
+        pipe.srem(site+'-rooms', room)
+
 
 @app.route('/api/update', methods=['POST'])
 def update():
