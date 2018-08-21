@@ -24,6 +24,8 @@ with open(args.file, 'r') as placecsv:
     preader = csv.reader(placecsv)
 
     for rownumber, row in enumerate(preader):
+        if rownumber < 3:
+            continue
         for colnumber, machine in enumerate(row):
             print(rownumber, colnumber, machine)
             machines.add(machine)
@@ -31,8 +33,10 @@ with open(args.file, 'r') as placecsv:
             r.hmset(machine, {
                 'hostname': machine,
                 'col': colnumber,
-                'row': rownumber,
+                'row': rownumber-3,
                 'user': '',
+                'timestamp': '',
+                'status': 'offline',
             })
     machines.add("")
 
