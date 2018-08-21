@@ -325,7 +325,7 @@ def update_schema():
 
                 hostname = cell_value
 
-                if not dropOnly:
+                if hostname != "" and not dropOnly:
                     machines.append({
                         'hostname': hostname,
                         'col': colnumber,
