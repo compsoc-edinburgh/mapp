@@ -4,23 +4,33 @@
 
 function onOpen() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var csvMenuEntries = [{ name: "Mapp: deploy schema (all)", functionName: "deployAll" }, {name: "Mapp: deploy schema (this sheet)", functionName: "deployThis"}];
+  var csvMenuEntries = [
+    {name: "Mapp: deploy schema (all)", functionName: "deployAll"},
+    {name: "Mapp: deploy schema (this sheet)", functionName: "deployThis"},
+    {name: "Mapp: drop room (this sheet)", functionName: "dropThis"}
+  ];
   ss.addMenu("Better Informatics", csvMenuEntries);
 };
 
 function deployThis() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var s = ss.getActiveSheet();
-  deploySheets([s], false);
+  deploySheets([s], false, false);
+}
+
+function dropThis() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var s = ss.getActiveSheet();
+  deploySheets([s], false, true);
 }
 
 function deployAll() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheets = ss.getSheets();
-  deploySheets(sheets, true);
+  deploySheets(sheets, true, false);
 }
 
-function deploySheets(sheets, resetAll) {
+function deploySheets(sheets, resetAll, dropOnly) {
   var machines = []
   for (var i = 0; i < sheets.length; i++) {
     var sheet = sheets[i];
@@ -42,6 +52,7 @@ function deploySheets(sheets, resetAll) {
       'callback-key': PropertiesService.getScriptProperties().getProperty("authorised-key"),
       machines: machines,
       resetAll: resetAll,
+      dropOnly: dropOnly,
     }),
     muteHttpExceptions: true
   };
