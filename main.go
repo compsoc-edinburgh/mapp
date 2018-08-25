@@ -81,6 +81,8 @@ PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
 KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 -----END CERTIFICATE-----`
 
+var cachedMachineList []byte
+
 func getMachines() (machines []string, err error) {
 	var listStruct struct{ Machines []string }
 	var listBytes []byte
@@ -106,9 +108,14 @@ func getMachines() (machines []string, err error) {
 
 		defer resp.Body.Close()
 	} else {
-		listBytes, err = ioutil.ReadFile(machineListPath)
-		if err != nil {
-			return nil, errors.Wrap(err, "could not open machines file")
+		if cachedMachineList == nil {
+			listBytes, err = ioutil.ReadFile(machineListPath)
+			if err != nil {
+				return nil, errors.Wrap(err, "could not open machines file")
+			}
+			cachedMachineList = listBytes
+		} else {
+			listBytes = cachedMachineList
 		}
 	}
 
@@ -339,6 +346,12 @@ func main() {
 
 	cronSearch := func(msg string) func() {
 		return func() {
+			if newMachines, err := getMachines(); err != nil {
+				log.WithField("error", err).Fatalln("could not get machines")
+			} else {
+				machines = newMachines
+			}
+
 			log.WithField("msg", msg).Println("CRON TRIGGERED")
 			performSearch(machines, secret, callbackKey)
 		}
