@@ -187,6 +187,10 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 		if err != nil {
 			result.Status = "offline"
 			result.Error = errors.Wrap(err, errbuf.String())
+
+			if strings.Contains(errbuf.String(), "Name or service not known") {
+				result.Status = "unknown"
+			}
 		} else {
 			result.Status = "online"
 
@@ -278,6 +282,7 @@ func performSearch(machines []string, secret, callbackKey string) {
 		if result.Error != nil {
 			log.
 				WithField("host", result.Hostname).
+				WithField("status", result.Status).
 				WithField("error", result.Error).
 				Errorln("NO-GO")
 		} else if result.User != "" {
@@ -291,13 +296,13 @@ func performSearch(machines []string, secret, callbackKey string) {
 					WithField("status", result.Status).
 					WithField("host", result.Hostname).
 					WithField("user", result.User[:15]+"...").
-					Infoln("USER")
+					Infoln("SUCCESS WITH USER")
 			}
 		} else {
 			log.
 				WithField("status", result.Status).
 				WithField("host", result.Hostname).
-				Infoln("RECORD")
+				Infoln("SUCCESS")
 		}
 
 		result.Error = nil
