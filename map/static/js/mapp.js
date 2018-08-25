@@ -184,8 +184,11 @@ function readyFunction(){
                         userAt = cell.friend;
                     } else if (cell.user) {
                         tdClass = "text-danger";
-                    } else {
+                    } else if (cell.status === "success") {
                         icon.addClass("text-success");
+                    } else {
+                        iconClass = "fa-question-circle"
+                        icon.addClass("text-warning");
                     }
 
                     icon.find("i").addClass(iconClass);
