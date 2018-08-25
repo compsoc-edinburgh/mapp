@@ -248,7 +248,6 @@ def logout():
 
 @app.route("/api/rooms")
 @app.route("/api/rooms/<which>")
-@login_required
 def rooms(which=""):
     if not which:
         return jsonify({'rooms':rooms_list()})
