@@ -82,24 +82,36 @@ KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 -----END CERTIFICATE-----`
 
 func getMachines() (machines []string, err error) {
-	singleMachine := os.Getenv("MAPP_MACHINE")
-	if singleMachine == "" {
-		singleMachine = "localhost"
-	}
+	var listStruct struct{ Machines []string }
+	var listBytes []byte
 
 	machineListPath := os.Getenv("MACHINE_LIST")
 	if machineListPath == "" {
-		machines = []string{singleMachine}
-		log.Infoln("Could not find machine list. Using " + singleMachine)
-		return
+		log.Infoln("Could not find machine list. Downloading and using machine list...")
+
+		client, err := getHTTPClient()
+		if err != nil {
+			return nil, errors.Wrap(err, "could not get http client")
+		}
+
+		resp, err := client.Get("https://mapp.betterinformatics.com/api/rooms/all")
+		if err != nil {
+			return nil, errors.Wrap(err, "could not download machines list")
+		}
+
+		listBytes, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not read API response for machines list")
+		}
+
+		defer resp.Body.Close()
+	} else {
+		listBytes, err = ioutil.ReadFile(machineListPath)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not open machines file")
+		}
 	}
 
-	listBytes, err := ioutil.ReadFile(machineListPath)
-	if err != nil {
-		return nil, errors.Wrap(err, "could not open machines file")
-	}
-
-	var listStruct struct{ Machines []string }
 	if err := json.Unmarshal(listBytes, &listStruct); err != nil {
 		return nil, errors.Wrap(err, "could not read machines file json contents")
 	}
@@ -139,7 +151,7 @@ var reo = regexp.MustCompile(`^\s+\w+\s+\d+\s+(\w+)\s+seat0\s+$`)
 func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
 		// fmt.Println("worker", id, "started job", machine)
-		
+
 		location, _ := time.LoadLocation("Europe/London")
 
 		result := MachineResult{
@@ -186,15 +198,10 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	}
 }
 
-func sendUpdate(payload interface{}) error {
-	data, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-
+func getHTTPClient() (*http.Client, error) {
 	pool := x509.NewCertPool()
 	if pool.AppendCertsFromPEM([]byte(letsencryptPem)) != true {
-		return errors.New("failed to append cert to pool")
+		return nil, errors.New("failed to append cert to pool")
 	}
 
 	tlsConf := &tls.Config{RootCAs: pool}
@@ -203,6 +210,19 @@ func sendUpdate(payload interface{}) error {
 	client := &http.Client{Transport: &http.Transport{
 		TLSClientConfig: tlsConf,
 	}}
+	return client, nil
+}
+
+func sendUpdate(payload interface{}) error {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	client, err := getHTTPClient()
+	if err != nil {
+		return errors.Wrap(err, "could not get http client")
+	}
 
 	_, err = client.Post(
 		"https://mapp.tardis.ed.ac.uk/api/update",
