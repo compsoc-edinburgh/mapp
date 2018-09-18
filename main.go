@@ -175,6 +175,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ServerAliveInterval=5",
 			"-o", "ServerAliveCountMax=3",
 			"-o", "ConnectTimeout=15s",
+			"-o", "StrictHostKeyChecking=no",
 			machine+".inf.ed.ac.uk",
 			"/usr/bin/loginctl --no-legend --no-pager list-sessions",
 		)
