@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"regexp"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -153,7 +154,7 @@ type MachineResult struct {
 	Error     error  `json:"-"`
 }
 
-var reo = regexp.MustCompile(`^\s+\w+\s+\d+\s+(\w+)\s+seat0\s+$`)
+var reo = regexp.MustCompile(`^\s+(\w+)\s+\d+\s+(\w+)\s+seat0\s+$`)
 
 func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
@@ -196,11 +197,26 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			result.Status = "online"
 
 			lines := strings.Split(string(out), "\n")
+
+			n := -1
 			for _, line := range lines {
 				uun := reo.FindStringSubmatch(line)
 				if len(uun) > 0 {
-					result.User = uun[1]
-					break
+					thisSession, err := strconv.Atoi(uun[1])
+					if err != nil {
+						log.WithFields(log.Fields{
+							"line":    line,
+							"session": uun[1],
+							"error":   err,
+							"machine": machine,
+						}).Warnln("MACHINE BAD LOGINCTL SESSION NUMBER")
+					} else {
+						if thisSession > n {
+							// fmt.Println(uun[0], "then", uun[1], "and", uun[2])
+							result.User = uun[2]
+							n = thisSession
+						}
+					}
 				}
 			}
 		}
