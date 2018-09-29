@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"regexp"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -178,7 +177,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ConnectTimeout=15s",
 			"-o", "StrictHostKeyChecking=no",
 			machine+".inf.ed.ac.uk",
-			"/usr/bin/loginctl --no-legend --no-pager list-sessions",
+			"/usr/bin/printf '%s' $(/usr/bin/ps -ho user --ppid $(/sbin/pidof lightdm) | /usr/bin/fgrep -ve 'root')",
 		)
 
 		var errbuf bytes.Buffer
@@ -195,30 +194,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			}
 		} else {
 			result.Status = "online"
-
-			lines := strings.Split(string(out), "\n")
-
-			n := -1
-			for _, line := range lines {
-				uun := reo.FindStringSubmatch(line)
-				if len(uun) > 0 {
-					thisSession, err := strconv.Atoi(uun[1])
-					if err != nil {
-						log.WithFields(log.Fields{
-							"line":    line,
-							"session": uun[1],
-							"error":   err,
-							"machine": machine,
-						}).Warnln("MACHINE BAD LOGINCTL SESSION NUMBER")
-					} else {
-						if thisSession > n {
-							// fmt.Println(uun[0], "then", uun[1], "and", uun[2])
-							result.User = uun[2]
-							n = thisSession
-						}
-					}
-				}
-			}
+			result.User = strings.TrimSpace(string(out))
 		}
 
 		results <- result
