@@ -88,9 +88,7 @@ def map_routine(which_room):
 
     low_availability = num_free <= 0.3 * num_machines
 
-    date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
-    last_update = last_update.strftime("%Y-%m-%d %H:%M:%S")
+    last_update = flask_redis.get("last-update")
 
     # Annotate friends with "here" if they are here
     room_key = room['key']

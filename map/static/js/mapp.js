@@ -103,15 +103,16 @@ function readyFunction(){
         })
         .done(function(data){
             console.log(data);
-
             $("#mapp-room-name").text(data.room.name);
             $("#mapp-num-free")
                 .text(data.num_free)
                 .removeClass("text-warning").removeClass('text-success')
                 .addClass(data.low_availability ? "text-warning" : "text-success");
             $("#mapp-num-machines").text(data.num_machines);
-            $("#mapp-last-update-parent").attr("title", `Last update performed at ${data.last_update}`);
-            $("#mapp-last-update").text(data.last_update);
+
+            const time = moment(data.last_update);
+            $("#mapp-last-update-parent").attr("title", `Last update performed at ${time}`);
+            $("#mapp-last-update").text(time.fromNow());
 
             $("#mapp-buddybar-here").html("");
             $("#mapp-buddybar-elsewhere").html("");
