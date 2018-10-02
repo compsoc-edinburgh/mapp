@@ -537,41 +537,41 @@ def get_demo_json():
         'rows':[
             [
                 {},
-                {"hostname":"dish"},
-                {"hostname":"paulajennings"},
+                {"hostname":"dish", "status": "offline"},
+                {"hostname":"paulajennings", "status": "online"},
                 {},{},{},{},{}
             ],[
-                {"hostname":"dent"},
-                {"hostname":"prefect"},
+                {"hostname":"dent", "status": "online"},
+                {"hostname":"prefect", "status": "online"},
                 {"hostname":"slartibartfast", "user":" ","friend":"moony"},
                 {"hostname":"random", "user":" ","friend":"wormtail"},
-                {"hostname":"colin"},
+                {"hostname":"colin", "status": "offline"},
                 {},
-                {"hostname":"marvin"},
-                {"hostname":"vogon"}
+                {"hostname":"marvin", "status": "online"},
+                {"hostname":"vogon", "status": "online"}
             ],[
                 {"hostname":"beeblebrox", "user":" ","friend":"padfoot"},
                 {"hostname":"trillian", "user":" "},
-                {"hostname":"agrajag"},
+                {"hostname":"agrajag", "status": "unknown"},
                 {"hostname":"krikkit", "user":" "},
-                {"hostname":"almightybob"},
+                {"hostname":"almightybob", "status": "online"},
                 {},
                 {"hostname":"jynnan", "user":" "},
-                {"hostname":"tonyx"}
+                {"hostname":"tonyx", "status": "offline"}
             ],[
                 {},{},{},
-                {"hostname":"eddie"},
+                {"hostname":"eddie", "status": "offline"},
                 {"hostname":"fenchurch", "user":" "},
                 {},{},{}
             ],[
                 {},{},{},
-                {"hostname":"anangus"},
+                {"hostname":"anangus", "status": "offline"},
                 {"hostname":"benjy", "user":" ","friend":"prongs"},
                 {},{},{}
             ]
         ],
         'num_machines':20,
-        'num_free':12,
+        'num_free':6,
         'low_availability':False,
         'last_update':"1998-05-02 13:37"
     }
