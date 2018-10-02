@@ -427,7 +427,7 @@ def update():
         print("Malformed JSON content")
         raise APIError("Malformed JSON content", status_code=400)
 
-    pipe.set("last-update", str(datetime.utcnow().isoformat()))
+    pipe.set("last-update", str(datetime.now().isoformat()))
     pipe.execute()
 
     return jsonify(status="ok")
