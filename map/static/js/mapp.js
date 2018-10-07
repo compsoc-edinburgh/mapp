@@ -109,10 +109,9 @@ function readyFunction(){
                 .removeClass("text-warning").removeClass('text-success')
                 .addClass(data.low_availability ? "text-warning" : "text-success");
             $("#mapp-num-machines").text(data.num_machines);
-
-            const time = moment(data.last_update);
-            $("#mapp-last-update-parent").attr("title", `Last update performed at ${time}`);
-            $("#mapp-last-update").text(time.fromNow());
+            const time = data.last_update;
+            $("#mapp-last-update-parent").attr("title", `Last update performed at ${dateFns.format(time)}`);
+            $("#mapp-last-update").text(dateFns.distanceInWordsToNow(time, { addSuffix: true }));
 
             $("#mapp-buddybar-here").html("");
             $("#mapp-buddybar-elsewhere").html("");
