@@ -1,6 +1,6 @@
 from flask import Flask, g
-from flask.ext.redis import FlaskRedis
-from flask.ext.login import LoginManager
+from flask_redis import FlaskRedis
+from flask_login import LoginManager
 from flask.sessions import SecureCookieSessionInterface
 from ldappool import ConnectionManager
 

@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 import json, re
 from flask import render_template, request, jsonify, redirect, make_response
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 import csv
 from collections import defaultdict
 
