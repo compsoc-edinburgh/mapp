@@ -174,7 +174,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "PasswordAuthentication=no",
 			"-o", "ServerAliveInterval=5",
 			"-o", "ServerAliveCountMax=3",
-			"-o", "ConnectTimeout=15s",
+			"-o", "ConnectTimeout=5s",
 			"-o", "StrictHostKeyChecking=no",
 			machine+".inf.ed.ac.uk",
 			"/usr/bin/printf '%s' $(/usr/bin/ps -ho user --ppid $(/sbin/pidof lightdm) | /usr/bin/fgrep -ve 'root')",
