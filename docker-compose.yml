@@ -3,7 +3,7 @@ services:
     web:
         build: .
         ports:
-            - "9000:9000"
+            - "127.0.0.1:9000:9000"
         volumes:
             - ./config.py:/code/config.py
     redis:
