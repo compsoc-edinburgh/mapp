@@ -229,7 +229,7 @@ def refresh_data():
 
 @app.route("/login", methods=['GET'])
 def login():
-    url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&https://map.betterinformatics.com"
+    url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&" + request.url_root
     return redirect(url + request.args.get('next', '/'))
 
 @app.route("/flip_dnd", methods=['POST'])
