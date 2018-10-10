@@ -6,9 +6,11 @@ from ldappool import ConnectionManager
 
 from cosign import CoSign
 from ldaptools import LDAPTools
+from werkzeug.contrib.fixers import ProxyFix
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 flask_redis = FlaskRedis(app, 'REDIS')
 ldap = LDAPTools(
