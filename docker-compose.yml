@@ -4,6 +4,8 @@ services:
         build: .
         ports:
             - "9000:9000"
+        volumes:
+            - ./config.py:/code/config.py
     redis:
         image: "redis:alpine"
         volumes:
