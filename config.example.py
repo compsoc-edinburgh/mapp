@@ -9,5 +9,7 @@ LDAP_SERVER = "ldap://dir.inf.ed.ac.uk"
 
 REDIS_URL = "redis://:PASSWORD@localhost:6379/0"
 
+DEBUG = True
+
 CRYPTO_SECRET="SECRET KEY"
 #CRYPTO_SECRET="Done this to invalidate old data"

@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 
 ADD . /code
 
-CMD ["python", "run_debug.py"]
+CMD ["python", "run.py"]
