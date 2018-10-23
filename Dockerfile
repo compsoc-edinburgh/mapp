@@ -2,11 +2,13 @@ FROM python:2.7
 
 RUN apt-get update -y && \
     apt-get install -y libldap2-dev libsasl2-dev
+RUN pip install pipenv
 
-ADD ./requirements.txt /code/requirements.txt
 WORKDIR /code
+ADD ./Pipfile.lock /code/Pipfile.lock
+ADD ./Pipfile /code/Pipfile
 
-RUN pip install -r requirements.txt
+RUN pipenv install --system --deploy
 
 ADD . /code
 
