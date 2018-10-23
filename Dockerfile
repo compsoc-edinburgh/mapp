@@ -10,4 +10,6 @@ RUN pip install -r requirements.txt
 
 ADD . /code
 
+EXPOSE 9000
+
 CMD ["python", "run.py"]
