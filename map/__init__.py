@@ -4,8 +4,8 @@ from flask_login import LoginManager
 from flask.sessions import SecureCookieSessionInterface
 from ldappool import ConnectionManager
 
-from cosign import CoSign
-from ldaptools import LDAPTools
+from .cosign import CoSign
+from .ldaptools import LDAPTools
 from werkzeug.contrib.fixers import ProxyFix
 
 app = Flask(__name__)

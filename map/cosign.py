@@ -1,5 +1,5 @@
 import requests
-from user import User, DisabledUser
+from .user import User, DisabledUser
 
 class ServerDownException(Exception): pass
 

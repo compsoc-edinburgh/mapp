@@ -269,7 +269,7 @@ def update_schema():
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
-        print "******* CLIENT ATTEMPTED TO USE BAD KEY *******"
+        print("******* CLIENT ATTEMPTED TO USE BAD KEY *******")
         raise APIError("Given key is not an authorised API key")
 
     try:
@@ -407,7 +407,7 @@ def update():
 
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
-        print "******* CLIENT ATTEMPTED TO USE BAD KEY *******"
+        print("******* CLIENT ATTEMPTED TO USE BAD KEY *******")
         raise APIError("Given key is not an authorised API key") 
 
     pipe = flask_redis.pipeline()
