@@ -42,9 +42,9 @@ def map_routine(which_room):
     
     rows = []
     uuns = []
-    for r in xrange(0, num_rows+1):
+    for r in range(0, num_rows+1):
         unsorted_cells = []
-        for c in xrange(0, num_cols+1):
+        for c in range(0, num_cols+1):
             default_cell = {'hostname': None, 'col': c, 'row': r}
             cell = [v for (k, v) in machines.iteritems() if int(v['row']) == r and int(v['col']) == c]
             if not cell:
@@ -76,8 +76,8 @@ def map_routine(which_room):
 
     uun_names = ldap.get_names(uuns)
 
-    for y in xrange(len(rows)):
-        for x in xrange(len(rows[y])):
+    for y in range(len(rows)):
+        for x in range(len(rows[y])):
             cell = rows[y][x]
             if "user" in cell:
                 uun = cell["user"]
