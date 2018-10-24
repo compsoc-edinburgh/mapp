@@ -388,7 +388,8 @@ def schema_reset(site):
 def schema_reset_room(pipe, site, room, dropFromSite=False):
     roomKey = room+"-machines"
     machines = flask_redis.lrange(roomKey, 0, -1)
-    pipe.delete(*machines)
+    if len(machines) > 0:
+        pipe.delete(*machines)
     pipe.delete(roomKey)
     pipe.delete(room)
 
