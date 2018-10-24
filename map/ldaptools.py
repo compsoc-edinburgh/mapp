@@ -26,7 +26,7 @@ class LDAPTools():
 
         if data:
             dn, attrs = data[0]
-            return attrs['gecos'][0]
+            return attrs['gecos'][0].decode('utf-8')
 
     def get_names_bare(self, uuns, l):
         """Takes a list of uuns and returns a dict of uun->name"""
@@ -35,7 +35,7 @@ class LDAPTools():
 
         names = {}
         for _, row in data:
-            names[row['uid'][0]] = row['gecos'][0]
+            names[row['uid'][0].decode('utf-8')] = row['gecos'][0].decode('utf-8')
 
         return names
     
@@ -48,8 +48,8 @@ class LDAPTools():
         data = l.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, ["gecos", "uid"])
 
         return map(lambda p: {
-            'uun': p[1]['uid'][0],
-            'name': p[1]['gecos'][0],
+            'uun': p[1]['uid'][0].decode('utf-8'),
+            'name': p[1]['gecos'][0].decode('utf-8'),
         }, data)
 
 
