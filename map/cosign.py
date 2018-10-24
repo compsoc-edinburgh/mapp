@@ -15,7 +15,7 @@ class CoSign():
             payload = {'cookie': login_token, 'ip': ip}
             r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
             obj = r.json()
-            print(obj)
+            # print(obj)
             if obj['status'] == 'success' and obj['data']['Realm'] == 'INF.ED.AC.UK':
                 return User(login_token, obj['data'])
             elif obj['status'] == 'success':
