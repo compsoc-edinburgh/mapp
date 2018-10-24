@@ -170,7 +170,7 @@ def get_friend_rooms():
                     'room_name': c
                 }
 
-        friends.sort(key=lambda x: x['name'])
+        friends = sorted(friends, key=lambda x: x['name'])
 
     return friends
 
