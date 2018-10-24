@@ -147,7 +147,7 @@ def get_friend_rooms():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
     rooms = sorted(rooms, key=lambda x: x['key'])
 
-    friends = set()
+    friends_rooms = set()
     if current_user.is_authenticated:
         for room in rooms:
             room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
@@ -155,24 +155,24 @@ def get_friend_rooms():
                 machine = flask_redis.hgetall(machineName)
                 if current_user.has_friend(machine['user']):
                     uun = current_user.get_friend(machine['user'])
-                    friends.add((uun, room['key'], room['name']))
-        friends = list(friends)
+                    friends_rooms.add((uun, room['key'], room['name']))
+        friends_rooms = list(friends_rooms)
 
         # uun -> name
-        names = ldap.get_names([f[0] for f in friends])
-        for i in range(len(friends)):
-            uun, b, c = friends[i]
+        names = ldap.get_names([f[0] for f in friends_rooms])
+        for i in range(len(friends_rooms)):
+            uun, b, c = friends_rooms[i]
             if uun in names:
-                friends[i] = {
+                friends_rooms[i] = {
                     'uun': uun,
                     'name': names[uun],
                     'room_key': b,
                     'room_name': c
                 }
 
-        friends = sorted(list(friends), key=lambda x: x['name'])
+        friends_rooms.sort(key=lambda x: x['name'])
 
-    return friends
+    return friends_rooms
 
 @app.route("/")
 def index():
