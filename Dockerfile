@@ -14,4 +14,5 @@ ADD . /code
 
 EXPOSE 9000
 
-CMD ["python", "run.py"]
+# gunicorn -w 4 -b 0.0.0.0:$PORT -k gevent map:app
+CMD ["gunicorn", "-b", "0.0.0.0:9000", "map:app"]
