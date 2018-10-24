@@ -46,7 +46,7 @@ def map_routine(which_room):
         unsorted_cells = []
         for c in range(0, num_cols+1):
             default_cell = {'hostname': None, 'col': c, 'row': r}
-            cell = [v for (k, v) in machines.iteritems() if int(v['row']) == r and int(v['col']) == c]
+            cell = [v for (k, v) in machines.items() if int(v['row']) == r and int(v['col']) == c]
             if not cell:
                 cell = default_cell
             else:
