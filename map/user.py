@@ -5,7 +5,7 @@ def check_uun_hash(uun, hash):
     from config import CRYPTO_SECRET as secret
 
     hasher = hashlib.sha512()
-    hasher.update(uun + str(secret))
+    hasher.update((uun + str(secret)).encode("utf-8"))
 
     return hasher.hexdigest() == hash
 
