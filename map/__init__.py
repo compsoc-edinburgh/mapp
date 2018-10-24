@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-flask_redis = FlaskRedis(app, 'REDIS')
+flask_redis = FlaskRedis(app, 'REDIS', decode_responses=True)
 ldap = LDAPTools(
     ConnectionManager(app.config["LDAP_SERVER"])
 )
