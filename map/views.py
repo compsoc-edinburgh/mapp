@@ -145,7 +145,7 @@ def get_friends():
 
 def get_friend_rooms():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
-    rooms.sort(key=lambda x: x['key'])
+    rooms = sorted(rooms, key=lambda x: x['key'])
 
     friends = set()
     if current_user.is_authenticated:
