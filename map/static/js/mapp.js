@@ -109,7 +109,7 @@ function readyFunction(){
                 .removeClass("text-warning").removeClass('text-success')
                 .addClass(data.low_availability ? "text-warning" : "text-success");
             $("#mapp-num-machines").text(data.num_machines);
-            const time = data.last_update;
+            const time = Date(data.last_update);
             $("#mapp-last-update-parent").attr("title", `Last update performed at ${dateFns.format(time)}`);
             $("#mapp-last-update").text(dateFns.distanceInWordsToNow(time, { addSuffix: true }));
 

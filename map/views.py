@@ -1,5 +1,5 @@
 from map import app, flask_redis, ldap
-from datetime import datetime
+import time
 import hashlib
 import json, re
 from flask import render_template, request, jsonify, redirect, make_response
@@ -88,7 +88,7 @@ def map_routine(which_room):
 
     low_availability = num_free <= 0.3 * num_machines
 
-    last_update = flask_redis.get("last-update")
+    last_update = float(flask_redis.get("last-update"))
 
     # Annotate friends with "here" if they are here
     room_key = room['key']
@@ -428,7 +428,7 @@ def update():
         print("Malformed JSON content")
         raise APIError("Malformed JSON content", status_code=400)
 
-    pipe.set("last-update", str(datetime.now().isoformat()))
+    pipe.set("last-update", time.time())
     pipe.execute()
 
     return jsonify(status="ok")
@@ -440,11 +440,11 @@ def update_available():
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     
     try:
-        client_time = datetime.strptime(content['timestamp'],date_format)
+        client_time = float(content['timestamp'])
     except Exception as e:
         raise APIError("Malformed JSON POST data", status_code=400)
 
-    last_update = datetime.strptime(flask_redis.get("last-update"),date_format)
+    last_update = float(flask_redis.get("last-update"))
     user_behind = client_time < last_update
 
     return jsonify(status=str(user_behind))
