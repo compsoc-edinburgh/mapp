@@ -229,7 +229,7 @@ func sendUpdate(payload interface{}) error {
 	}
 
 	_, err = client.Post(
-		"https://mapp.tardis.ed.ac.uk/api/update",
+		"https://mapp.betterinformatics.com/api/update",
 		"application/json",
 		bytes.NewBuffer(data),
 	)
