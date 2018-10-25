@@ -234,7 +234,7 @@ function readyFunction(){
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                timestamp : timeNow.toJSON().replace('Z','')
+                timestamp : Date.now()
             }),
             dataType:'json'
         })
