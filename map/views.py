@@ -1,22 +1,24 @@
-from map import app, flask_redis, ldap
-import time
-import hashlib
-import json, re
-from flask import render_template, request, jsonify, redirect, make_response
-from flask_login import login_user, logout_user, login_required, current_user
 import csv
+import time
 from collections import defaultdict
+
+from flask import jsonify, make_response, redirect, render_template, request
+
+from flask_login import current_user, login_required
+
+from map import app, flask_redis, ldap
+
 
 class APIError(Exception):
     status_code = 401
-    
+
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
         self.message = message
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
-            
+
     def to_dict(self):
         rv = dict(self.payload or ())
         rv['message'] = self.message
@@ -39,7 +41,7 @@ def map_routine(which_room):
 
     num_machines = len(machines.keys())
     num_used = 0
-    
+
     rows = []
     uuns = []
     for r in range(0, num_rows+1):
@@ -100,18 +102,19 @@ def map_routine(which_room):
             friends_here += 1
         else:
             friends_elsewhere += 1
-    
+
     return {
-        "friends"          : friends,
+        "friends": friends,
         "friends_here_count": friends_here,
         "friends_elsewhere_count": friends_elsewhere,
-        "room"             : room,
-        "rows"             : rows,
-        "num_free"         : num_free,
-        "num_machines"     : num_machines,
-        "low_availability" : low_availability,
-        "last_update"      : last_update
+        "room": room,
+        "rows": rows,
+        "num_free": num_free,
+        "num_machines": num_machines,
+        "low_availability": low_availability,
+        "last_update": last_update
     }
+
 
 def rooms_list():
     rooms = list(flask_redis.smembers("forresthill-rooms"))
@@ -122,9 +125,11 @@ def rooms_list():
 
     return rooms
 
+
 def room_machines(which):
     machines = flask_redis.lrange(which + "-machines", 0, -1)
     return machines
+
 
 def get_friends():
     friends = flask_redis.smembers(current_user.get_username() + "-friends")
@@ -142,6 +147,7 @@ def get_friends():
 
             friends[i] = (friend, uun)
     return friends
+
 
 def get_friend_rooms():
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
@@ -174,6 +180,7 @@ def get_friend_rooms():
 
     return friends_rooms
 
+
 @app.route("/")
 def index():
     if current_user.is_anonymous:
@@ -181,9 +188,11 @@ def index():
 
     return redirect("/site/6.06")
 
+
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 @app.route('/site/<which>', methods=['GET', 'POST'])
 @login_required
@@ -195,9 +204,10 @@ def site(which):
     room = flask_redis.hgetall(str(which))
     if room == {}:
         return '404'
-        
+
     return render_template('site.html',
                            room_key=room['key'])
+
 
 # WARNING!!!! THIS METHOD IS UNAUTHENTICATED!!!!!
 @app.route('/api/refresh')
@@ -205,7 +215,8 @@ def refresh_data():
     """
     Returns a new update
     """
-    default = "drillhall"
+    # Doesn't seem to be used anywhere
+    # default = "drillhall"
     which = request.args.get('site', '')
 
     # SENSITIVE CODE!!!!
@@ -227,10 +238,13 @@ def refresh_data():
 
     return resp
 
+
 @app.route("/login", methods=['GET'])
 def login():
-    url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&" + request.url_root
+    url = ("https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&" +
+           request.url_root)
     return redirect(url + request.args.get('next', '/'))
+
 
 @app.route("/flip_dnd", methods=['POST'])
 @login_required
@@ -238,25 +252,27 @@ def flip_dnd():
     current_user.set_dnd(not current_user.get_dnd())
     return redirect(request.form.get('next', '/'))
 
+
 @app.route("/logout")
 def logout():
-    resp = make_response(redirect(request.args.get('next','/')))
+    resp = make_response(redirect(request.args.get('next', '/')))
     resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
     return resp
+
 
 @app.route("/api/rooms")
 @app.route("/api/rooms/<which>")
 def rooms(which=""):
     if not which:
-        return jsonify({'rooms':rooms_list()})
+        return jsonify({'rooms': rooms_list()})
     else:
         if which == "all":
             which = ",".join([r[0] for r in rooms_list()])
         machines = []
         for room in which.split(","):
             machines.extend(room_machines(room))
-        return jsonify({"machines":machines})
-    
+        return jsonify({"machines": machines})
+
 
 @app.route('/api/update_schema', methods=['POST'])
 def update_schema():
@@ -278,12 +294,12 @@ def update_schema():
         raise APIError("no machines?")
 
     try:
-        resetAll = content['resetAll'] == True
+        resetAll = content['resetAll']
     except Exception:
         raise APIError("Expected resetAll key")
 
     try:
-        dropOnly = content['dropOnly'] == True
+        dropOnly = content['dropOnly']
     except Exception:
         raise APIError("Expected dropOnly key")
 
@@ -305,19 +321,27 @@ def update_schema():
                     if colnumber < len(roomKeys):
                         expected = roomKeys[colnumber]
                         if expected != cell_value:
-                            raise APIError("[Sheet %s] Invalid header '%s' in cols[%s], expected '%s" % (sheet['name'], cell_value, colnumber, expected))
+                            raise APIError(
+                                "[Sheet {}] Invalid header '{}' in cols[{}], expected '{}'".format(
+                                    sheet['name'], cell_value, colnumber, expected)
+                            )
                     continue
                 elif rownumber == 1:
                     if colnumber >= len(roomKeys):
                         continue
                     if cell_value == "":
-                        raise APIError("[Sheet %s] Invalid value in col[%s] row[%s], expected non-empty string" % (sheet['name'], colnumber, rownumber))
+                        raise APIError(("[Sheet {}] Invalid value in col[{}] row[{}], "
+                                        "expected non-empty string").format(sheet['name'],
+                                                                            colnumber,
+                                                                            rownumber))
                     colName = roomKeys[colnumber]
                     room[colName] = cell_value
                     continue
                 elif rownumber == 2:
                     if cell_value != "":
-                        raise APIError("[Sheet %s] Invalid value '%s' in rows[%s], expected empty row" % (sheet['name'], cell_value, rownumber))
+                        raise APIError(("[Sheet {}] Invalid value '{}' in rows[{}], "
+                                        "expected empty row").format(sheet['name'], cell_value,
+                                                                     rownumber))
                     continue
 
                 hostname = cell_value
@@ -326,7 +350,7 @@ def update_schema():
                     machines.append({
                         'hostname': hostname,
                         'col': colnumber,
-                        'row': rownumber-3, # -3 required because first 3 rows are headers
+                        'row': rownumber-3,  # -3 required because first 3 rows are headers
                         'user': '',
                         'timestamp': '',
                         'status': 'offline',
@@ -363,17 +387,17 @@ def update_schema():
 
     return jsonify({'success': True})
 
-"""
-    schema_reset completely resets the schema for a site.
+
+def schema_reset(site):
+    """
+    Completely resets the schema for a site.
 
     - list site rooms
         - list room machines
             - remove machine entries
         - remove room entry
     - remove site entry
-
-"""
-def schema_reset(site):
+    """
     siteKey = site + "-rooms"
     pipe = flask_redis.pipeline()
 
@@ -384,6 +408,7 @@ def schema_reset(site):
     pipe.srem("mapp.sites", site)
 
     pipe.execute()
+
 
 def schema_reset_room(pipe, site, room, dropFromSite=False):
     roomKey = room+"-machines"
@@ -409,15 +434,15 @@ def update():
     if key not in flask_redis.lrange("authorised-key", 0, -1):
         # HTTP 401 Not Authorised
         print("******* CLIENT ATTEMPTED TO USE BAD KEY *******")
-        raise APIError("Given key is not an authorised API key") 
+        raise APIError("Given key is not an authorised API key")
 
     pipe = flask_redis.pipeline()
-    
+
     try:
         for machine in content['machines']:
-            host   = machine['hostname']
-            user   = machine['user']
-            ts     = machine['timestamp']
+            host = machine['hostname']
+            user = machine['user']
+            ts = machine['timestamp']
             status = machine['status']
 
             pipe.hset(host, "user", user)
@@ -433,15 +458,15 @@ def update():
 
     return jsonify(status="ok")
 
+
 @app.route("/api/update_available", methods=['POST'])
 @login_required
 def update_available():
     content = request.json
-    date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    
+
     try:
         client_time = float(content['timestamp'])
-    except Exception as e:
+    except Exception:
         raise APIError("Malformed JSON POST data", status_code=400)
 
     last_update = float(flask_redis.get("last-update"))
@@ -449,27 +474,28 @@ def update_available():
 
     return jsonify(status=str(user_behind))
 
+
 @app.route("/api/friends", methods=['GET', 'POST'])
 @login_required
 def friends():
     if request.method == "POST":
-       formtype = request.form.get('type')
-       if formtype == "del":
-           remove_friends = request.form.getlist('delfriends[]')
-           flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
-       elif formtype == "add":
-           add_friend = request.form.get('uun')
+        formtype = request.form.get('type')
+        if formtype == "del":
+            remove_friends = request.form.getlist('delfriends[]')
+            flask_redis.srem(current_user.get_username() + "-friends", *remove_friends)
+        elif formtype == "add":
+            add_friend = request.form.get('uun')
 
-           #if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
-           #    raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
-           flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
+            # if(re.match("^[A-Za-z]+\ [A-Za-z]+$", add_friend) == None):
+            #     raise APIError("Friend name expected in [A-z]+\ [A-z]+ form.", status_code=400)
+            flask_redis.sadd(current_user.get_username() + "-friends", add_friend)
 
     friends = get_friends()
     friends = map(lambda p: ("%s (%s)" % (p[0], p[1]), p[1]), friends)
 
     friends = sorted(friends, key=lambda s: s[0].lower())
 
-    return jsonify(friendList=friends) #Set up for ajax responses
+    return jsonify(friendList=friends)  # Set up for ajax responses
 
 
 @app.route("/api/search", methods=['GET'])
@@ -486,15 +512,16 @@ def search_friends():
         if (person['name'], person['uun']) in friends:
             person['friend'] = True
 
-    return jsonify(people=people) #Set up for ajax responses
+    return jsonify(people=people)  # Set up for ajax responses
 
-    
+
 @app.route("/demo")
 def demo():
     return render_template(
         "site.html",
         room_key="Demo"
     )
+
 
 def get_demo_friends():
     return [
@@ -529,50 +556,51 @@ def get_demo_friends():
         },
     ]
 
+
 def get_demo_json():
     return {
         'friends': get_demo_friends(),
         'friends_here_count': 4,
         'friends_elsewhere_count': 1,
-        'room':{"name":"Mapp Demo", "key":"demo"},
-        'rows':[
+        'room': {"name": "Mapp Demo", "key": "demo"},
+        'rows': [
             [
                 {},
-                {"hostname":"dish", "status": "offline"},
-                {"hostname":"paulajennings", "status": "online"},
-                {},{},{},{},{}
-            ],[
-                {"hostname":"dent", "status": "online"},
-                {"hostname":"prefect", "status": "online"},
-                {"hostname":"slartibartfast", "user":" ","friend":"moony"},
-                {"hostname":"random", "user":" ","friend":"wormtail"},
-                {"hostname":"colin", "status": "offline"},
+                {"hostname": "dish", "status": "offline"},
+                {"hostname": "paulajennings", "status": "online"},
+                {}, {}, {}, {}, {}
+            ], [
+                {"hostname": "dent", "status": "online"},
+                {"hostname": "prefect", "status": "online"},
+                {"hostname": "slartibartfast", "user": " ", "friend": "moony"},
+                {"hostname": "random", "user": " ", "friend": "wormtail"},
+                {"hostname": "colin", "status": "offline"},
                 {},
-                {"hostname":"marvin", "status": "online"},
-                {"hostname":"vogon", "status": "online"}
-            ],[
-                {"hostname":"beeblebrox", "user":" ","friend":"padfoot"},
-                {"hostname":"trillian", "user":" "},
-                {"hostname":"agrajag", "status": "unknown"},
-                {"hostname":"krikkit", "user":" "},
-                {"hostname":"almightybob", "status": "online"},
+                {"hostname": "marvin", "status": "online"},
+                {"hostname": "vogon", "status": "online"}
+            ], [
+                {"hostname": "beeblebrox", "user": " ", "friend": "padfoot"},
+                {"hostname": "trillian", "user": " "},
+                {"hostname": "agrajag", "status": "unknown"},
+                {"hostname": "krikkit", "user": " "},
+                {"hostname": "almightybob", "status": "online"},
                 {},
-                {"hostname":"jynnan", "user":" "},
-                {"hostname":"tonyx", "status": "offline"}
-            ],[
-                {},{},{},
-                {"hostname":"eddie", "status": "offline"},
-                {"hostname":"fenchurch", "user":" "},
-                {},{},{}
-            ],[
-                {},{},{},
-                {"hostname":"anangus", "status": "offline"},
-                {"hostname":"benjy", "user":" ","friend":"prongs"},
-                {},{},{}
+                {"hostname": "jynnan", "user": " "},
+                {"hostname": "tonyx", "status": "offline"}
+            ], [
+                {}, {}, {},
+                {"hostname": "eddie", "status": "offline"},
+                {"hostname": "fenchurch", "user": " "},
+                {}, {}, {}
+            ], [
+                {}, {}, {},
+                {"hostname": "anangus", "status": "offline"},
+                {"hostname": "benjy", "user": " ", "friend": "prongs"},
+                {}, {}, {}
             ]
         ],
-        'num_machines':20,
-        'num_free':6,
-        'low_availability':False,
-        'last_update':"1998-05-02 13:37"
+        'num_machines': 20,
+        'num_free': 6,
+        'low_availability': False,
+        'last_update': "1998-05-02 13:37"
     }

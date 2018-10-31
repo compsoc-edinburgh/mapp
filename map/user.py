@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 
+
 def check_uun_hash(uun, hash):
     import hashlib
     from config import CRYPTO_SECRET as secret
@@ -8,6 +9,7 @@ def check_uun_hash(uun, hash):
     hasher.update((uun + str(secret)).encode("utf-8"))
 
     return hasher.hexdigest() == hash
+
 
 class User(UserMixin):
     def __init__(self, login_token, attrs):
@@ -44,9 +46,9 @@ class User(UserMixin):
             if self.get_dnd() and not ignore_dnd:
                 return ""
             return self.get_username()
-        
+
         all_friends = flask_redis.smembers(self.get_username()+'-friends')
-        
+
         for friend in all_friends:
             if check_uun_hash(friend, friend_hash):
                 from map import flask_redis
@@ -59,6 +61,7 @@ class User(UserMixin):
 
     def has_friend(self, friend_hash, ignore_dnd=False):
         return self.get_friend(friend_hash, ignore_dnd) != ""
+
 
 class DisabledUser(User):
     def get_friend(self, hash):

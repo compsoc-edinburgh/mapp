@@ -1,7 +1,11 @@
 import requests
-from .user import User, DisabledUser
 
-class ServerDownException(Exception): pass
+from .user import DisabledUser, User
+
+
+class ServerDownException(Exception):
+    pass
+
 
 class CoSign():
     def __init__(self, app):
@@ -11,9 +15,11 @@ class CoSign():
         }
 
     def getuser(self, login_token, ip):
-        #try:
+        # try:
             payload = {'cookie': login_token, 'ip': ip}
-            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" + self.config['key'], params=payload)
+            r = requests.get("http://bi:6663/check/" + self.config['name'] + "/" +
+                             self.config['key'],
+                             params=payload)
             obj = r.json()
             # print(obj)
             if obj['status'] == 'success' and obj['data']['Realm'] == 'INF.ED.AC.UK':
@@ -21,5 +27,5 @@ class CoSign():
             elif obj['status'] == 'success':
                 return DisabledUser(login_token, obj['data'])
 
-        #except Exception:
-        #    print("Ran into exception in getuser")
+        # except Exception:
+        #     print("Ran into exception in getuser")

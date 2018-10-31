@@ -1,12 +1,17 @@
-from flask import Flask, g
-from flask_redis import FlaskRedis
-from flask_login import LoginManager
+from flask import Flask
 from flask.sessions import SecureCookieSessionInterface
+
+from flask_login import LoginManager
+
+from flask_redis import FlaskRedis
+
 from ldappool import ConnectionManager
 
+from werkzeug.contrib.fixers import ProxyFix
+
+from . import views
 from .cosign import CoSign
 from .ldaptools import LDAPTools
-from werkzeug.contrib.fixers import ProxyFix
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -28,7 +33,9 @@ class CustomSessionInterface(SecureCookieSessionInterface):
     def save_session(self, *args, **kwargs):
         return
 
+
 app.session_interface = CustomSessionInterface()
+
 
 @lm.request_loader
 def get_user(request):
@@ -37,6 +44,5 @@ def get_user(request):
         print("request_loader: getting user via request_loader")
         return cosign.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
 
-from . import views
 
 app.jinja_env.globals.update(rooms_list=views.rooms_list)

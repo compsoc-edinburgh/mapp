@@ -18,13 +18,13 @@ with open(sys.argv[1], 'r') as placecsv:
             r.hset(sys.argv[3], "key", sys.argv[3])
     except IndexError:
         pass
-    
+
     for rownumber, row in enumerate(preader):
         for colnumber, machine in enumerate(row):
             try:
                 if sys.argv[2] == "-a":
                     if machine != "":
-                        r.lpush(sys.argv[3],machine)
+                        r.lpush(sys.argv[3], machine)
             except IndexError:
                 pass
             r.hmset(machine, {

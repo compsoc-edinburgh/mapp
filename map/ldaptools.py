@@ -1,6 +1,7 @@
 import ldap
 from ldap.filter import filter_format
 
+
 class LDAPTools():
     def __init__(self, cm):
         self.config = {
@@ -13,12 +14,12 @@ class LDAPTools():
         return self.cm.connection()
 
     def get_name(self, uun):
-        with self.conn() as l:
-            return self.get_name_bare(uun, l)
+        with self.conn() as conn:
+            return self.get_name_bare(uun, conn)
 
     def get_names(self, uuns):
-        with self.conn() as l:
-            return self.get_names_bare(uuns, l)
+        with self.conn() as conn:
+            return self.get_names_bare(uuns, conn)
 
     def get_name_bare(self, uun, l):
         ldap_filter = filter_format("uid=%s", [uun])
@@ -38,19 +39,17 @@ class LDAPTools():
             names[row['uid'][0].decode('utf-8')] = row['gecos'][0].decode('utf-8')
 
         return names
-    
-    def search_name(self, name):
-        with self.conn() as l:
-            return self.search_name_bare(name, l)
 
-    def search_name_bare(self, name, l):
+    def search_name(self, name):
+        with self.conn() as conn:
+            return self.search_name_bare(name, conn)
+
+    def search_name_bare(self, name, conn):
         ldap_filter = filter_format("(|(name=*%s*)(uid=%s))", [name, name])
-        data = l.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter, ["gecos", "uid"])
+        data = conn.search_s(self.config['memberdn'], ldap.SCOPE_SUBTREE, ldap_filter,
+                             ["gecos", "uid"])
 
         return map(lambda p: {
             'uun': p[1]['uid'][0].decode('utf-8'),
             'name': p[1]['gecos'][0].decode('utf-8'),
         }, data)
-
-
-

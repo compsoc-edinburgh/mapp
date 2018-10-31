@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import argparse
-
 import csv
-import sys
 
 from redis import Redis
 
@@ -29,7 +27,7 @@ with open(args.file, 'r') as placecsv:
         for colnumber, machine in enumerate(row):
             print(rownumber, colnumber, machine)
             machines.add(machine)
-            
+
             r.hmset(machine, {
                 'hostname': machine,
                 'col': colnumber,
@@ -43,8 +41,7 @@ with open(args.file, 'r') as placecsv:
 machines.remove("")
 
 # empty the list
-machines_key = "{}-machines".format(args.room) 
+machines_key = "{}-machines".format(args.room)
 r.delete(machines_key)
 for machine in machines:
     r.lpush(machines_key, machine)
-
