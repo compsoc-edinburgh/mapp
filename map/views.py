@@ -126,6 +126,9 @@ def rooms_list():
     return rooms
 
 
+app.jinja_env.globals.update(rooms_list=rooms_list)
+
+
 def room_machines(which):
     machines = flask_redis.lrange(which + "-machines", 0, -1)
     return machines
