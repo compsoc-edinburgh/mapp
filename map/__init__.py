@@ -23,6 +23,10 @@ ldap = LDAPTools(
 
 cosign = CoSign(app)
 
+from .views import Views  # noqa: I202
+
+views = Views(flask_redis, ldap)
+
 lm = LoginManager(app)
 lm.login_view = "login"
 
@@ -42,3 +46,6 @@ def get_user(request):
     if 'cosign-betterinformatics.com' in request.cookies:
         print("request_loader: getting user via request_loader")
         return cosign.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
+
+
+app.jinja_env.globals.update(rooms_list=views.rooms_list)
