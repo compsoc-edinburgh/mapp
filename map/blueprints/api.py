@@ -9,7 +9,6 @@ from flask_login import current_user, login_required
 from map import flask_redis, ldap
 
 bp = Blueprint('api', __name__, url_prefix='/api')
-bp.config.from_object('config')
 
 
 class APIError(Exception):
