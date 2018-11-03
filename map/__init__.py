@@ -5,30 +5,28 @@ from flask_login import LoginManager
 
 from flask_redis import FlaskRedis
 
-from ldappool import ConnectionManager
-
 from werkzeug.contrib.fixers import ProxyFix
 
 from .cosign import CoSign
-from .ldaptools import LDAPTools
 
-app = Flask(__name__)
-app.config.from_object('config')
-app.wsgi_app = ProxyFix(app.wsgi_app)
+flask_redis = FlaskRedis()
 
-flask_redis = FlaskRedis(app, 'REDIS', decode_responses=True)
-ldap = LDAPTools(
-    ConnectionManager(app.config["LDAP_SERVER"])
-)
 
-cosign = CoSign(app)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('config')
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 
-from .views import Views  # noqa: I202
+    flask_redis.init_app(app, decode_responses=True)
 
-views = Views(flask_redis, ldap)
+    from .blueprints import api, auth, views
+    app.register_blueprint(api.bp)
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(views.bp)
 
-lm = LoginManager(app)
-lm.login_view = "login"
+    app.jinja_env.globals.update(rooms_list=api.rooms_list)
+
+    return app
 
 
 class CustomSessionInterface(SecureCookieSessionInterface):
@@ -37,7 +35,14 @@ class CustomSessionInterface(SecureCookieSessionInterface):
         return
 
 
+app = create_app()
+
 app.session_interface = CustomSessionInterface()
+
+cosign = CoSign(app)
+
+lm = LoginManager(app)
+lm.login_view = "login"
 
 
 @lm.request_loader
@@ -46,6 +51,3 @@ def get_user(request):
     if 'cosign-betterinformatics.com' in request.cookies:
         print("request_loader: getting user via request_loader")
         return cosign.getuser(request.cookies['cosign-betterinformatics.com'], request.remote_addr)
-
-
-app.jinja_env.globals.update(rooms_list=views.rooms_list)
