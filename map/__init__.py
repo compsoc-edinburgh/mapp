@@ -17,14 +17,14 @@ def create_app():
     app.config.from_object('config')
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-    flask_redis.init_app(app, decode_responses=True)
-
     from .blueprints import api, auth, views
     app.register_blueprint(api.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(views.bp)
 
     app.jinja_env.globals.update(rooms_list=api.rooms_list)
+
+    flask_redis.init_app(app, decode_responses=True)
 
     return app
 
