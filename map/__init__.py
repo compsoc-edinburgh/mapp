@@ -5,11 +5,22 @@ from flask_login import LoginManager
 
 from flask_redis import FlaskRedis
 
+from ldappool import ConnectionManager
+
 from werkzeug.contrib.fixers import ProxyFix
 
 from .cosign import CoSign
+from .ldaptools import LDAPTools
 
 flask_redis = FlaskRedis()
+
+# Not a great fix, sorry
+app_config = Flask(__name__)
+app_config.config.from_object('config')
+
+ldap = LDAPTools(
+    ConnectionManager(app_config.config["LDAP_SERVER"])
+)
 
 
 def create_app():

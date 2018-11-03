@@ -6,18 +6,10 @@ from flask import Blueprint, jsonify, make_response, request
 
 from flask_login import current_user, login_required
 
-from ldappool import ConnectionManager
-
-from map import flask_redis
-
-from .ldaptools import LDAPTools
+from map import flask_redis, ldap
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 bp.config.from_object('config')
-
-ldap = LDAPTools(
-    ConnectionManager(bp.config["LDAP_SERVER"])
-)
 
 
 class APIError(Exception):
