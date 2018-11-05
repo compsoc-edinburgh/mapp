@@ -358,9 +358,9 @@ func main() {
 	c := cron.New()
 
 	// weekdays, between 9am and 6pm,
-	// at 05, 10, 15, 45, 50, 55 past the hour
+	// at 8, 15, 45, 52 past the hour
 	// See https://crontab.guru/ (remove first number [seconds])
-	c.AddFunc("0 50,55,5,10 09-18 * * 1-5", cronSearch("near the hour, from 9am to 6pm, weekly"))
+	c.AddFunc("0 8,15,45,52 09-18 * * 1-5", cronSearch("near the hour, from 9am to 6pm, weekly"))
 
 	// Always do it on the hour and at the half hour.
 	c.AddFunc("0 0,30 * * * *", cronSearch("every thirty minutes"))
