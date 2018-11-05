@@ -83,6 +83,13 @@ KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 
 var cachedMachineList []byte
 
+func getBase() string {
+	if os.Getenv("DEBUG") == "true" {
+		return "https://mapp-dev.betterinformatics.com"
+	}
+	return "https://mapp.betterinformatics.com"
+}
+
 func getMachines() (machines []string, err error) {
 	var listStruct struct{ Machines []string }
 	var listBytes []byte
@@ -96,7 +103,7 @@ func getMachines() (machines []string, err error) {
 			return nil, errors.Wrap(err, "could not get http client")
 		}
 
-		resp, err := client.Get("https://mapp.betterinformatics.com/api/rooms/all")
+		resp, err := client.Get(getBase() + "/api/rooms/all")
 		if err != nil {
 			return nil, errors.Wrap(err, "could not download machines list")
 		}
@@ -229,7 +236,7 @@ func sendUpdate(payload interface{}) error {
 	}
 
 	_, err = client.Post(
-		"https://mapp.betterinformatics.com/api/update",
+		getBase()+"/api/update",
 		"application/json",
 		bytes.NewBuffer(data),
 	)
