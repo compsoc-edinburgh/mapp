@@ -140,7 +140,7 @@ func checkAuthentication() error {
 		"-o", "ForwardX11=no",
 		"-o", "GSSAPIAuthentication=yes",
 		"-o", "GSSAPIDelegateCredentials=no",
-		"-o", "PasswordAuthentication=no",
+		"-o", "BatchMode=yes",
 		"student.login.inf.ed.ac.uk",
 		"exit",
 	).Output()
@@ -178,7 +178,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ForwardX11=no",
 			"-o", "GSSAPIAuthentication=yes",
 			"-o", "GSSAPIDelegateCredentials=no",
-			"-o", "PasswordAuthentication=no",
+			"-o", "BatchMode=yes",
 			"-o", "ServerAliveInterval=5",
 			"-o", "ServerAliveCountMax=3",
 			"-o", "ConnectTimeout=5s",
