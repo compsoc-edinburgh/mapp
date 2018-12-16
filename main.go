@@ -184,7 +184,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ConnectTimeout=5s",
 			"-o", "StrictHostKeyChecking=no",
 			machine+".inf.ed.ac.uk",
-			"/usr/bin/printf '%s' $(PIDS=$(pidof lightdm); for pid in $PIDS; do ps -ho user --ppid $pid | fgrep -v -e 'root'; done)",
+			"/usr/bin/printf '%s' $(PIDS=$(pidof lightdm); for pid in $PIDS; do ps -ho user --ppid $pid | fgrep -v -e 'root' -e lightdm; done)",
 		)
 
 		var errbuf bytes.Buffer
@@ -202,9 +202,6 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 		} else {
 			result.Status = "online"
 			result.User = strings.TrimSpace(string(out))
-			if result.User == "lightdm" {
-				result.User = ""
-			}
 		}
 
 		results <- result
