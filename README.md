@@ -48,7 +48,7 @@ This will allow your bot to run for 28 days.
 
 ### Recovering from crashes
 
-[@qaisjp](https://github.com/qaisjp is a monster and uses this:
+[@qaisjp](https://github.com/qaisjp) is a monster and uses this:
 
 ```
 alias mapp_start="longjob -nobackground -28day -c ~/Documents/mapp-worker/mapp-worker.sh"
