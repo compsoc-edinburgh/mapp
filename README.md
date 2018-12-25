@@ -45,3 +45,18 @@ longjob -nobackground -28day -c "nice ./mapp-worker.sh"
 The `longjob` command will ask for your DICE password and then
 produce renewable Kerberos credentials valid for up to 28 days.
 This will allow your bot to run for 28 days.
+
+### Recovering from crashes
+
+[@qaisjp](https://github.com/qaisjp is a monster and uses this:
+
+```
+alias mapp_start="longjob -nobackground -28day -c ~/Documents/mapp-worker/mapp-worker.sh"
+function mapp {
+    read -sp "Password? " PW
+    while true; do
+        printf "%s" "$PW" | mapp_start
+    done;
+}
+```
+
