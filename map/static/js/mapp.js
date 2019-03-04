@@ -135,7 +135,7 @@ function readyFunction(){
                 cascaders_elsewhere_msg = `${cascaders_elsewhere_msg} cascaders`;
             }
 
-            const base_cascaders_buddy = `<tr><td><small><a href="#" data-toggle="modal" data-target="#casc-mdl" class="text-cascaders d-flex justify-content-between">$content</a></small></td></tr>`
+            const base_cascaders_buddy = `<tr><td><small><a href="#" data-toggle="modal" data-target="#casc-mdl" class="text-cascaders d-flex justify-content-between">$content<span class="ml-1">join</span></a></small></td></tr>`
             $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
             $("#mapp-buddybar-elsewhere").append(base_cascaders_buddy.replace("$content", cascaders_elsewhere_msg));
 
