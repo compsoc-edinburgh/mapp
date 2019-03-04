@@ -122,6 +122,23 @@ function readyFunction(){
             $("#mapp-here-count").text(here_count);
             $("#mapp-elsewhere-count").text(else_count);
 
+            const {cascaders_here_count, cascaders_elsewhere_count} = data;
+
+            let cascaders_here_msg = "No cascaders are in this room.";
+            let cascaders_elsewhere_msg = "No cascaders elsewhere.";
+
+            if (cascaders_here_count > 0) {
+                cascaders_here_msg = `${cascaders_here_count} cascaders`;
+            }
+
+            if (cascaders_elsewhere_count > 0) {
+                cascaders_elsewhere_msg = `${cascaders_elsewhere_msg} cascaders`;
+            }
+
+            const base_cascaders_buddy = `<tr><td><small><a href="#" data-toggle="modal" data-target="#casc-mdl" class="text-cascaders d-flex justify-content-between">$content<span class="ml-1">join</span></a></small></td></tr>`
+            $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
+            $("#mapp-buddybar-elsewhere").append(base_cascaders_buddy.replace("$content", cascaders_elsewhere_msg));
+
             if (here_count === 0) {
                 $("#mapp-buddybar-here").append("<tr><td><small>No friends are in this room.</small></td></tr>");
             }
@@ -182,6 +199,9 @@ function readyFunction(){
                     } else if (cell.friend) {
                         iconClass = "fa-hand-peace-o text-info"
                         userAt = cell.friend;
+                    } else if (cell.cascader) {
+                        iconClass = "fa-smile-o text-cascaders"
+                        userAt = cell.cascader;
                     } else if (cell.user) {
                         tdClass = "text-danger";
                     } else if (cell.status === "online") {
@@ -198,8 +218,7 @@ function readyFunction(){
                     td.append(text);
 
                     if (userAt) {
-
-                        const f = $("<p class='text-info userat-name'></p>")
+                        const f = $(`<p class='text-${cell.cascader ? "cascaders" : "info"} userat-name'></p>`)
                         f.text(cell.friend);
                         td.append(f);
                     }

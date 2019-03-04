@@ -28,6 +28,68 @@
 
   {% block content %} {% endblock %} {% block scripts %}
 
+  <!-- Cascaders Modal -->
+  <div class="modal fade" id="casc-mdl" tabindex="-1" role="dialog" aria-labelledby="casc-mdl-label" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="max-width: 800px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="casc-mdl-label">Cascaders Online</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex flex-column flex-md-row">
+            <div class="mr-0 mr-md-2">
+              <h5>What is Cascaders?</h5>
+              <p>
+                Cascaders is a peer-support programme that started off many many years ago. There used to be a box of teddies left outside the ITO,
+                and if you were happy lending someone a hand you could just take a teddy and prop it on top of your lab machine.
+              </p>
+              <p>
+                Hopefully <a target="_blank" href="/static/img/teddy.jpg">these teddies</a> will make a comeback, but for now, why not <em>cascade</em> through mapp?
+              </p>
+            </div>
+            <div>
+              <h5>How does it work?</h5>
+              <p>
+                Enter a tagline explaining what you're happy to help out with (please don't be rude!) and choose whether you'd like your name to appear.
+                Then, when you're at a DICE machine, you'll show up on the map!
+              </p>
+              <p>Taglines can be anything from "inf1/2 courses" or "DICE" to "Machine Learning" or "Python".</p>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-start">
+            This feature is coming soon, hang tight!
+            <!-- <small class="text-muted">If visible, your status will be reflected on the next update.</small> -->
+            <!-- <form method="POST" class="w-100" id="csc-form">
+              <input type="hidden" name="type" value="add">
+              <div class="form-group form-row">
+                <div class="col-auto" style="flex: 1 1 auto;">
+                  <input type="checkbox" class="form-check-input" id="csc-show-name">
+                  <label class="form-check-label" for="csc-show-name">Show name to everyone</label>
+                </div>
+                <div class="col-auto" style="flex: 0 1 auto;">
+                  <button type="submit" class="btn btn-block btn-primary" id="search-btn">
+                    Pause Temporarily
+                  </button>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-block btn-primary" id="add-btn">Save</button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-block btn-secondary" id="csc-pause">Pause</button>
+                </div>
+              </div>
+            </form> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Friends Modal -->
   <div class="modal fade" id="friendsModal" tabindex="-1" role="dialog" aria-labelledby="friendsModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
