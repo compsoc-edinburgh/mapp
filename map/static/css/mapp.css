@@ -250,6 +250,14 @@ code {
     width: 99%;
 }
 
+.text-cascaders {
+    color: #b40fba !important;
+}
+
+.text-cascaders:hover {
+    color: #a50eea !important;
+}
+
 @media(max-width: 767px){
     .shrinklittle {
         font-size: 0.6em;
