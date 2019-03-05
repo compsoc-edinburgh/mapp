@@ -254,8 +254,12 @@ code {
     color: #b40fba !important;
 }
 
-.text-cascaders:hover {
+a .text-cascaders:hover {
     color: #a50eea !important;
+}
+
+.underline {
+    text-decoration: underline;
 }
 
 @media(max-width: 767px){
