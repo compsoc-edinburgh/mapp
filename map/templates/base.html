@@ -60,30 +60,27 @@
             </div>
           </div>
           <div class="modal-footer justify-content-start">
-            This feature is coming soon, hang tight!
-            <!-- <small class="text-muted">If visible, your status will be reflected on the next update.</small> -->
-            <!-- <form method="POST" class="w-100" id="csc-form">
-              <input type="hidden" name="type" value="add">
-              <div class="form-group form-row">
-                <div class="col-auto" style="flex: 1 1 auto;">
-                  <input type="checkbox" class="form-check-input" id="csc-show-name">
-                  <label class="form-check-label" for="csc-show-name">Show name to everyone</label>
-                </div>
-                <div class="col-auto" style="flex: 0 1 auto;">
-                  <button type="submit" class="btn btn-block btn-primary" id="search-btn">
-                    Pause Temporarily
-                  </button>
-                </div>
+            <form method="POST" class="w-100" id="csc-form">
+              <div class="form-group">
+                <label for="csc-tagline">Tagline</label>
+                <input type="text" class="form-control" id="csc-tagline" placeholder="Enter tagline">
               </div>
-              <div class="form-row">
+
+              <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="csc-showname">
+                <label class="form-check-label" for="csc-showname">Show name publicly, to everyone with a DICE account</label>
+              </div>
+
+              <div class="form-row align-items-center">
                 <div class="col">
-                  <button type="button" class="btn btn-block btn-primary" id="add-btn">Save</button>
+                  <button type="button" class="btn btn-block btn-primary" id="add-btn">Save Settings</button>
                 </div>
                 <div class="col">
-                  <button type="button" class="btn btn-block btn-secondary" id="csc-pause">Pause</button>
+                  <button type="button" class="btn btn-block btn-secondary" id="csc-pause">Start</button>
                 </div>
+                <small class="ml-2">Your status will be reflected on the next update.</small>
               </div>
-            </form> -->
+            </form>
           </div>
         </div>
       </div>
