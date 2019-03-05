@@ -113,6 +113,9 @@ def map_routine(which_room):
         "last_update"      : last_update
     }
 
+def get_cascaders():
+    return list(flask_redis.smembers("cascaders"))
+
 def rooms_list():
     rooms = list(flask_redis.smembers("forresthill-rooms"))
     rooms.sort()
@@ -243,6 +246,20 @@ def logout():
     resp = make_response(redirect(request.args.get('next','/')))
     resp.set_cookie("cosign-betterinformatics.com", "", domain="betterinformatics.com", expires=0)
     return resp
+
+@app.route("/api/cascaders")
+def route_cascaders():
+    """API endpoint to return list of cascaders"""
+
+    # Check token
+    token = request.args.get("token", "")
+    if token not in flask_redis.lrange("authorised-key", 0, -1):
+        # HTTP 401 Not Authorised
+        print("******* CLIENT ATTEMPTED TO USE BAD KEY *******")
+        raise APIError("Given key is not an authorised API key")
+
+    cascaders = get_cascaders()
+    return jsonify({"cascaders": cascaders})
 
 @app.route("/api/rooms")
 @app.route("/api/rooms/<which>")
