@@ -558,6 +558,7 @@ function cascadersReady() {
         search: true,
         sortable: true,
         showRefresh: true,
+        escape: true,
         columns: [{
             field: "name",
             title: "Name"
