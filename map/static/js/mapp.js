@@ -128,14 +128,17 @@ function readyFunction(){
             let cascaders_elsewhere_msg = "No cascaders elsewhere.";
 
             if (cascaders_here_count > 0) {
-                cascaders_here_msg = `${cascaders_here_count} cascaders`;
+                cascaders_here_msg = `${cascaders_here_count} cascader${cascaders_here_count == 1 ? "" : "s"}`;
             }
 
             if (cascaders_elsewhere_count > 0) {
-                cascaders_elsewhere_msg = `${cascaders_elsewhere_msg} cascaders`;
+                cascaders_elsewhere_msg = `${cascaders_elsewhere_count} cascader${cascaders_elsewhere_count == 1 ? "" : "s"}`;
             }
 
-            const base_cascaders_buddy = `<tr><td><small><a href="#" data-toggle="modal" data-target="#casc-mdl" class="text-cascaders d-flex justify-content-between">$content</a></small></td></tr>`
+            const base_cascaders_buddy = `
+                <tr><td><small>
+                    <a href="#" data-toggle="modal" data-target="#csc-mdl" class="text-cascaders">$content</a>
+                </small></td></tr>`
             $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
             $("#mapp-buddybar-elsewhere").append(base_cascaders_buddy.replace("$content", cascaders_elsewhere_msg));
 
@@ -219,7 +222,7 @@ function readyFunction(){
 
                     if (userAt) {
                         const f = $(`<p class='text-${cell.cascader ? "cascaders" : "info"} userat-name'></p>`)
-                        f.text(cell.friend);
+                        f.text(userAt);
                         td.append(f);
                     }
 
@@ -457,12 +460,113 @@ function readyFunction(){
     $('.dropdown').on('show.bs.dropdown', function(e){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("fast");
     });
-    
+
     $('.dropdown').on('hide.bs.dropdown', function(e){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("fast");
     });
-    
+
     mapUpdate();
+
+    cascadersReady();
 };
 
+function cascadersReady() {
+    const btnSave = document.getElementById("csc-save");
+    const btnToggle = document.getElementById("csc-toggle");
+    const inputTagline = document.getElementById("csc-tagline");
+    const tableList = $("#csc-tbl");
 
+    const ui = {
+        spinnerHTML: `<i class="fa fa-spinner fa-spin"></i>`,
+
+        getTagline: () => inputTagline.value,
+        setTagline: tagline => inputTagline.value = tagline || "",
+        setToggleState: enabled => {
+            btnToggle.innerText = enabled ? "Stop" : "Start";
+            btnToggle.classList.remove("btn-secondary", "btn-warning");
+            btnToggle.classList.add(enabled ? "btn-warning" : "btn-secondary");
+        },
+        setToggleLoading: () => btnToggle.innerHTML = ui.spinnerHTML,
+        getToggleState: () => btnToggle.innerText === "Stop",
+
+        showError: () => alert("Failed to update. Please try again later."),
+    }
+
+    const save = async (enabled, tagline) => {
+        const body = {enabled, tagline};
+        const response = await fetch("/api/cascaders/me", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body),
+        });
+
+        return response.ok;
+    }
+
+    const updateList = () => {
+        // const response = await fetch("/api/cascaders");
+        // const json = await response.json();
+
+    }
+
+    // When the modal is shown, refresh the UI
+    $("#csc-mdl").on("show.bs.modal", async () => {
+        const response = await fetch("/api/cascaders/me");
+        const json = await response.json();
+
+        ui.setTagline(json['tagline']);
+        ui.setToggleState(json['enabled']);
+
+        // Update list
+        tableList.bootstrapTable('refresh', {silent: true})
+
+        // Hack to fix the fa-sync icon not appearing
+        $('.bootstrap-table button[title="Refresh"]').text("Refresh");
+    })
+
+    btnToggle.addEventListener("click", () => {
+        const enabled = !ui.getToggleState();
+        ui.setToggleLoading();
+
+        save(enabled, ui.getTagline()).then(success => {
+            if (!success) {
+                ui.showError();
+                return;
+            }
+
+            ui.setToggleState(enabled);
+        });
+    });
+
+    btnSave.addEventListener("click", () => {
+        const oldText = btnSave.innerText;
+        btnSave.innerHTML = ui.spinnerHTML;
+
+        save(ui.getToggleState(), ui.getTagline()).then(success => {
+            btnSave.innerText = oldText;
+
+            if (!success) {
+                ui.showError();
+            }
+        })
+    })
+
+    tableList.bootstrapTable({
+        url: "/api/cascaders",
+        search: true,
+        sortable: true,
+        showRefresh: true,
+        columns: [{
+            field: "name",
+            title: "Name"
+        }, {
+            field: "room",
+            title: "Room",
+        }, {
+            "field": "tagline",
+            "title": "Tagline",
+        }]
+    })
+}

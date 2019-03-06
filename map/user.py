@@ -9,7 +9,10 @@ def check_uun_hash(uun, hash):
 
     return hasher.hexdigest() == hash
 
+
 class User(UserMixin):
+    is_disabled = False
+
     def __init__(self, login_token, attrs):
         self.login_token = login_token
         self.__dict__.update(attrs)
@@ -60,9 +63,32 @@ class User(UserMixin):
     def has_friend(self, friend_hash, ignore_dnd=False):
         return self.get_friend(friend_hash, ignore_dnd) != ""
 
+    def cascade(self, enabled, tagline):
+        from map import flask_redis
+
+        uun = self.get_username()
+
+        if enabled:
+            flask_redis.sadd("cascaders.users", uun)
+        else:
+            flask_redis.srem("cascaders.users", uun)
+
+        if not tagline:
+            flask_redis.hdel("cascaders.taglines", uun)
+        else:
+            flask_redis.hset("cascaders.taglines", uun, tagline)
+
+
+
 class DisabledUser(User):
+    is_disabled = True
+
     def get_friend(self, hash):
         return ""
 
     def has_friend(self, hash):
         return False
+
+    def cascade(self, enabled, tagline):
+        super().cascade(False, None)
+

@@ -17,7 +17,7 @@ ldap = LDAPTools(
     ConnectionManager(app.config["LDAP_SERVER"])
 )
 
-cosign = CoSign(app)
+cosign = CoSign(app, flask_redis)
 
 lm = LoginManager(app)
 lm.login_view = "login"
