@@ -100,9 +100,6 @@ def map_routine(which_room):
                 if cell['user'] == "":
                     del cell['user']
                 else:
-                    if cell['hostname'] == 'brunero':
-                        print(cell)
-
                     uun = find_cascader(cascaders, cell['user'])
                     if uun:
                         cascaders_here.add(uun)
@@ -302,6 +299,9 @@ def flip_dnd():
 @app.route("/api/cascaders")
 @login_required
 def route_get_cascaders():
+    if current_user.is_disabled():
+        return jsonify([])
+
     cascaders = get_cascaders()
 
     rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
@@ -340,21 +340,11 @@ def route_get_cascaders():
 def route_post_cascaders():
     # Tagline, enabled
     content = request.json
-    print(content)
+
     enabled = content['enabled']
     tagline = content["tagline"]
 
-    uun = current_user.get_username()
-
-    if enabled:
-        flask_redis.sadd("cascaders.users", uun)
-    else:
-        flask_redis.srem("cascaders.users", uun)
-
-    if tagline == "":
-        flask_redis.hdel("cascaders.taglines", uun)
-    else:
-        flask_redis.hset("cascaders.taglines", uun, tagline)
+    current_user.cascade(enabled, tagline)
 
     return jsonify({"success": True})
 
