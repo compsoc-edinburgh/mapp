@@ -199,12 +199,12 @@ function readyFunction(){
 
                     if (cell.status === "offline") {
                         tdClass = "muted";
-                    } else if (cell.friend) {
-                        iconClass = "fa-hand-peace-o text-info"
-                        userAt = cell.friend;
                     } else if (cell.cascader) {
                         iconClass = "fa-smile-o text-cascaders"
                         userAt = cell.cascader;
+                    } else if (cell.friend) {
+                        iconClass = "fa-hand-peace-o text-info"
+                        userAt = cell.friend;
                     } else if (cell.user) {
                         tdClass = "text-danger";
                     } else if (cell.status === "online") {
