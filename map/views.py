@@ -342,7 +342,7 @@ def route_post_cascaders():
     content = request.json
 
     enabled = content['enabled']
-    tagline = content["tagline"]
+    tagline = content["tagline"][:100]
 
     current_user.cascade(enabled, tagline)
 
