@@ -291,11 +291,49 @@ def login():
     url = "https://weblogin.inf.ed.ac.uk/cosign-bin/cosign.cgi?cosign-betterinformatics.com&" + request.url_root
     return redirect(url + request.args.get('next', '/'))
 
+
 @app.route("/flip_dnd", methods=['POST'])
 @login_required
 def flip_dnd():
     current_user.set_dnd(not current_user.get_dnd())
     return redirect(request.form.get('next', '/'))
+
+
+@app.route("/api/cascaders")
+@login_required
+def route_get_cascaders():
+    cascaders = get_cascaders()
+
+    rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
+    result = []
+
+    for room in rooms:
+        room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
+        for machineName in room_machines:
+            machine = flask_redis.hgetall(machineName)
+            if machine['user']:
+                uun = find_cascader(cascaders, machine['user'])
+                if uun:
+                    result.append({
+                        'uun': uun,
+                        'room': room['name'],
+                    })
+
+    uuns = [f['uun'] for f in result]
+
+    # uun -> name
+    names = ldap.get_names(uuns)
+
+    # uun -> tagline
+    taglines = flask_redis.hmget("cascaders.taglines", uuns)
+
+    for i in range(len(result)):
+        uun = result[i]['uun']
+        if uun in names:
+            result[i]['name'] = names[uun]
+        result[i]['tagline'] = taglines[i]
+
+    return jsonify({"cascaders": result})
 
 @app.route("/api/cascaders/me", methods=['POST'])
 @login_required
