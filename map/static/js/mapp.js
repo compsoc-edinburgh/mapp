@@ -136,12 +136,9 @@ function readyFunction(){
             }
 
             const base_cascaders_buddy = `
-                <tr><td>
-                    <small class="text-cascaders d-flex justify-content-between">
-                        $content
-                        <a href="#" data-toggle="modal" data-target="#csc-mdl" class="text-cascaders ml-1 underline">????</a>
-                    </small>
-                </td></tr>`
+                <tr><td><small>
+                    <a href="#" data-toggle="modal" data-target="#csc-mdl" class="text-cascaders">$content</a>
+                </small></td></tr>`
             $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
             $("#mapp-buddybar-elsewhere").append(base_cascaders_buddy.replace("$content", cascaders_elsewhere_msg));
 
