@@ -139,7 +139,7 @@ function readyFunction(){
                 <tr><td>
                     <small class="text-cascaders d-flex justify-content-between">
                         $content
-                        <a href="#" data-toggle="modal" data-target="#casc-mdl" class="text-cascaders ml-1 underline">????</a>
+                        <a href="#" data-toggle="modal" data-target="#csc-mdl" class="text-cascaders ml-1 underline">????</a>
                     </small>
                 </td></tr>`
             $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
@@ -463,12 +463,83 @@ function readyFunction(){
     $('.dropdown').on('show.bs.dropdown', function(e){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("fast");
     });
-    
+
     $('.dropdown').on('hide.bs.dropdown', function(e){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeOut("fast");
     });
-    
+
     mapUpdate();
+
+    cascadersReady();
 };
 
+function cascadersReady() {
+    const btnSave = document.getElementById("csc-save");
+    const btnToggle = document.getElementById("csc-toggle");
+    const inputTagline = document.getElementById("csc-tagline");
 
+    const ui = {
+        spinnerHTML: `<i class="fa fa-spinner fa-spin"></i>`,
+
+        getTagline: () => inputTagline.value,
+        setTagline: tagline => inputTagline.value = tagline || "",
+        setToggleState: enabled => {
+            btnToggle.innerText = enabled ? "Stop" : "Start";
+            btnToggle.classList.remove("btn-secondary", "btn-warning");
+            btnToggle.classList.add(enabled ? "btn-warning" : "btn-secondary");
+        },
+        setToggleLoading: () => btnToggle.innerHTML = ui.spinnerHTML,
+        getToggleState: () => btnToggle.innerText === "Stop",
+
+        showError: () => alert("Failed to update. Please try again later."),
+    }
+
+    const save = async (enabled, tagline) => {
+        const body = {enabled, tagline};
+        const response = await fetch("/api/cascaders/me", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body),
+        });
+
+        return response.ok;
+    }
+
+    // When the modal is shown, refresh the UI
+    $("#csc-mdl").on("show.bs.modal", async () => {
+        const response = await fetch("/api/cascaders/me");
+        const json = await response.json();
+
+        ui.setTagline(json['tagline']);
+        ui.setToggleState(json['enabled']);
+    })
+
+    btnToggle.addEventListener("click", () => {
+        const enabled = !ui.getToggleState();
+        ui.setToggleLoading();
+
+        save(enabled, ui.getTagline()).then(success => {
+            if (!success) {
+                ui.showError();
+                return;
+            }
+
+            ui.setToggleState(enabled);
+        });
+    });
+
+    btnSave.addEventListener("click", () => {
+        const oldText = btnSave.innerText;
+        btnSave.innerHTML = ui.spinnerHTML;
+
+        save(ui.getToggleState(), ui.getTagline()).then(success => {
+            btnSave.innerText = oldText;
+
+            if (!success) {
+                ui.showError();
+            }
+        })
+    })
+}

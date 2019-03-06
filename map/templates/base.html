@@ -29,18 +29,18 @@
   {% block content %} {% endblock %} {% block scripts %}
 
   <!-- Cascaders Modal -->
-  <div class="modal fade" id="casc-mdl" tabindex="-1" role="dialog" aria-labelledby="casc-mdl-label" aria-hidden="true">
+  <div class="modal fade" id="csc-mdl" tabindex="-1" role="dialog" aria-labelledby="csc-mdl-label" aria-hidden="true">
     <div class="modal-dialog" role="document" style="max-width: 800px">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="casc-mdl-label">Cascaders Online</h5>
+          <h5 class="modal-title" id="csc-mdl-label">Cascaders Online</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="d-flex flex-column flex-md-row">
-            <div class="mr-0 mr-md-2">
+          <div class="row">
+            <div class="col-md-6">
               <h5>What is Cascaders?</h5>
               <p>
                 Cascaders is a peer-support programme that started off many many years ago. There used to be a box of teddies left outside the ITO,
@@ -50,10 +50,12 @@
                 Hopefully <a target="_blank" href="/static/img/teddy.jpg">these teddies</a> will make a comeback, but for now, why not <em>cascade</em> through mapp?
               </p>
             </div>
-            <div>
+            <div class="col-md-6">
               <h5>How does it work?</h5>
               <p>
-                Enter a tagline explaining what you're happy to help out with (please don't be rude!) and choose whether you'd like your name to appear.
+                Enter a tagline explaining what you're happy to help out with. (Please don't be rude!)<!--- and choose whether you'd like your name to appear-->
+              </p>
+              <p>
                 Then, when you're at a DICE machine, you'll show up on the map!
               </p>
               <p>Taglines can be anything from "inf1/2 courses" or "DICE" to "Machine Learning" or "Python".</p>
@@ -66,17 +68,17 @@
                 <input type="text" class="form-control" id="csc-tagline" placeholder="Enter tagline">
               </div>
 
-              <div class="form-group form-check">
+              <!-- <div class="form-group form-check">
                 <input type="checkbox" class="form-check-input" id="csc-showname">
                 <label class="form-check-label" for="csc-showname">Show name publicly, to everyone with a DICE account</label>
-              </div>
+              </div> -->
 
               <div class="form-row align-items-center">
                 <div class="col">
-                  <button type="button" class="btn btn-block btn-primary" id="add-btn">Save Settings</button>
+                  <button type="button" class="btn btn-block btn-primary" id="csc-save">Just Save Tagline</button>
                 </div>
                 <div class="col">
-                  <button type="button" class="btn btn-block btn-secondary" id="csc-pause">Start</button>
+                  <button type="button" class="btn btn-block btn-secondary" id="csc-toggle">Start</button>
                 </div>
                 <small class="ml-2">Your status will be reflected on the next update.</small>
               </div>

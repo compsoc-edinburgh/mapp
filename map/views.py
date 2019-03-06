@@ -114,7 +114,7 @@ def map_routine(which_room):
     }
 
 def get_cascaders():
-    return list(flask_redis.smembers("cascaders"))
+    return list(flask_redis.smembers("cascaders.users"))
 
 def rooms_list():
     rooms = list(flask_redis.smembers("forresthill-rooms"))
@@ -240,6 +240,39 @@ def login():
 def flip_dnd():
     current_user.set_dnd(not current_user.get_dnd())
     return redirect(request.form.get('next', '/'))
+
+@app.route("/api/cascaders/me", methods=['POST'])
+@login_required
+def route_post_cascaders():
+    # Tagline, enabled
+    content = request.json
+    print(content)
+    enabled = content['enabled']
+    tagline = content["tagline"]
+
+    uun = current_user.get_username()
+
+    if enabled:
+        flask_redis.sadd("cascaders.users", uun)
+    else:
+        flask_redis.srem("cascaders.users", uun)
+
+    if tagline == "":
+        flask_redis.hdel("cascaders.taglines", uun)
+    else:
+        flask_redis.hset("cascaders.taglines", uun, tagline)
+
+    return jsonify({"success": True})
+
+@app.route("/api/cascaders/me", methods=['GET'])
+@login_required
+def route_get_cascaders_info():
+    uun = current_user.get_username()
+
+    return jsonify({
+        "enabled": flask_redis.sismember("cascaders.users", uun),
+        "tagline": flask_redis.hget("cascaders.taglines", uun),
+    })
 
 @app.route("/logout")
 def logout():
