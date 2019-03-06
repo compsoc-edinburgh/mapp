@@ -556,7 +556,7 @@ function cascadersReady() {
     tableList.bootstrapTable({
         url: "/api/cascaders",
         search: true,
-        sorting: true,
+        sortable: true,
         showRefresh: true,
         columns: [{
             field: "name",
