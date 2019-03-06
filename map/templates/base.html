@@ -14,6 +14,7 @@
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link href="{{  url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.1/dist/bootstrap-table.min.css">
   <link href="{{  url_for('static', filename='css/mapp.css') }}" rel="stylesheet">
 </head>
 
@@ -58,20 +59,7 @@
                   <p>
                     Hopefully <a target="_blank" href="/static/img/teddy.jpg">these teddies</a> will make a comeback, but for now, why not <em>cascade</em> through mapp?
                   </p>
-                  <table class="table table-striped table-hover" id="csc-tbl">
-                    <thead>
-                      <tr>
-                        <th scope=col>Name</th>
-                        <th scope=col>Room</th>
-                        <th scope=col>Tagline</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td colspan="3" class="text-cascaders">No cascaders online</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <table class="table table-striped table-hover" id="csc-tbl"></table>
                 </div>
               </div>
               <div class="tab-pane fade" id="csc-register" role="tabpanel" aria-labelledby="csc-register-tab">
@@ -172,6 +160,7 @@
     <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/popper.min.js') }}" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.14.1/dist/bootstrap-table.min.js"></script>
     <script src="{{ url_for('static', filename='js/date_fns-v1.9.0.min.js') }}"></script>
     <script type="text/javascript" src="{{  url_for('static', filename='js/mapp.js') }}?20180422-2237"></script> {% endblock %}
 

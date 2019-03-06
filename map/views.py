@@ -333,7 +333,7 @@ def route_get_cascaders():
             result[i]['name'] = names[uun]
         result[i]['tagline'] = taglines[i]
 
-    return jsonify({"cascaders": result})
+    return jsonify(result)
 
 @app.route("/api/cascaders/me", methods=['POST'])
 @login_required

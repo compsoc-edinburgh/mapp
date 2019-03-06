@@ -477,6 +477,7 @@ function cascadersReady() {
     const btnSave = document.getElementById("csc-save");
     const btnToggle = document.getElementById("csc-toggle");
     const inputTagline = document.getElementById("csc-tagline");
+    const tableList = $("#csc-tbl");
 
     const ui = {
         spinnerHTML: `<i class="fa fa-spinner fa-spin"></i>`,
@@ -507,6 +508,12 @@ function cascadersReady() {
         return response.ok;
     }
 
+    const updateList = () => {
+        // const response = await fetch("/api/cascaders");
+        // const json = await response.json();
+
+    }
+
     // When the modal is shown, refresh the UI
     $("#csc-mdl").on("show.bs.modal", async () => {
         const response = await fetch("/api/cascaders/me");
@@ -514,6 +521,12 @@ function cascadersReady() {
 
         ui.setTagline(json['tagline']);
         ui.setToggleState(json['enabled']);
+
+        // Update list
+        tableList.bootstrapTable('refresh', {silent: true})
+
+        // Hack to fix the fa-sync icon not appearing
+        $('.bootstrap-table button[title="Refresh"]').text("Refresh");
     })
 
     btnToggle.addEventListener("click", () => {
@@ -541,5 +554,22 @@ function cascadersReady() {
                 ui.showError();
             }
         })
+    })
+
+    tableList.bootstrapTable({
+        url: "/api/cascaders",
+        search: true,
+        sorting: true,
+        showRefresh: true,
+        columns: [{
+            field: "name",
+            title: "Name"
+        }, {
+            field: "room",
+            title: "Room",
+        }, {
+            "field": "tagline",
+            "title": "Tagline",
+        }]
     })
 }
