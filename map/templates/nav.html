@@ -54,6 +54,13 @@
                         <a class="nav-link" href="/login">Log in with DICE</a>
                     </li>
                     {% else %}
+                        {% if current_user.is_disabled %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" href="mailto:admin@betterinformatics.com" title="Disabled">
+                                Your account is disabled!
+                            </a>
+                        </li>
+                        {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="/logout" title="Mischief Managed">
                             Logout ({{ current_user.get_name() }}, {{ current_user.get_username() }})

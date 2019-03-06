@@ -11,6 +11,8 @@ def check_uun_hash(uun, hash):
 
 
 class User(UserMixin):
+    is_disabled = False
+
     def __init__(self, login_token, attrs):
         self.login_token = login_token
         self.__dict__.update(attrs)
@@ -76,11 +78,11 @@ class User(UserMixin):
         else:
             flask_redis.hset("cascaders.taglines", uun, tagline)
 
-    def is_disabled(self):
-        return False
 
 
 class DisabledUser(User):
+    is_disabled = True
+
     def get_friend(self, hash):
         return ""
 
@@ -90,5 +92,3 @@ class DisabledUser(User):
     def cascade(self, enabled, tagline):
         super().cascade(False, None)
 
-    def is_disabled(self):
-        return True
