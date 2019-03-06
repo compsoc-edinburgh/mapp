@@ -44,9 +44,6 @@ def find_cascader(cascaders: List[str], hash: str) -> Optional[str]:
 
 
 def get_cascader_elsewhere_count(cascaders: List[str], notRoom: str) -> int:
-    if not current_user.is_authenticated:
-        return 7
-
     rooms = filter(lambda name: name != notRoom, flask_redis.smembers("forresthill-rooms"))
     rooms = map(lambda name: flask_redis.hgetall(name), rooms)
 
@@ -654,6 +651,8 @@ def get_demo_json():
         'friends': get_demo_friends(),
         'friends_here_count': 4,
         'friends_elsewhere_count': 1,
+        'cascaders_here_count': 7,
+        'cascaders_elsewhere_count': 0,
         'room':{"name":"Mapp Demo", "key":"demo"},
         'rows':[
             [
