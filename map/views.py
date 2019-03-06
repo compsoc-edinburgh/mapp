@@ -36,9 +36,9 @@ def get_cascaders() -> List[str]:
     return list(flask_redis.smembers("cascaders.users"))
 
 
-def find_cascader(cascaders: List[str], hash: str) -> Optional[str]:
+def find_cascader(cascaders: List[str], uun_hash: str) -> Optional[str]:
     for uun in cascaders:
-        if check_uun_hash(uun, hash):
+        if check_uun_hash(uun, uun_hash):
             return uun
     return None
 
