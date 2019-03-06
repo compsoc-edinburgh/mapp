@@ -128,11 +128,11 @@ function readyFunction(){
             let cascaders_elsewhere_msg = "No cascaders elsewhere.";
 
             if (cascaders_here_count > 0) {
-                cascaders_here_msg = `${cascaders_here_count} cascaders`;
+                cascaders_here_msg = `${cascaders_here_count} cascader${cascaders_here_count == 1 ? "" : "s"}`;
             }
 
             if (cascaders_elsewhere_count > 0) {
-                cascaders_elsewhere_msg = `${cascaders_elsewhere_msg} cascaders`;
+                cascaders_elsewhere_msg = `${cascaders_elsewhere_count} cascader${cascaders_elsewhere_count == 1 ? "" : "s"}`;
             }
 
             const base_cascaders_buddy = `
@@ -225,7 +225,7 @@ function readyFunction(){
 
                     if (userAt) {
                         const f = $(`<p class='text-${cell.cascader ? "cascaders" : "info"} userat-name'></p>`)
-                        f.text(cell.friend);
+                        f.text(userAt);
                         td.append(f);
                     }
 

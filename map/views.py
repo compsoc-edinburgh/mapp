@@ -1,4 +1,6 @@
 from map import app, flask_redis, ldap
+from .user import check_uun_hash
+from typing import List, Optional
 import time
 import hashlib
 import json, re
@@ -30,6 +32,38 @@ def handle_invalid_usage(error):
     return response
 
 
+def get_cascaders() -> List[str]:
+    return list(flask_redis.smembers("cascaders.users"))
+
+
+def find_cascader(cascaders: List[str], hash: str) -> Optional[str]:
+    for uun in cascaders:
+        if check_uun_hash(uun, hash):
+            return uun
+    return None
+
+
+def get_cascader_elsewhere_count(cascaders: List[str], notRoom: str) -> int:
+    if not current_user.is_authenticated:
+        return 7
+
+    rooms = filter(lambda name: name != notRoom, flask_redis.smembers("forresthill-rooms"))
+    rooms = map(lambda name: flask_redis.hgetall(name), rooms)
+
+    count: int = 0
+
+    for room in rooms:
+        room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
+        for machineName in room_machines:
+            machine = flask_redis.hgetall(machineName)
+            if machine['user']:
+                uun = find_cascader(cascaders, machine['user'])
+                if uun:
+                    count += 1
+
+    return count
+
+
 def map_routine(which_room):
     room = flask_redis.hgetall(str(which_room))
     room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
@@ -39,9 +73,13 @@ def map_routine(which_room):
 
     num_machines = len(machines.keys())
     num_used = 0
-    
+
     rows = []
-    uuns = []
+    uuns = set()
+
+    cascaders = get_cascaders()
+    cascaders_here = set()
+
     for r in range(0, num_rows+1):
         unsorted_cells = []
         for c in range(0, num_cols+1):
@@ -62,9 +100,19 @@ def map_routine(which_room):
                 if cell['user'] == "":
                     del cell['user']
                 else:
+                    if cell['hostname'] == 'brunero':
+                        print(cell)
+
+                    uun = find_cascader(cascaders, cell['user'])
+                    if uun:
+                        cascaders_here.add(uun)
+                        cell["cascader"] = uun
+                    # else:
+                        # del cell["cascader"]
+
                     uun = current_user.get_friend(cell['user'])
                     if uun:
-                        uuns.append(uun)
+                        uuns.add(uun)
                         cell["user"] = uun
                     else:
                         cell["user"] = "-"
@@ -74,7 +122,9 @@ def map_routine(which_room):
         cells = unsorted_cells
         rows.append(cells)
 
-    uun_names = ldap.get_names(uuns)
+    uuns.update(cascaders_here)
+
+    uun_names = ldap.get_names(list(uuns))
 
     for y in range(len(rows)):
         for x in range(len(rows[y])):
@@ -83,6 +133,11 @@ def map_routine(which_room):
                 uun = cell["user"]
                 if uun in uun_names:
                     rows[y][x]["friend"] = uun_names[uun]
+
+            if "cascader" in cell:
+                uun = cell["cascader"]
+                if uun in uun_names:
+                    rows[y][x]["cascader"] = uun_names[uun]
 
     num_free = num_machines - num_used
 
@@ -105,6 +160,8 @@ def map_routine(which_room):
         "friends"          : friends,
         "friends_here_count": friends_here,
         "friends_elsewhere_count": friends_elsewhere,
+        "cascaders_here_count": len(cascaders_here),
+        "cascaders_elsewhere_count": get_cascader_elsewhere_count(cascaders, which_room),
         "room"             : room,
         "rows"             : rows,
         "num_free"         : num_free,
@@ -113,10 +170,9 @@ def map_routine(which_room):
         "last_update"      : last_update
     }
 
-def get_cascaders():
-    return list(flask_redis.smembers("cascaders.users"))
 
 def rooms_list():
+    """Returns a tuple of (name, uun) (TODO: swap order)"""
     rooms = list(flask_redis.smembers("forresthill-rooms"))
     rooms.sort()
     for i in range(len(rooms)):
