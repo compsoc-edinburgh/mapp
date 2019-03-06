@@ -299,7 +299,7 @@ def flip_dnd():
 @app.route("/api/cascaders")
 @login_required
 def route_get_cascaders():
-    if current_user.is_disabled():
+    if current_user.is_disabled:
         return jsonify([])
 
     cascaders = get_cascaders()
