@@ -3,7 +3,7 @@
 This is the worker that picks up information about every DICE machine. It takes inspiration from the original [Python implementation](https://github.com/compsoc-edinburgh/mapp-worker-py).
 
 ## How to run
-- Have Go installed
+- [Have Go installed](https://golang.org/doc/install)
 - `go get github.com/compsoc-edinburgh/mapp-worker`
 - Set the `MAPP_SECRET`, `CALLBACK_KEY` and `MACHINE_LIST` environment variables
 - Run `mapp-worker` and let it do its magic.
