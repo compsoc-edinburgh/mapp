@@ -36,7 +36,7 @@ function readyFunction(){
         }
         else {
             $('#del-form').addClass('d-none');
-            $('#no-friends').removeClass('d-none');            
+            $('#no-friends').removeClass('d-none');
         }
     };
     var centreMap = function (smooth) {
@@ -63,7 +63,7 @@ function readyFunction(){
         if (typeof start === "undefined"){
             start = myDiv.css('font-size');
         }
-        
+
         var newsize = parseFloat(start) + (multiplier * 1) + "px";
         myDiv.css({'font-size' : newsize});
     };
@@ -266,7 +266,7 @@ function readyFunction(){
                     useCache = false;
                     mapUpdate();
                 }
-            });       
+            });
     };
     var loadMapScroll = function() {
         $("#mapscroll").on({
@@ -375,7 +375,7 @@ function readyFunction(){
     // Check for a refresh every five minutes
     window.setInterval(checkRefreshAvailable, 5 * 60 * 1000);
     /*Listeners*/
-    
+
     $('#zoom-in').on('click',function(){
         mapZoom(1)
 
@@ -456,7 +456,7 @@ function readyFunction(){
     });
 
     /* Listeners to add a Nice slide transition to dropdowns */
-    
+
     $('.dropdown').on('show.bs.dropdown', function(e){
         $(this).find('.dropdown-menu').first().stop(true, true).fadeIn("fast");
     });
@@ -496,6 +496,7 @@ function cascadersReady() {
         const body = {enabled, tagline};
         const response = await fetch("/api/cascaders/me", {
             method: "POST",
+            credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -513,7 +514,7 @@ function cascadersReady() {
 
     // When the modal is shown, refresh the UI
     $("#csc-mdl").on("show.bs.modal", async () => {
-        const response = await fetch("/api/cascaders/me");
+        const response = await fetch("/api/cascaders/me", {credentials: "same-origin"});
         const json = await response.json();
 
         ui.setTagline(json['tagline']);
