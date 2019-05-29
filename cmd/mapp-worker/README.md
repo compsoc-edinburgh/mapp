@@ -12,13 +12,19 @@ This is the worker that picks up information about every DICE machine. It takes 
 This goes through every DICE machine and scans it within 30 seconds.
 
 ## How it works
-Expects JSON file to be a list of DICE machines.
 
-It will attempt to authenticate against `student.login`.
+It downloads a `machines.json` file from the mapp website.
+
+It will then attempt to authenticate against `student.login`.
 If authentication does not work to `student.login`, it will abort.
 
 All threads will authenticate with the remote hosts using the
 Kerberos credentials on your machine.
+
+### You can provide a `machines.json` file
+
+Expects the `MACHINES_LIST` environment variable
+to point to a JSON file containing a list of DICE machines.
 
 You can get a `machines.json` file (can be called anything,
 must be a `json` file though) by visiting
@@ -31,10 +37,14 @@ from multiple rooms at once.
 To run this bot on any Informatics DICE machine, create a script that sets those environment variables and runs the program:
 
 ```
-export MACHINE_LIST='machines.json'
 export CALLBACK_KEY='....'
 export MAPP_SECRET='......'
+mapp-worker
 ```
+
+Install `mapp-worker`:
+- Ensure `$GOPATH/bin` is in your `$PATH`
+- `go install github.com/compsoc-edinburgh/mapp/cmd/mapp-worker`
 
 Then run the following line:
 
@@ -59,4 +69,3 @@ function mapp {
     done;
 }
 ```
-
