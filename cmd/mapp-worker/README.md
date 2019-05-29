@@ -4,8 +4,9 @@ This is the worker that picks up information about every DICE machine. It takes 
 
 ## How to run
 - [Have Go installed](https://golang.org/doc/install)
-- `go get github.com/compsoc-edinburgh/mapp-worker`
-- Set the `MAPP_SECRET`, `CALLBACK_KEY` and `MACHINE_LIST` environment variables
+- Ensure `$GOPATH/bin` is in your `PATH`
+- Get the worker by running `go get -u github.com/compsoc-edinburgh/mapp/cmd/mapp-worker`
+- Set the `MAPP_SECRET`, `CALLBACK_KEY` environment variables
 - Run `mapp-worker` and let it do its magic.
 
 ## Speed
@@ -41,10 +42,6 @@ export CALLBACK_KEY='....'
 export MAPP_SECRET='......'
 mapp-worker
 ```
-
-Install `mapp-worker`:
-- Ensure `$GOPATH/bin` is in your `$PATH`
-- `go install github.com/compsoc-edinburgh/mapp/cmd/mapp-worker`
 
 Then run the following line:
 
