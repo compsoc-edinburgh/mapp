@@ -211,7 +211,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 
 func getHTTPClient() (*http.Client, error) {
 	pool := x509.NewCertPool()
-	if pool.AppendCertsFromPEM([]byte(letsencryptPem)) != true {
+	if !pool.AppendCertsFromPEM([]byte(letsencryptPem)) {
 		return nil, errors.New("failed to append cert to pool")
 	}
 
