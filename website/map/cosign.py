@@ -27,8 +27,8 @@ class CoSign():
                 if not banned:
                     return User(login_token, obj['data'])
 
-            if obj['status'] == 'success':
-                return DisabledUser(login_token, obj['data'])
+            # if obj['status'] == 'success':
+            #     return DisabledUser(login_token, obj['data'])
 
         #except Exception:
         #    print("Ran into exception in getuser")
