@@ -5,12 +5,37 @@
 function onOpen() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var csvMenuEntries = [
-    {name: "Mapp: deploy schema (all)", functionName: "deployAll"},
-    {name: "Mapp: deploy schema (this sheet)", functionName: "deployThis"},
-    {name: "Mapp: drop room (this sheet)", functionName: "dropThis"}
+    { name: "Mapp: deploy schema (all)", functionName: "deployAll" },
+    { name: "Mapp: deploy schema (this sheet)", functionName: "deployThis"},
+    { name: "Mapp: drop room (this sheet)", functionName: "dropThis"}
   ];
   ss.addMenu("Better Informatics", csvMenuEntries);
+  
+  var DEV_csvMenuEntries = [
+    { name: "[DEV] Mapp: deploy schema (all)", functionName: "DEV_deployAll" },
+    { name: "[DEV] Mapp: deploy schema (this sheet)", functionName: "DEV_deployThis"},
+    { name: "[DEV] Mapp: drop room (this sheet)", functionName: "DEV_dropThis"}
+  ];
+  ss.addMenu("[DEV] Better Informatics", DEV_csvMenuEntries);
 };
+
+function DEV_deployThis() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var s = ss.getActiveSheet();
+  deploySheets([s], false, false, true);
+}
+
+function DEV_dropThis() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var s = ss.getActiveSheet();
+  deploySheets([s], false, true, true);
+}
+
+function DEV_deployAll() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  deploySheets(sheets, true, false, true);
+}
 
 function deployThis() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -30,7 +55,7 @@ function deployAll() {
   deploySheets(sheets, true, false);
 }
 
-function deploySheets(sheets, resetAll, dropOnly) {
+function deploySheets(sheets, resetAll, dropOnly, DEV_ENDPOINT) {
   var machines = []
   for (var i = 0; i < sheets.length; i++) {
     var sheet = sheets[i];
@@ -56,8 +81,13 @@ function deploySheets(sheets, resetAll, dropOnly) {
     }),
     muteHttpExceptions: true
   };
+  
+  var urlpath = 'mapp';
+  if (DEV_ENDPOINT) {
+    urlpath += "-dev";
+  }
 
-  var r = UrlFetchApp.fetch('https://mapp.betterinformatics.com/api/update_schema', options)
+  var r = UrlFetchApp.fetch("https://"+urlpath+".betterinformatics.com/api/update_schema", options)
   Logger.log(r)
   Browser.msgBox(r)
 }
