@@ -195,7 +195,7 @@ function readyFunction(){
                     if (cell.gpu == "True") {
                         gpuSuffix = " (gpu)"
                     }
-                    text.text(cell.hostname+gpuSuffix);
+                    text.text(cell.hostname + gpuSuffix);
 
                     let iconClass = "fa-television";
                     let tdClass = "";
