@@ -437,14 +437,15 @@ def update_schema():
                         raise APIError("[Sheet %s] Invalid value '%s' in rows[%s], expected empty row" % (sheet['name'], cell_value, rownumber))
                     continue
 
-                hostname = cell_value
+                hostname = cell_value.lower()
 
                 if hostname != "" and not dropOnly:
                     machines.append({
-                        'hostname': hostname,
+                        'hostname': hostname.replace(' (gpu)', ''),
                         'col': colnumber,
                         'row': rownumber-3, # -3 required because first 3 rows are headers
                         'user': '',
+                        'gpu': str(hostname.endswith(' (gpu)')),
                         'timestamp': '',
                         'status': 'offline',
                         'site': room['site'],

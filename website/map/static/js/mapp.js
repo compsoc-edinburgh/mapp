@@ -191,7 +191,11 @@ function readyFunction(){
                     const icon = $("<p class=blip><i class=fa></i></p>")
                     const text = $("<p></p>");
 
-                    text.text(cell.hostname);
+                    let gpuSuffix = "";
+                    if (cell.gpu == "True") {
+                        gpuSuffix = " (gpu)"
+                    }
+                    text.text(cell.hostname + gpuSuffix);
 
                     let iconClass = "fa-television";
                     let tdClass = "";
