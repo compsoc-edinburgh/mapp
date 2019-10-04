@@ -8,6 +8,7 @@ from flask import render_template, request, jsonify, redirect, make_response
 from flask_login import login_user, logout_user, login_required, current_user
 import csv
 from collections import defaultdict
+import socket
 
 class APIError(Exception):
     status_code = 401
@@ -231,6 +232,19 @@ def get_friend_rooms():
 def index():
     if current_user.is_anonymous:
         return redirect("/about")
+
+    try:
+        hostname, _, _ = socket.gethostbyaddr(request.remote_addr)
+
+        suffix = ".inf.ed.ac.uk"
+        if hostname.endswith(suffix):
+            machine = hostname[:-len(suffix)]
+            if machine.isalpha() and (flask_redis.exists(machine) == 1):
+                r = flask_redis.hget(machine, "room")
+                return redirect("/site/"+r)
+
+    except socket.herror:
+        pass
 
     return redirect("/site/6.06")
 
