@@ -2,6 +2,43 @@
 $(readyFunction);
 
 function readyFunction(){
+
+    const refreshTimetabling = async roomKey => {
+        const field = document.querySelector("#mapp-next-booking")
+        field.textContent = ``
+
+        let resp = await fetch("https://timetabling.business-school.ed.ac.uk/api/v1/buildings/18/locations")
+        if (!resp.ok) {
+            console.log("Timetabling location resp not OK", resp)
+            return
+        }
+
+        const locations = await resp.json()
+        const room = locations.data.find(d => d.attributes.identifier === roomKey)
+        if (!room) {
+            console.log("Timetabling could not find room", locations)
+            return
+        }
+
+        resp = await fetch(room.relationships.bookings.links.related)
+        if (!resp.ok) {
+            console.log("Timetabling room bookings resp not OK", resp)
+            return
+        }
+
+        const bookings = await resp.json()
+        if (bookings.data.length === 0) {
+            console.log("Timetabling room bookings has no bookings", bookings)
+            return
+        }
+
+        const firstBooking = bookings.data[0]
+        const title = firstBooking.attributes.meeting_title
+        const startTime = firstBooking.attributes.start
+        const endTime = firstBooking.attributes.end
+        field.textContent = `${dateFns.distanceInWordsToNow(startTime, { addSuffix: true })} - ${firstBooking.attributes.meeting_title}`
+    }
+
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
         regexName = /^([a-zA-Z]+\ [A-Za-z]+)$/,
@@ -239,6 +276,10 @@ function readyFunction(){
             centreMap();
             loadMapScroll();
             refreshData();
+
+            refreshTimetabling(data.room.key).catch(err => {
+                console.log("Timetabling issue:", err)
+            })
 
             setTimeout(() => $(fadeClasses).animate({ opacity: 1 }));
         });
