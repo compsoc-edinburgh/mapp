@@ -27,19 +27,30 @@ function readyFunction(){
             return
         }
 
-        const bookings = await resp.json()
+        let bookings = await resp.json()
         if (bookings.data.length === 0) {
             console.info("Timetabling room bookings has no bookings", bookings)
             return
         }
 
-        const firstBooking = bookings.data.reduce((e1,e2) => (e1.attributes.start < e2.attributes.start ? e1 : e2))
-        const title = firstBooking.attributes.meeting_title
+        const firstBooking = bookings.data
+            .filter(o => new Date(o.attributes.end) > new Date()) // filter out events that have "ended in the past"
+            .reduce((e1,e2) => (e1.attributes.start < e2.attributes.start ? e1 : e2)) // find the earliest event that hasn't completed
+        let title = firstBooking.attributes.meeting_title
         const startTime = firstBooking.attributes.start
         const endTime = firstBooking.attributes.end
 
+        let mainText = ""
+        if (dateFns.isPast(startTime)) {
+            mainText = `until ${dateFns.format(endTime, "HH:mm")}`
+        } else {
+            mainText = `in ${dateFns.distanceInWordsToNow(startTime)}`
+        }
+
+        console.log("This booking", firstBooking)
+
         field.classList.add("visible")
-        field.textContent = `${dateFns.distanceInWordsToNow(startTime, { addSuffix: true })} - ${firstBooking.attributes.meeting_title}`
+        field.textContent = `${mainText}: ${title}`
     }
 
     //Move function expressions to top because hoisting doesn't work for them
