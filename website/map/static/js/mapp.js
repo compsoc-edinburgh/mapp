@@ -49,6 +49,26 @@ function readyFunction(){
 
         console.log("This booking", firstBooking)
 
+        // Simplify booking title a little bit
+        try {
+            const resp = await fetch("https://betterinformatics.com/courses.json", {contentType: "application/json"})
+            if (!resp.ok) {
+                console.error("Course list not happy", resp)
+                return
+            }
+
+            const courses = await resp.json()
+            for (const [_, course] of Object.entries(courses.list)) {
+                if (title.startsWith(course.name)) {
+                    title = title.replace(course.name, course.acronym)
+                    break
+                }
+            }
+        } catch (e) {
+            console.error("Error getting course list", e)
+            // Don't return, because shortening the title is not 100% required
+        }
+
         field.classList.add("visible")
         field.textContent = `${mainText}: ${title}`
     }
