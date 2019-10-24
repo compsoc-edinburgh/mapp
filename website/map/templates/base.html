@@ -22,7 +22,7 @@
   <!--
     For some reason, the execution of the following tag: {{ active_page }}
     causes the active_page to be kept in "cache" and sent down to the nav.html.
-    
+
     Without the inclusion of active_page above the below nav.html will not receive it.
   -->
   {% include 'nav.html' %}
@@ -161,7 +161,7 @@
     <script src="{{ url_for('static', filename='js/popper.min.js') }}" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-table@1.14.1/dist/bootstrap-table.min.js"></script>
-    <script src="{{ url_for('static', filename='js/date_fns-v1.9.0.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js" integrity="sha256-wCBClaCr6pJ7sGU5kfb3gQMOOcIZNzaWpWcj/lD9Vfk=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{  url_for('static', filename='js/mapp.js') }}?20180422-2237"></script> {% endblock %}
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
