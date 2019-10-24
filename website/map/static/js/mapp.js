@@ -70,6 +70,7 @@ function readyFunction(){
         }
 
         field.classList.add("visible")
+        field.setAttribute("title", `${dateFns.format(startTime, "Do MMM - HH:mm")} to ${dateFns.format(endTime, "HH:mm")} - ${firstBooking.attributes.meeting_title}`)
         field.textContent = `${mainText}: ${title}`
     }
 
