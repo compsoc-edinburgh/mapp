@@ -17,7 +17,7 @@ function readyFunction(){
         const locations = await resp.json()
         const room = locations.data.find(d => d.attributes.identifier === roomKey)
         if (!room) {
-            console.error("Timetabling could not find room", locations)
+            console.warn("Timetabling could not find room", locations)
             return
         }
 
@@ -29,7 +29,7 @@ function readyFunction(){
 
         const bookings = await resp.json()
         if (bookings.data.length === 0) {
-            console.error("Timetabling room bookings has no bookings", bookings)
+            console.info("Timetabling room bookings has no bookings", bookings)
             return
         }
 
