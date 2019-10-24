@@ -32,7 +32,7 @@ function readyFunction(){
             return
         }
 
-        const firstBooking = bookings.data[0]
+        const firstBooking = bookings.data.reduce((e1,e2) => (e1.attributes.start < e2.attributes.start ? e1 : e2))
         const title = firstBooking.attributes.meeting_title
         const startTime = firstBooking.attributes.start
         const endTime = firstBooking.attributes.end
