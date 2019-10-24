@@ -10,26 +10,26 @@ function readyFunction(){
 
         let resp = await fetch("https://timetabling.business-school.ed.ac.uk/api/v1/buildings/18/locations")
         if (!resp.ok) {
-            console.log("Timetabling location resp not OK", resp)
+            console.error("Timetabling location resp not OK", resp)
             return
         }
 
         const locations = await resp.json()
         const room = locations.data.find(d => d.attributes.identifier === roomKey)
         if (!room) {
-            console.log("Timetabling could not find room", locations)
+            console.error("Timetabling could not find room", locations)
             return
         }
 
         resp = await fetch(room.relationships.bookings.links.related)
         if (!resp.ok) {
-            console.log("Timetabling room bookings resp not OK", resp)
+            console.error("Timetabling room bookings resp not OK", resp)
             return
         }
 
         const bookings = await resp.json()
         if (bookings.data.length === 0) {
-            console.log("Timetabling room bookings has no bookings", bookings)
+            console.error("Timetabling room bookings has no bookings", bookings)
             return
         }
 
@@ -281,7 +281,7 @@ function readyFunction(){
             refreshData();
 
             refreshTimetabling(data.room.key).catch(err => {
-                console.log("Timetabling issue:", err)
+                console.error("Timetabling issue:", err)
             })
 
             setTimeout(() => $(fadeClasses).animate({ opacity: 1 }));
