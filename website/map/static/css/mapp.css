@@ -283,3 +283,15 @@ a .text-cascaders:hover {
         font-size: 0.6em;
     }
 }
+
+#mapp-next-booking {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+#mapp-next-booking.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s, visibility 0.3s;
+}

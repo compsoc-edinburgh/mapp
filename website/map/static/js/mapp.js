@@ -5,6 +5,7 @@ function readyFunction(){
 
     const refreshTimetabling = async roomKey => {
         const field = document.querySelector("#mapp-next-booking")
+        field.classList.remove("visible")
         field.textContent = ``
 
         let resp = await fetch("https://timetabling.business-school.ed.ac.uk/api/v1/buildings/18/locations")
@@ -36,6 +37,8 @@ function readyFunction(){
         const title = firstBooking.attributes.meeting_title
         const startTime = firstBooking.attributes.start
         const endTime = firstBooking.attributes.end
+
+        field.classList.add("visible")
         field.textContent = `${dateFns.distanceInWordsToNow(startTime, { addSuffix: true })} - ${firstBooking.attributes.meeting_title}`
     }
 
