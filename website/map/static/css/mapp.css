@@ -283,3 +283,22 @@ a .text-cascaders:hover {
         font-size: 0.6em;
     }
 }
+
+#mapp-next-booking {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+
+    /* Hide super long booking names */
+    /* Wide lines breaks the size of the room "last updated" thing and I can't fix it */
+    /* max-width: 50%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap; */
+}
+
+#mapp-next-booking.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s, visibility 0.3s;
+}

@@ -2,6 +2,78 @@
 $(readyFunction);
 
 function readyFunction(){
+
+    const refreshTimetabling = async roomKey => {
+        const field = document.querySelector("#mapp-next-booking")
+        field.classList.remove("visible")
+        field.textContent = ``
+
+        let resp = await fetch("https://timetabling.business-school.ed.ac.uk/api/v1/buildings/18/locations")
+        if (!resp.ok) {
+            console.error("Timetabling location resp not OK", resp)
+            return
+        }
+
+        const locations = await resp.json()
+        const room = locations.data.find(d => d.attributes.identifier === roomKey)
+        if (!room) {
+            console.warn("Timetabling could not find room", locations)
+            return
+        }
+
+        resp = await fetch(room.relationships.bookings.links.related)
+        if (!resp.ok) {
+            console.error("Timetabling room bookings resp not OK", resp)
+            return
+        }
+
+        let bookings = await resp.json()
+        if (bookings.data.length === 0) {
+            console.info("Timetabling room bookings has no bookings", bookings)
+            return
+        }
+
+        const firstBooking = bookings.data
+            .filter(o => new Date(o.attributes.end) > new Date()) // filter out events that have "ended in the past"
+            .reduce((e1,e2) => (e1.attributes.start < e2.attributes.start ? e1 : e2)) // find the earliest event that hasn't completed
+        let title = firstBooking.attributes.meeting_title
+        const startTime = firstBooking.attributes.start
+        const endTime = firstBooking.attributes.end
+
+        let mainText = ""
+        if (dateFns.isPast(startTime)) {
+            mainText = `until ${dateFns.format(endTime, "HH:mm")}`
+        } else {
+            mainText = `in ${dateFns.distanceInWordsToNow(startTime)}`
+        }
+
+        console.log("This booking", firstBooking)
+
+        // Simplify booking title a little bit
+        try {
+            const resp = await fetch("https://betterinformatics.com/courses.json", {contentType: "application/json"})
+            if (!resp.ok) {
+                console.error("Course list not happy", resp)
+                return
+            }
+
+            const courses = await resp.json()
+            for (const [_, course] of Object.entries(courses.list)) {
+                if (title.startsWith(course.name)) {
+                    title = title.replace(course.name, course.acronym)
+                    break
+                }
+            }
+        } catch (e) {
+            console.error("Error getting course list", e)
+            // Don't return, because shortening the title is not 100% required
+        }
+
+        field.classList.add("visible")
+        field.setAttribute("title", `${dateFns.format(startTime, "Do MMM - HH:mm")} to ${dateFns.format(endTime, "HH:mm")} - ${firstBooking.attributes.meeting_title}`)
+        field.textContent = `${mainText}: ${title}`
+    }
+
     //Move function expressions to top because hoisting doesn't work for them
     var clicked = false, clickY, clickX,
         regexName = /^([a-zA-Z]+\ [A-Za-z]+)$/,
@@ -239,6 +311,10 @@ function readyFunction(){
             centreMap();
             loadMapScroll();
             refreshData();
+
+            refreshTimetabling(data.room.key).catch(err => {
+                console.error("Timetabling issue:", err)
+            })
 
             setTimeout(() => $(fadeClasses).animate({ opacity: 1 }));
         });
