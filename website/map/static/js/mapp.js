@@ -228,10 +228,11 @@ function readyFunction(){
 
                     const since = $("<p class='machine-timestamp'></p>")
                     if (cell.timestamp !== "") {
-                        let sinceText = dateFns.distanceInWordsToNow(new Date(cell.timestamp))
-                        sinceText = sinceText.replace("about", "~")
-                        since.text(sinceText)
-                        td.append(since)
+                        const sinceDate = new Date(cell.timestamp);
+                        const sinceText = dateFns.distanceInWordsToNow(sinceDate).replace("about", "~");
+                        since.text(sinceText);
+                        since.attr("title", `Logged in at ${dateFns.format(sinceDate)}`);
+                        td.append(since);
                     }
                     tr.append(td);
                 }
