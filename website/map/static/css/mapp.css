@@ -157,6 +157,11 @@ table.mapp-table>tbody>tr>td {
     line-height: 0;
 }
 
+.machine-timestamp {
+    font-size: 0.7em;
+    color: #99a6b1;
+}
+
 .mapp-table .blip .fa-stack {
     font-size: 0.5em;
 }

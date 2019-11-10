@@ -226,8 +226,7 @@ function readyFunction(){
                         td.append(f);
                     }
 
-                    const since = $("<p style='font-size: 0.7em;'></p>")
-                    since.addClass("muted")
+                    const since = $("<p class='machine-timestamp'></p>")
                     if (cell.timestamp !== "") {
                         let sinceText = dateFns.distanceInWordsToNow(new Date(cell.timestamp))
                         sinceText = sinceText.replace("about", "~")
