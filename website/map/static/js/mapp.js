@@ -226,6 +226,14 @@ function readyFunction(){
                         td.append(f);
                     }
 
+                    const since = $("<p style='font-size: 0.7em;'></p>")
+                    since.addClass("muted")
+                    if (cell.timestamp !== "") {
+                        let sinceText = dateFns.distanceInWordsToNow(new Date(cell.timestamp))
+                        sinceText = sinceText.replace("about", "~")
+                        since.text(sinceText)
+                        td.append(since)
+                    }
                     tr.append(td);
                 }
 
