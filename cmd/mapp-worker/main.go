@@ -166,12 +166,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 	for machine := range jobs {
 		// fmt.Println("worker", id, "started job", machine)
 
-		location, _ := time.LoadLocation("Europe/London")
-
-		result := MachineResult{
-			Hostname:  machine,
-			Timestamp: time.Now().In(location).Format(time.RFC3339),
-		}
+		result := MachineResult{Hostname: machine}
 
 		cmd := exec.Command(
 			"ssh",
@@ -184,7 +179,7 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 			"-o", "ConnectTimeout=5s",
 			"-o", "StrictHostKeyChecking=no",
 			machine+".inf.ed.ac.uk",
-			"/usr/bin/printf '%s' $(PIDS=$(pidof lightdm); for pid in $PIDS; do ps -ho user --ppid $pid | fgrep -v -e 'root' -e lightdm; done)",
+			`/usr/bin/printf '%s' "$(PIDS=$(pidof lightdm); for pid in $PIDS; do ps -ho user,lstart --ppid $pid | fgrep -v -e 'root' -e lightdm; done)"`,
 		)
 
 		var errbuf bytes.Buffer
@@ -200,8 +195,25 @@ func searchWorker(id int, jobs <-chan string, results chan<- MachineResult) {
 				result.Status = "unknown"
 			}
 		} else {
+			strOut := strings.TrimSpace(string(out))
 			result.Status = "online"
-			result.User = strings.TrimSpace(string(out))
+			if strOut == "" {
+				result.User = ""
+			} else {
+				parts := strings.SplitN(strOut, " ", 2)
+				result.User = parts[0]
+
+				loginTime, err := time.Parse("Mon Jan 2 15:04:05 2006", parts[1])
+				if err != nil {
+					log.
+						WithField("host", machine).
+						WithField("error", err).
+						Errorln("TIME PARSE FAILED")
+				} else {
+					location, _ := time.LoadLocation("Europe/London")
+					result.Timestamp = loginTime.In(location).Format(time.RFC3339)
+				}
+			}
 		}
 
 		results <- result
