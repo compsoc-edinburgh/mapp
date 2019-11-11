@@ -157,6 +157,11 @@ table.mapp-table>tbody>tr>td {
     line-height: 0;
 }
 
+.machine-timestamp {
+    font-size: 0.7em;
+    color: #99a6b1;
+}
+
 .mapp-table .blip .fa-stack {
     font-size: 0.5em;
 }
@@ -282,4 +287,23 @@ a .text-cascaders:hover {
     .shrinklittle {
         font-size: 0.6em;
     }
+}
+
+#mapp-next-booking {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+
+    /* Hide super long booking names */
+    /* Wide lines breaks the size of the room "last updated" thing and I can't fix it */
+    /* max-width: 50%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap; */
+}
+
+#mapp-next-booking.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s, visibility 0.3s;
 }
