@@ -194,26 +194,6 @@ function readyFunction(){
             $("#mapp-here-count").text(here_count);
             $("#mapp-elsewhere-count").text(else_count);
 
-            const {cascaders_here_count, cascaders_elsewhere_count} = data;
-
-            let cascaders_here_msg = "No cascaders are in this room.";
-            let cascaders_elsewhere_msg = "No cascaders elsewhere.";
-
-            if (cascaders_here_count > 0) {
-                cascaders_here_msg = `${cascaders_here_count} cascader${cascaders_here_count == 1 ? "" : "s"}`;
-            }
-
-            if (cascaders_elsewhere_count > 0) {
-                cascaders_elsewhere_msg = `${cascaders_elsewhere_count} cascader${cascaders_elsewhere_count == 1 ? "" : "s"}`;
-            }
-
-            const base_cascaders_buddy = `
-                <tr><td><small>
-                    <a href="#" data-toggle="modal" data-target="#csc-mdl" class="text-cascaders">$content</a>
-                </small></td></tr>`
-            $("#mapp-buddybar-here").append(base_cascaders_buddy.replace("$content", cascaders_here_msg));
-            $("#mapp-buddybar-elsewhere").append(base_cascaders_buddy.replace("$content", cascaders_elsewhere_msg));
-
             if (here_count === 0) {
                 $("#mapp-buddybar-here").append("<tr><td><small>No friends are in this room.</small></td></tr>");
             }
@@ -275,9 +255,6 @@ function readyFunction(){
 
                     if (cell.status === "offline") {
                         tdClass = "muted";
-                    } else if (cell.cascader) {
-                        iconClass = "fa-smile-o text-cascaders"
-                        userAt = cell.cascader;
                     } else if (cell.friend) {
                         iconClass = "fa-hand-peace-o text-info"
                         userAt = cell.friend;
@@ -297,7 +274,7 @@ function readyFunction(){
                     td.append(text);
 
                     if (userAt) {
-                        const f = $(`<p class='text-${cell.cascader ? "cascaders" : "info"} userat-name'></p>`)
+                        const f = $(`<p class='text-info userat-name'></p>`)
                         f.text(userAt);
                         td.append(f);
                     }
@@ -554,109 +531,4 @@ function readyFunction(){
     });
 
     mapUpdate();
-
-    cascadersReady();
 };
-
-function cascadersReady() {
-    const btnSave = document.getElementById("csc-save");
-    const btnToggle = document.getElementById("csc-toggle");
-    const inputTagline = document.getElementById("csc-tagline");
-    const tableList = $("#csc-tbl");
-
-    const ui = {
-        spinnerHTML: `<i class="fa fa-spinner fa-spin"></i>`,
-
-        getTagline: () => inputTagline.value,
-        setTagline: tagline => inputTagline.value = tagline || "",
-        setToggleState: enabled => {
-            btnToggle.innerText = enabled ? "Stop" : "Start";
-            btnToggle.classList.remove("btn-secondary", "btn-warning");
-            btnToggle.classList.add(enabled ? "btn-warning" : "btn-secondary");
-        },
-        setToggleLoading: () => btnToggle.innerHTML = ui.spinnerHTML,
-        getToggleState: () => btnToggle.innerText === "Stop",
-
-        showError: () => alert("Failed to update. Please try again later."),
-    }
-
-    const save = async (enabled, tagline) => {
-        const body = {enabled, tagline};
-        const response = await fetch("/api/cascaders/me", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body),
-        });
-
-        return response.ok;
-    }
-
-    const updateList = () => {
-        // const response = await fetch("/api/cascaders");
-        // const json = await response.json();
-
-    }
-
-    // When the modal is shown, refresh the UI
-    $("#csc-mdl").on("show.bs.modal", async () => {
-        const response = await fetch("/api/cascaders/me", {credentials: "same-origin"});
-        const json = await response.json();
-
-        ui.setTagline(json['tagline']);
-        ui.setToggleState(json['enabled']);
-
-        // Update list
-        tableList.bootstrapTable('refresh', {silent: true})
-
-        // Hack to fix the fa-sync icon not appearing
-        $('.bootstrap-table button[title="Refresh"]').text("Refresh");
-    })
-
-    btnToggle.addEventListener("click", () => {
-        const enabled = !ui.getToggleState();
-        ui.setToggleLoading();
-
-        save(enabled, ui.getTagline()).then(success => {
-            if (!success) {
-                ui.showError();
-                return;
-            }
-
-            ui.setToggleState(enabled);
-        });
-    });
-
-    btnSave.addEventListener("click", () => {
-        const oldText = btnSave.innerText;
-        btnSave.innerHTML = ui.spinnerHTML;
-
-        save(ui.getToggleState(), ui.getTagline()).then(success => {
-            btnSave.innerText = oldText;
-
-            if (!success) {
-                ui.showError();
-            }
-        })
-    })
-
-    tableList.bootstrapTable({
-        url: "/api/cascaders",
-        search: true,
-        sortable: true,
-        showRefresh: true,
-        escape: true,
-        columns: [{
-            field: "name",
-            title: "Name"
-        }, {
-            field: "room",
-            title: "Room",
-        }, {
-            "field": "tagline",
-            "title": "Tagline",
-        }]
-    })
-}

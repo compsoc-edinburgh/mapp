@@ -255,32 +255,8 @@ code {
     width: 99%;
 }
 
-.text-cascaders {
-    color: #b40fba !important;
-}
-
-a .text-cascaders:hover {
-    color: #a50eea !important;
-}
-
 .underline {
     text-decoration: underline;
-}
-
-.btn-cascaders {
-    color: white;
-    background-color: #b40fba;
-    border-color: #b40fba;
-}
-
-.btn-cascaders:hover {
-    color: white;
-    background-color: #a50eea;
-    border-color: #b40fba;
-}
-
-.btn-cascaders:focus {
-    box-shadow: 0 0 0 0.2rem #b40fba80;
 }
 
 @media(max-width: 767px){

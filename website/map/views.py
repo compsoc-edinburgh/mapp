@@ -33,35 +33,6 @@ def handle_invalid_usage(error):
     return response
 
 
-def get_cascaders() -> List[str]:
-    return list(flask_redis.smembers("cascaders.users"))
-
-
-def find_cascader(cascaders: List[str], uun_hash: str) -> Optional[str]:
-    for uun in cascaders:
-        if check_uun_hash(uun, uun_hash):
-            return uun
-    return None
-
-
-def get_cascader_elsewhere_count(cascaders: List[str], notRoom: str) -> int:
-    rooms = filter(lambda name: name != notRoom, flask_redis.smembers("forresthill-rooms"))
-    rooms = map(lambda name: flask_redis.hgetall(name), rooms)
-
-    count: int = 0
-
-    for room in rooms:
-        room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
-        for machineName in room_machines:
-            machine = flask_redis.hgetall(machineName)
-            if machine['user']:
-                uun = find_cascader(cascaders, machine['user'])
-                if uun:
-                    count += 1
-
-    return count
-
-
 def map_routine(which_room):
     room = flask_redis.hgetall(str(which_room))
     room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
@@ -74,9 +45,6 @@ def map_routine(which_room):
 
     rows = []
     uuns = set()
-
-    cascaders = get_cascaders()
-    cascaders_here = set()
 
     for r in range(0, num_rows+1):
         unsorted_cells = []
@@ -98,13 +66,6 @@ def map_routine(which_room):
                 if cell['user'] == "":
                     del cell['user']
                 else:
-                    uun = find_cascader(cascaders, cell['user'])
-                    if uun:
-                        cascaders_here.add(uun)
-                        cell["cascader"] = uun
-                    # else:
-                        # del cell["cascader"]
-
                     uun = current_user.get_friend(cell['user'])
                     if uun:
                         uuns.add(uun)
@@ -117,8 +78,6 @@ def map_routine(which_room):
         cells = unsorted_cells
         rows.append(cells)
 
-    uuns.update(cascaders_here)
-
     uun_names = ldap.get_names(list(uuns))
 
     for y in range(len(rows)):
@@ -128,11 +87,6 @@ def map_routine(which_room):
                 uun = cell["user"]
                 if uun in uun_names:
                     rows[y][x]["friend"] = uun_names[uun]
-
-            if "cascader" in cell:
-                uun = cell["cascader"]
-                if uun in uun_names:
-                    rows[y][x]["cascader"] = uun_names[uun]
 
     num_free = num_machines - num_used
 
@@ -155,8 +109,6 @@ def map_routine(which_room):
         "friends"          : friends,
         "friends_here_count": friends_here,
         "friends_elsewhere_count": friends_elsewhere,
-        "cascaders_here_count": len(cascaders_here),
-        "cascaders_elsewhere_count": get_cascader_elsewhere_count(cascaders, which_room),
         "room"             : room,
         "rows"             : rows,
         "num_free"         : num_free,
@@ -305,69 +257,6 @@ def login():
 def flip_dnd():
     current_user.set_dnd(not current_user.get_dnd())
     return redirect(request.form.get('next', '/'))
-
-
-@app.route("/api/cascaders")
-@login_required
-def route_get_cascaders():
-    if current_user.is_disabled:
-        return jsonify([])
-
-    cascaders = get_cascaders()
-
-    rooms = map(lambda name: flask_redis.hgetall(name), flask_redis.smembers("forresthill-rooms"))
-    result = []
-
-    for room in rooms:
-        room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
-        for machineName in room_machines:
-            machine = flask_redis.hgetall(machineName)
-            if machine['user']:
-                uun = find_cascader(cascaders, machine['user'])
-                if uun:
-                    result.append({
-                        'uun': uun,
-                        'room': room['name'],
-                    })
-
-    uuns = [f['uun'] for f in result]
-
-    # uun -> name
-    names = ldap.get_names(uuns)
-
-    # uun -> tagline
-    taglines = flask_redis.hmget("cascaders.taglines", uuns)
-
-    for i in range(len(result)):
-        uun = result[i]['uun']
-        if uun in names:
-            result[i]['name'] = names[uun]
-        result[i]['tagline'] = taglines[i]
-
-    return jsonify(result)
-
-@app.route("/api/cascaders/me", methods=['POST'])
-@login_required
-def route_post_cascaders():
-    # Tagline, enabled
-    content = request.json
-
-    enabled = content['enabled']
-    tagline = content["tagline"][:100]
-
-    current_user.cascade(enabled, tagline)
-
-    return jsonify({"success": True})
-
-@app.route("/api/cascaders/me", methods=['GET'])
-@login_required
-def route_get_cascaders_info():
-    uun = current_user.get_username()
-
-    return jsonify({
-        "enabled": flask_redis.sismember("cascaders.users", uun),
-        "tagline": flask_redis.hget("cascaders.taglines", uun),
-    })
 
 @app.route("/logout")
 def logout():
@@ -666,8 +555,6 @@ def get_demo_json():
         'friends': get_demo_friends(),
         'friends_here_count': 4,
         'friends_elsewhere_count': 1,
-        'cascaders_here_count': 7,
-        'cascaders_elsewhere_count': 0,
         'room':{"name":"Mapp Demo", "key":"demo"},
         'rows':[
             [
