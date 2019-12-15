@@ -61,6 +61,8 @@ class User(UserMixin):
         return ""
 
     def has_friend(self, friend_hash, ignore_dnd=False):
+        if friend_hash == "":
+            return False
         return self.get_friend(friend_hash, ignore_dnd) != ""
 
 class DisabledUser(User):
