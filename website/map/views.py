@@ -37,8 +37,9 @@ def map_routine(which_room):
     room = flask_redis.hgetall(str(which_room))
     room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
     machines = {m: flask_redis.hgetall(m) for m in room_machines}
-    num_rows = max([int(machines[m]['row']) for m in machines])
-    num_cols = max([int(machines[m]['col']) for m in machines])
+    
+    num_rows = max([int(m['row']) for m in machines.values()])
+    num_cols = max([int(m['col']) for m in machines.values()])
 
     num_machines = len(machines.keys())
     num_used = 0
@@ -159,8 +160,8 @@ def get_friend_rooms():
             room_machines = flask_redis.lrange(room['key'] + "-machines", 0, -1)
             for machineName in room_machines:
                 machine = flask_redis.hgetall(machineName)
-                if current_user.has_friend(machine['user']):
-                    uun = current_user.get_friend(machine['user'])
+                if current_user.has_friend(machine.get('user', '')):
+                    uun = current_user.get_friend(machine.get('user', ''))
                     friends_rooms.add((uun, room['key'], room['name']))
         friends_rooms = list(friends_rooms)
 
@@ -231,14 +232,10 @@ def refresh_data():
     # THIS IS_ANONYMOUS CHECK IS WHAT GUARDS
     # AGAINST NON-LOGGED IN ACCESS
     is_demo = True
-    if current_user.is_anonymous or which == "":
+    if current_user.is_anonymous or which in ["", "demo"]:
         this = get_demo_json()
     else:
-        try:
-            this = map_routine(which)
-            is_demo = False
-        except KeyError:
-            this = get_demo_json()
+        this = map_routine(which)
 
     resp = make_response(jsonify(this))
     if not is_demo:
