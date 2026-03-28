@@ -12,8 +12,10 @@ watching, and we should avoid storing these on disk in an unencrypted format.
 
 Essentially the architecture looks like:
 
+```
 Worker 1 -------\
 Worker 2 -------|
 ...             | ----> Website API ---> Website front-end
 Worker n-1 -----|
 Worker n -------/
+```
