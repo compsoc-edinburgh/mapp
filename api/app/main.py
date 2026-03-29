@@ -156,7 +156,7 @@ def require_roles(*allowed_roles: str):
 
 admin_required = require_roles("admin")
 worker_required = require_roles("admin", "worker")
-user_required = require_roles("admin", "user")
+user_required = require_roles("admin", "worker", "user")
 
 # CRUD user accounts
 @app.get("/users")
@@ -230,6 +230,10 @@ def patch_user(id: str, user: UserEdit, request: Request):
             or (session_user_data.get("account_class") == "user" and
                 id == session_user_id and not user.student_id)): # users can't change others data, and can't change their own student_id
         raise HTTPException(status_code=403, detail="Unauthorized to make requested change.")
+    # check that user we're changing actually exists
+    user_data = redis_client.hgetall(f"user:{id}")
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User does not exist.")
     if user.username:
         # check that username is actually available
         success = redis_client.set(f"username:{user.username}", id, nx=True)
@@ -317,7 +321,7 @@ def send_verification_email(user: UserCreate) -> tuple[int, str]:
     return 200, None
 
 @app.post("/auth/verify")
-def auth_verify(code: VerificationCode):
+def auth_verify(code: VerificationCode, request: Request):
     rate_limit("verify", 10, 60)(request, identifier=code.id)
     # grab student id
     student_id = redis_client.hget(f"user:{code.id}", "student_id")
@@ -339,12 +343,16 @@ def auth_verify(code: VerificationCode):
 
 @app.post("/auth/resend_verification")
 def auth_resend(request: Request):
-    rate_limit("verify", 1, 60)(request, identifier=code.id)
+    user_id = request.session.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authorization required.")
+    rate_limit("verify", 1, 60)(request, identifier=user_id)
     pass
 
 # signup as a user (different flow from POST /users, because this requires student id verification)
 @app.post("/auth/signup")
-def auth_signup(user: UserCreate):
+def auth_signup(user: UserCreate, request: Request):
+    rate_limit("login", 10, 300)(request, identifier=get_client_ip(request))
     # Set user_id, is atomic in redis
     user_id = str(uuid.uuid4()) # https://en.wikipedia.org/wiki/Universally_unique_identifier#Random_UUID_probability_of_duplicates
     success = redis_client.set(f"username:{user.username}", user_id, nx=True)
@@ -396,37 +404,78 @@ def auth_login(user: UserLogin, request: Request):
     request.session["user_id"] = user_id
     return {'status': 'success', "user_id": user_id}
 
-# CRUD keys
+# CRUD keys:
+# by default only admins can list / write / delete keys,
+# but they're readable by workers
 @app.get("/keys")
 @admin_required
-def get_keys():
-    pass
+def get_keys(request: Request):
+    # return list of keys
+    users = redis_client.smembers("keys")
+    return {'status': 'success', 'keys': list(users)}
+
 @app.post("/keys")
 @admin_required
-def post_keys(key: KeyEdit):
-    pass
+def post_keys(key: KeyEdit, request: Request):
+    # generate id and set name -> id mapping
+    key_id = str(uuid.uuid4())
+    success = redis_client.set(f"key_name:{key.name}", key_id, nx=True)
+    if not success:
+        raise HTTPException(status_code=400, detail="Name already in use.")
+    # set key and add it
+    redis_client.hset(f"key:{key_id}", mapping={
+        "name": key.name,
+        "value": key.value
+    })
+    redis_client.sadd("keys", key_id)
+    # return key_id
+    return {"status": "success", "key_id": key_id}
+
 @app.get("/keys/{id}")
 @worker_required
-def get_key(id: int):
-    pass
+def get_key(id: str, request: Request):
+    key_data = redis_client.hgetall(f"key:{id}")
+    if not key_data:
+        raise HTTPException(status_code=404, detail="Key with ID not found.")
+    return {"status": "success", "key": key_data}
+
 @app.patch("/keys/{id}")
 @admin_required
-def patch_key(id: int, key: KeyCreate):
-    pass
+def patch_key(id: str, key: KeyEdit, request: Request):
+    key_data = redis_client.hgetall(f"key:{id}")
+    if not key_data:
+        raise HTTPException(status_code=404, detail="Key with ID not found.")
+    if key.name:
+        # create new name record
+        success = redis_client.set(f"key_name:{key.name}", id, nx=True)
+        if not success:
+            raise HTTPException(status_code=400, detail="Key name already in use.")
+        # set name
+        redis_client.hset(f"key:{id}", "name", key.name)
+        # delete old name record
+        if not (name := key_data.get("name")):
+            raise HTTPException(status_code=500, detail="Malformed key record without name.")
+        redis_client.delete(f"key_name:{name}")
+    if key.value:
+        redis_client.hset(f"key:{id}", "value", key.value)
+    return {"status": "success"}
+
 @app.delete("/keys/{id}")
 @admin_required
-def delete_key(id: int):
-    pass
-
-# Task queue
-@app.post("/tasks/claim")
-@worker_required
-def claim_task():
-    pass
-@app.post("/tasks/{id}/drop")
-@worker_required
-def claim_task(id: int):
-    pass
+def delete_key(id: str, request: Request):
+    # check key actually exists
+    key_data = redis_client.hgetall(f"key:{id}")
+    if not key_data:
+        raise HTTPException(status_code=404, detail="Key with ID not found.")
+    redis_client.delete(f"key:{id}")
+    # remove from list
+    redis_client.srem("keys", id)
+    # try to delete name mapping record
+    if not (name := key_data.get("name")):
+        logging.error(f"Malformed key record with no name with id '{id}'")
+        raise HTTPException(status_code=500, detail="Malformed key record with not name.")
+    redis_client.delete(f"key_name:{name}")
+    return {"status": "success"}
 
 # CRUD machine information
 @app.get("/machines")
