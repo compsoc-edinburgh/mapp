@@ -1,3 +1,4 @@
+from functools import wraps
 from fastapi import FastAPI, Request, HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
@@ -69,21 +70,42 @@ class MachineEdit(BaseModel):
     is_online: bool | None = None
     in_use: bool | None = None
 
-# CRUD user accounts
-@app.get("/users")
-def get_users(request: Request):
-    # check session has user id
+
+# some helpful authorization decorators
+def get_current_user(request: Request):
     session_user_id = request.session.get("user_id")
     if not session_user_id:
         raise HTTPException(status_code=401, detail="Authorization required.")
-    # check user actually exists and grab data
-    session_user_data = redis_client.hgetall(f"user:{session_user_id}")
-    if not session_user_data:
+
+    user_data = redis_client.hgetall(f"user:{session_user_id}")
+    if not user_data:
         logging.error(f"Valid session for {session_user_id=}, but user does not exist.")
         raise HTTPException(status_code=401, detail="Invalid session, user does not exist.")
-    # check if authorized
-    if session_user_data.get("account_class") != "admin":
-        raise HTTPException(status_code=403, detail="Not authorized to access users list.")
+
+    return session_user_id, user_data
+
+def require_roles(*allowed_roles: str):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            request: Request = kwargs.get("request")
+            if request is None:
+                raise RuntimeError("Request parameter is required")
+            user_id, user_data = get_current_user(request)
+            if user_data.get("account_class") not in allowed_roles:
+                raise HTTPException(status_code=403, detail="Not authorized to access resource.")
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+admin_required = require_roles("admin")
+worker_required = require_roles("admin", "worker")
+user_required = require_roles("admin", "user")
+
+# CRUD user accounts
+@app.get("/users")
+@admin_required
+def get_users(request: Request):
     # return list of users
     users = redis_client.smembers("users")
     return {'status': 'success', 'user_ids': list(users)}
@@ -224,43 +246,55 @@ def auth(user: UserLogin, request: Request):
 
 # CRUD keys
 @app.get("/keys")
+@admin_required
 def get_keys():
     pass
 @app.post("/keys")
+@admin_required
 def post_keys(key: KeyEdit):
     pass
 @app.get("/keys/{id}")
+@worker_required
 def get_key(id: int):
     pass
 @app.patch("/keys/{id}")
+@admin_required
 def patch_key(id: int, key: KeyCreate):
     pass
 @app.delete("/keys/{id}")
+@admin_required
 def delete_key(id: int):
     pass
 
 # Task queue
 @app.post("/tasks/claim")
+@worker_required
 def claim_task():
     pass
 @app.post("/tasks/{id}/drop")
+@worker_required
 def claim_task(id: int):
     pass
 
 # CRUD machine information
 @app.get("/machines")
+@user_required
 def get_machines():
     pass
 @app.post("/machines")
+@admin_required
 def post_machines(machine: MachineCreate):
     pass
 @app.get("/machines/{id}")
+@user_required
 def get_machine(id: int):
     pass
 @app.patch("/machines/{id}")
+@worker_required
 def patch_machine(id: int, machine: MachineEdit):
     pass
 @app.delete("/machines/{id}")
+@admin_required
 def delete_machine(id: int):
     pass
 
