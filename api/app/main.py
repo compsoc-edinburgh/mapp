@@ -36,7 +36,7 @@ app.add_middleware(
 redis_client = redis.Redis(decode_responses=True)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 logging.basicConfig(level=logging.INFO)
-load_dotenv
+load_dotenv()
 
 class UserCreate(BaseModel):
     username: str
@@ -53,16 +53,16 @@ class UserEdit(BaseModel):
     student_id: str | None = None
 
 class VerificationCode(BaseModel):
-    id: int
+    id: str
     code: int
 
 class KeyCreate(BaseModel):
-    name: int|None = None
-    value: int|None = None
+    name: str|None = None
+    value: str|None = None
 
 class KeyEdit(BaseModel):
-    name: int|None = None
-    value: int|None = None
+    name: str|None = None
+    value: str|None = None
 
 class MachineCreate(BaseModel):
     hostname: str
@@ -74,6 +74,58 @@ class MachineEdit(BaseModel):
     is_online: bool | None = None
     in_use: bool | None = None
 
+# rate limiting
+def rate_limit(key_prefix: str, max_requests: int, window_seconds: int):
+    """
+    Usage:
+        @app.post("/auth/login")
+        def login(user: UserLogin, request: Request):
+            rate_limit("login", 10, 60)(request, identifier=user.username)
+            ...
+    """
+    def check(request: Request, identifier: str):
+        key = f"rl:{key_prefix}:{identifier}"
+        now = time.time()
+        window_start = now - window_seconds
+
+        pipe = redis_client.pipeline()
+        # Drop entries outside the window
+        pipe.zremrangebyscore(key, "-inf", window_start)
+        # Count remaining entries (requests in the current window)
+        pipe.zcard(key)
+        # Record this attempt with a unique member so simultaneous requests
+        # with the same timestamp don't collide and get deduplicated.
+        member = f"{now:.6f}-{secrets.token_hex(4)}"
+        pipe.zadd(key, {member: now})
+        # Auto-expire the key so Redis doesn't accumulate stale rate-limit sets.
+        pipe.expire(key, window_seconds)
+        _, count, *_ = pipe.execute()
+
+        if count >= max_requests:
+            # Compute when the oldest entry in the window will fall out.
+            oldest = redis_client.zrange(key, 0, 0, withscores=True)
+            if oldest:
+                retry_after = int(oldest[0][1] + window_seconds - now) + 1
+            else:
+                retry_after = window_seconds
+            logging.warning(
+                "Rate limit hit: prefix=%s identifier=%s count=%d limit=%d",
+                key_prefix, identifier, count, max_requests,
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Too many requests, please try again later.",
+                headers={"Retry-After": str(retry_after)},
+            )
+
+    return check
+
+def get_client_ip(request: Request) -> str:
+    """Return the best-guess client IP, honouring X-Forwarded-For if present."""
+    forwarded_for = request.headers.get("x-forwarded-for")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
 # some helpful authorization decorators
 def get_current_user(request: Request):
@@ -184,7 +236,7 @@ def patch_user(id: str, user: UserEdit, request: Request):
         if not success:
             raise HTTPException(status_code=400, detail="Username already in use.")
         # delete old username -> id record if exists
-        if (old_username:=session_user_data.get("username")):
+        if (old_username:=user_data.get("username")):
             redis_client.delete(f"username:{old_username}")
         # update user record
         redis_client.hset(f"user:{id}", "username", user.username)
@@ -266,6 +318,7 @@ def send_verification_email(user: UserCreate) -> tuple[int, str]:
 
 @app.post("/auth/verify")
 def auth_verify(code: VerificationCode):
+    rate_limit("verify", 10, 60)(request, identifier=code.id)
     # grab student id
     student_id = redis_client.hget(f"user:{code.id}", "student_id")
     if not student_id:
@@ -276,7 +329,7 @@ def auth_verify(code: VerificationCode):
         raise HTTPException(status_code=400, detail="Code expired or invalid.")
     # check code is correct
     formatted_presented_code = str(code.code).zfill(6)
-    if valid_code != formatted_presented_code:
+    if not secrets.compare_digest(valid_code, formatted_presented_code):
         raise HTTPException(status_code=400, detail="Code expired or invalid.")
     # update database
     redis_client.hset(f"user:{code.id}", "account_class", "user")
@@ -285,7 +338,8 @@ def auth_verify(code: VerificationCode):
     return {"status": "success", "message": "Account verified."}
 
 @app.post("/auth/resend_verification")
-def auth_signup(request: Request):
+def auth_resend(request: Request):
+    rate_limit("verify", 1, 60)(request, identifier=code.id)
     pass
 
 # signup as a user (different flow from POST /users, because this requires student id verification)
@@ -320,6 +374,7 @@ def auth_signup(user: UserCreate):
 # Authenticate yourself as a user or worker
 @app.post("/auth/login")
 def auth_login(user: UserLogin, request: Request):
+    rate_limit("login", 10, 60)(request, identifier=user.username)
     # grab user_id from username
     user_id = redis_client.get(f"username:{user.username}")
     if not user_id:
