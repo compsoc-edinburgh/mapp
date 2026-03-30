@@ -12,7 +12,7 @@ import uuid
 import logging
 import redis
 import os
-
+import time
 
 # Database:
 # verification_code:{student_id} -> {code} (STRING)
@@ -291,7 +291,6 @@ def send_verification_email(user: UserCreate) -> tuple[int, str]:
         return 400, "Student ID already in use."
     # grab email and password from session
     from_email = os.environ.get("EMAIL")
-    email_password = os.environ.get("EMAIL_PASSWORD")
     if not from_email or not email_password:
         logging.error("EMAIL or EMAIL_PASSWORD environment variables not set, these must be sent to allow email verification.")
         return 500, "Email failed to send, please try again later, or report this to an admin if this continues."
@@ -309,8 +308,7 @@ def send_verification_email(user: UserCreate) -> tuple[int, str]:
     BetterInformatics Admins""")
     # send email, backing out if errors occur.
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-            smtp.login(from_email, email_password)
+        with smtplib.SMTP("smtp-relay.gmail.com", 587) as smtp:
             smtp.send_message(msg)
     except smtplib.SMTPAuthenticationError as e:
         logging.error(f"Failed to authenticate with email server.")
@@ -454,6 +452,7 @@ def patch_key(id: str, key: KeyEdit, request: Request):
         redis_client.hset(f"key:{id}", "name", key.name)
         # delete old name record
         if not (name := key_data.get("name")):
+            logging.error(f"Malformed key record with no name with id '{id}'")
             raise HTTPException(status_code=500, detail="Malformed key record without name.")
         redis_client.delete(f"key_name:{name}")
     if key.value:
