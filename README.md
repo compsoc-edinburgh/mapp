@@ -3,6 +3,7 @@
 ### Project Structure
 - `api/` contains the FastAPI based API
 - `worker/` contains the Rust based worker binary which reports to the API
+
 **Planned:**
 - `website/` contains the front-end of the website -- Astro or Tailwind most
 likely
